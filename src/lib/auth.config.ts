@@ -11,6 +11,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      role: string | null; // Ajouter le rôle ici
     };
   }
 }
@@ -58,6 +59,7 @@ export const authOptions: NextAuthOptions = {
             id: String(user.id),
             email: user.email,
             name: user.name,
+            role: user.role, // Ajouter le rôle ici
           };
         } catch (error) {
           console.error("Erreur lors de l'authentification :", error);
@@ -71,12 +73,17 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+        // Correction ici - TypeScript exige un cast explicite
+        session.user.role = token.role as string | null;
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user?.id) {
         token.sub = String(user.id);
+        // Assurez-vous que la propriété 'role' est définie sur le token
+        // @ts-expect-error - user.role existe mais TypeScript ne le sait pas
+        token.role = user.role;
       }
       return token;
     },

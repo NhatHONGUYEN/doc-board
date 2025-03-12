@@ -1,4 +1,3 @@
-// app/sign-in/page.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -8,7 +7,6 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -18,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-
 import { Card } from "@/components/ui/card";
 import { signInSchema } from "@/lib/schema/auth";
 
@@ -36,6 +33,22 @@ export default function SignInPage() {
 
   const onSubmit = async (values: z.infer<typeof signInSchema>) => {
     try {
+      // D'abord, vérifiez si l'utilisateur existe et récupérez son rôle
+      const userCheck = await fetch("/api/auth/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.email }),
+      }).then((res) => res.json());
+
+      // Si l'utilisateur n'existe pas, affichez une erreur
+      if (!userCheck.exists) {
+        form.setError("email", {
+          message: "Cet email ne correspond à aucun compte.",
+        });
+        return;
+      }
+
+      // Tentative de connexion
       const result = await signIn("credentials", {
         redirect: false,
         email: values.email,
@@ -43,26 +56,11 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        // Messages d'erreur personnalisés pour les codes d'erreur standard
+        // Si l'erreur est liée aux identifiants, c'est probablement le mot de passe
         if (result.error === "CredentialsSignin") {
-          // On tente de vérifier si l'utilisateur existe d'abord
-          const userExists = await fetch("/api/auth/check-user", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: values.email }),
-          }).then((res) => res.json());
-
-          if (userExists.exists) {
-            // L'utilisateur existe, donc le problème est le mot de passe
-            form.setError("password", {
-              message: "Mot de passe incorrect.",
-            });
-          } else {
-            // L'utilisateur n'existe pas
-            form.setError("email", {
-              message: "Cet email ne correspond à aucun compte.",
-            });
-          }
+          form.setError("password", {
+            message: "Mot de passe incorrect.",
+          });
         } else {
           // Gestion des autres erreurs
           form.setError("root", {
@@ -71,9 +69,17 @@ export default function SignInPage() {
           });
         }
       } else {
-        router.push("/");
+        // Connexion réussie, rediriger en fonction du rôle récupéré préalablement
+        if (userCheck.role === "PATIENT") {
+          router.push("/patient/dashboard");
+        } else if (userCheck.role === "MEDECIN") {
+          router.push("/medecin/dashboard");
+        } else {
+          router.push("/");
+        }
       }
-    } catch {
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
       form.setError("root", {
         message: "Une erreur est survenue. Veuillez réessayer.",
       });
