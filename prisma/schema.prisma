@@ -8,10 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Définir un Enum pour les rôles
+// Define Role Enum
 enum Role {
   PATIENT
-  MEDECIN
+  DOCTOR
 }
 
 model User {
@@ -20,11 +20,87 @@ model User {
   email          String          @unique
   emailVerified  DateTime?
   image          String?
-  password       String? // Mot de passe haché
-  role           Role            @default(PATIENT) // Rôle de l'utilisateur, par défaut PATIENT
+  password       String? // Hashed password
+  role           Role            @default(PATIENT) // User role, default is PATIENT
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]
+
+  // Relations with specific profiles
+  patientProfile Patient?
+  doctorProfile  Doctor?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Patient {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  birthDate            DateTime?
+  address              String?
+  phone                String?
+  socialSecurityNumber String?
+  medicalHistory       String?
+
+  // Relation to User
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relation to appointments
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Doctor {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  specialty     String?
+  licenseNumber String? // Professional identification number
+  phone         String?
+  officeAddress String?
+  description   String? // Doctor description, areas of expertise, etc.
+
+  // Relation to User
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relation to appointments
+  appointments Appointment[]
+
+  // Doctor availability schedule
+  availabilities Availability[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id       String   @id @default(cuid())
+  date     DateTime
+  duration Int // Duration in minutes
+  reason   String?
+  notes    String?
+  status   String // "confirmed", "cancelled", "pending", etc.
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Availability {
+  id        String @id @default(cuid())
+  day       Int // 0-6 for Monday-Sunday
+  startTime String // Format "HH:MM"
+  endTime   String // Format "HH:MM"
+
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,7 +125,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
-  @@index([userId]) // Index pour optimiser les requêtes
+  @@index([userId]) // Index to optimize queries
 }
 
 model Session {
@@ -61,7 +137,7 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId]) // Index pour optimiser les requêtes
+  @@index([userId]) // Index to optimize queries
 }
 
 model VerificationToken {

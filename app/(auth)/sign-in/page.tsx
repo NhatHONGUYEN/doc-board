@@ -72,8 +72,8 @@ export default function SignInPage() {
         // Connexion réussie, rediriger en fonction du rôle récupéré préalablement
         if (userCheck.role === "PATIENT") {
           router.push("/patient/dashboard");
-        } else if (userCheck.role === "MEDECIN") {
-          router.push("/medecin/dashboard");
+        } else if (userCheck.role === "DOCTOR") {
+          router.push("/doctor/dashboard");
         } else {
           router.push("/");
         }

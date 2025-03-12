@@ -143,7 +143,7 @@ export default function SignUpPage() {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="PATIENT">Patient</SelectItem>
-                      <SelectItem value="MEDECIN">Médecin</SelectItem>
+                      <SelectItem value="DOCTOR">Médecin</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

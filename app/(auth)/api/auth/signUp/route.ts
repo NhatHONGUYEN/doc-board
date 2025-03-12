@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Valider le rôle
-    if (role !== "PATIENT" && role !== "MEDECIN") {
+    if (role !== "PATIENT" && role !== "DOCTOR") {
       return NextResponse.json(
         { message: "Le rôle spécifié est invalide." },
         { status: 400 }

@@ -1,7 +1,7 @@
 import SideBarPatient from "@/components/SideBarPatient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function MedecinDashboard() {
+export default function DoctorDashboard() {
   return (
     <div className="flex">
       <SideBarPatient />

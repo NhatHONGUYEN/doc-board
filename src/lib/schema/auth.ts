@@ -9,7 +9,7 @@ export const signInSchema = z.object({
 });
 
 // Définir le schéma pour le rôle
-const roleEnum = z.enum(["PATIENT", "MEDECIN"]);
+const roleEnum = z.enum(["PATIENT", "DOCTOR"]);
 
 // Extraire le type Role
 export type Role = z.infer<typeof roleEnum>;
