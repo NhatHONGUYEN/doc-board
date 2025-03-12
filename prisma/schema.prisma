@@ -8,6 +8,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Définir un Enum pour les rôles
+enum Role {
+  PATIENT
+  MEDECIN
+}
+
 model User {
   id             String          @id @default(cuid())
   name           String?
@@ -15,7 +21,7 @@ model User {
   emailVerified  DateTime?
   image          String?
   password       String? // Mot de passe haché
-  score          Int             @default(0) // Score global de l'utilisateur
+  role           Role            @default(PATIENT) // Rôle de l'utilisateur, par défaut PATIENT
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]

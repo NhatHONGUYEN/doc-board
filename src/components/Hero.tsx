@@ -35,11 +35,11 @@ export default function Hero() {
           </h1>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
             <Button onClick={handleSignin} size="lg">
-              Je suis patient
+              Se Connecter
               <MoveRight className="ml-2" strokeWidth={1} />
             </Button>
             <Button onClick={handleSignUp} size="lg" variant="secondary">
-              Je suis médecin
+              S&apos;inscrire
               <MoveRight className="ml-2" strokeWidth={1} />
             </Button>
           </div>
