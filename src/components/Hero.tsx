@@ -1,8 +1,21 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Calendar, MoveRight, Shield, Clock } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
+  const router = useRouter();
+
+  const handleSignin = () => {
+    router.push("/sign-in");
+  };
+
+  const handleSignUp = () => {
+    router.push("/sign-up");
+  };
+
   return (
     <section className="py-32">
       <div className="container mx-auto ">
@@ -21,11 +34,11 @@ export default function Hero() {
             Book Your Medical Appointments Online
           </h1>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button size="lg">
+            <Button onClick={handleSignin} size="lg">
               Je suis patient
               <MoveRight className="ml-2" strokeWidth={1} />
             </Button>
-            <Button size="lg" variant="secondary">
+            <Button onClick={handleSignUp} size="lg" variant="secondary">
               Je suis médecin
               <MoveRight className="ml-2" strokeWidth={1} />
             </Button>
