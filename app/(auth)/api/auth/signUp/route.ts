@@ -1,14 +1,11 @@
-// app/api/auth/signup/route.ts
 import { NextResponse } from "next/server";
-
 import argon2 from "argon2"; // Importer Argon2
-
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
-  const { name, email, password } = await request.json();
+  const { name, email, password, role } = await request.json(); // Ajouter `role` dans la destructuration
 
   try {
     // 1. Vérifiez si l'utilisateur existe déjà
@@ -23,19 +20,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2. Hacher le mot de passe avec Argon2
+    // 2. Valider le rôle
+    if (role !== "PATIENT" && role !== "MEDECIN") {
+      return NextResponse.json(
+        { message: "Le rôle spécifié est invalide." },
+        { status: 400 }
+      );
+    }
+    // 3. Hacher le mot de passe avec Argon2
     const hashedPassword = await argon2.hash(password);
 
-    // 3. Créez un nouvel utilisateur avec le mot de passe haché
+    // 4. Créez un nouvel utilisateur avec le mot de passe haché et le rôle
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword, // Stocker le mot de passe haché
+        role, // Ajouter le rôle
       },
     });
 
-    // 4. Retourner une réponse réussie
+    // 5. Retourner une réponse réussie
     return NextResponse.json(
       { message: "Utilisateur créé avec succès.", user },
       { status: 201 }
