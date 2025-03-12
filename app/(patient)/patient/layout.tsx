@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <SideBarPatient />
-      <main>
+      <main className="flex-1 p-4 mx-auto max-w-7xl ">
         <SidebarTrigger />
         {children}
       </main>
