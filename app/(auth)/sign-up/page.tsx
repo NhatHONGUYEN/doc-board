@@ -17,7 +17,15 @@ import {
 import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
-import { signUpSchema } from "@/lib/schema/auth";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Role, signUpSchema } from "@/lib/schema/auth";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -29,6 +37,7 @@ export default function SignUpPage() {
       name: "",
       email: "",
       password: "",
+      role: "PATIENT" as Role, // Typer explicitement le rôle
     },
   });
 
@@ -111,6 +120,32 @@ export default function SignUpPage() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Champ Rôle */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rôle</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un rôle" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="PATIENT">Patient</SelectItem>
+                      <SelectItem value="MEDECIN">Médecin</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

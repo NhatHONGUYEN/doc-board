@@ -7,13 +7,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email } = body;
 
-    // Vérifier si l'utilisateur existe
+    // Vérifier si l'utilisateur existe et récupérer son rôle
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true }, // On récupère juste l'ID pour vérifier l'existence
+      select: { id: true, role: true }, // On récupère l'ID et le rôle
     });
 
-    return NextResponse.json({ exists: !!user });
+    return NextResponse.json({ exists: !!user, role: user?.role });
   } catch (error) {
     console.error("Erreur lors de la vérification de l'utilisateur:", error);
     return NextResponse.json(
