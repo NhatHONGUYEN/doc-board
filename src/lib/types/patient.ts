@@ -10,27 +10,16 @@ export type Doctor = {
   id: string;
   userId: string;
   specialty: string | null;
-  licenseNumber: string | null;
-  phone: string | null;
-  officeAddress: string | null;
-  description: string | null;
+  licenseNumber?: string | null;
+  phone?: string | null;
+  officeAddress?: string | null;
+  description?: string | null;
   user: {
     id: string;
-    name: string | null;
+    name: string;
     email: string;
+    image?: string | null;
   };
-};
-
-export type Appointment = {
-  id: string;
-  date: string;
-  duration: number;
-  reason: string | null;
-  notes: string | null;
-  status: string;
-  patientId: string;
-  doctorId: string;
-  doctor: Doctor;
   createdAt: string;
   updatedAt: string;
 };
@@ -45,6 +34,30 @@ export type Patient = {
   medicalHistory: string | null;
   user: User;
   appointments: Appointment[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Appointment = {
+  id: string;
+  date: string; // ISO string from DateTime
+  duration: number;
+  reason: string | null;
+  notes: string | null;
+  status: string; // "confirmed", "cancelled", "pending", etc.
+
+  patientId: string;
+  patient?: Patient; // Optional because sometimes not included in API response
+
+  doctorId: string;
+  doctor: {
+    id: string;
+    specialty: string | null;
+    user: {
+      name: string;
+    };
+  };
+
   createdAt: string;
   updatedAt: string;
 };
