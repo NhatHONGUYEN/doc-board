@@ -6,20 +6,32 @@ export type User = {
   role: "PATIENT" | "DOCTOR";
 };
 
+export type Availability = {
+  id: string;
+  day: number; // 0-6 for Monday-Sunday
+  startTime: string; // Format "HH:MM"
+  endTime: string; // Format "HH:MM"
+  doctorId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Doctor = {
   id: string;
   userId: string;
   specialty: string | null;
-  licenseNumber?: string | null;
-  phone?: string | null;
-  officeAddress?: string | null;
-  description?: string | null;
+  licenseNumber: string | null;
+  phone: string | null;
+  officeAddress: string | null;
+  description: string | null;
   user: {
     id: string;
     name: string;
     email: string;
     image?: string | null;
   };
+  appointments: Appointment[]; // Non-optional to match schema
+  availabilities?: Availability[]; // Added availabilities
   createdAt: string;
   updatedAt: string;
 };
@@ -47,7 +59,13 @@ export type Appointment = {
   status: string; // "confirmed", "cancelled", "pending", etc.
 
   patientId: string;
-  patient?: Patient; // Optional because sometimes not included in API response
+  patient?: {
+    id?: string;
+    user?: {
+      name?: string;
+      image?: string;
+    };
+  };
 
   doctorId: string;
   doctor: {
