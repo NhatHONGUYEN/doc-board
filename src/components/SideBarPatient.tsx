@@ -15,7 +15,7 @@ import Link from "next/link";
 const PatientLinks = [
   { title: "Accueil", url: "/patient/dashboard", icon: Home },
   { title: "Mes rendez-vous", url: "/patient/appointment", icon: Calendar },
-  { title: "Mon profil", url: "/patient/profil", icon: User },
+  { title: "Mon profil", url: "/patient/profile", icon: User },
   { title: "Paramètres", url: "/patient/settings", icon: Settings },
 ];
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
@@ -13,9 +12,10 @@ import Link from "next/link";
 import { Calendar, Clock, FileText, User } from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
 import { Appointment } from "@/lib/types/patient";
+import useSessionStore from "@/lib/store/useSessionStore";
 
 export default function PatientDashboard() {
-  const { data: session, status: sessionStatus } = useSession();
+  const { session, status: sessionStatus } = useSessionStore();
   const {
     data: patient,
     isLoading,
