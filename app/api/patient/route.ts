@@ -122,3 +122,103 @@ export async function GET(request: NextRequest) {
     await prisma.$disconnect();
   }
 }
+
+// Add this to your existing file
+export async function PUT(request: NextRequest) {
+  try {
+    // Get current session
+    const session = await getServerSession(authOptions);
+
+    // Check if user is authenticated
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    // Get userId from query parameter
+    const userId = request.nextUrl.searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Only allow users to update their own data
+    if (session.user.id !== userId) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+    }
+
+    // Get form data
+    const formData = await request.json();
+
+    // Update User record (name and email)
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: formData.name,
+        email: formData.email,
+      },
+    });
+
+    // Update or create Patient record
+    const updatedPatient = await prisma.patient.upsert({
+      where: { userId: userId },
+      update: {
+        birthDate: formData.birthDate ? new Date(formData.birthDate) : null,
+        phone: formData.phone || null,
+        address: formData.address || null,
+        socialSecurityNumber: formData.socialSecurityNumber || null,
+        medicalHistory: formData.medicalHistory || null,
+      },
+      create: {
+        userId: userId,
+        birthDate: formData.birthDate ? new Date(formData.birthDate) : null,
+        phone: formData.phone || null,
+        address: formData.address || null,
+        socialSecurityNumber: formData.socialSecurityNumber || null,
+        medicalHistory: formData.medicalHistory || null,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+          },
+        },
+        appointments: {
+          include: {
+            doctor: {
+              include: {
+                user: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            date: "desc",
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(updatedPatient);
+  } catch (error) {
+    console.error("Error updating patient data:", error);
+    return NextResponse.json(
+      { error: "Failed to update patient data" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
