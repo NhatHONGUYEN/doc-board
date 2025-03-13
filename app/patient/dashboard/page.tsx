@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,71 +11,24 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Calendar, Clock, FileText, User } from "lucide-react";
-
-type Patient = {
-  id: string;
-  userId: string;
-  birthDate: string | null;
-  address: string | null;
-  phone: string | null;
-  socialSecurityNumber: string | null;
-  medicalHistory: string | null;
-  user: {
-    name: string;
-    email: string;
-    image: string | null;
-  };
-  appointments: Array<{
-    id: string;
-    date: string;
-    duration: number;
-    reason: string | null;
-    notes: string | null;
-    status: string;
-    doctor: {
-      id: string;
-      specialty: string | null;
-      user: {
-        name: string;
-      };
-    };
-  }>;
-};
+import { usePatientData } from "@/hooks/usePatientData";
+import { Appointment } from "@/lib/types/patient";
 
 export default function PatientDashboard() {
-  const { data: session, status } = useSession();
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: session, status: sessionStatus } = useSession();
+  const {
+    data: patient,
+    isLoading,
+    isError,
+    error,
+  } = usePatientData(session?.user?.id);
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchPatientData(session.user.id);
-    } else if (status === "unauthenticated") {
-      setLoading(false);
-    }
-  }, [session, status]);
-
-  const fetchPatientData = async (userId: string) => {
-    try {
-      const res = await fetch(`/api/patient?userId=${userId}`);
-      console.log("API response status:", res.status);
-
-      if (res.ok) {
-        const data = await res.json();
-        console.log("Patient data received:", data);
-        setPatient(data);
-      } else {
-        console.error("Failed to fetch patient data:", await res.text());
-      }
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (status === "loading" || loading) {
+  if (sessionStatus === "loading" || isLoading) {
     return <div className="p-8">Loading your dashboard...</div>;
+  }
+
+  if (isError) {
+    return <div className="p-8 text-red-500">Error: {error.message}</div>;
   }
 
   if (!session) {
@@ -86,8 +38,14 @@ export default function PatientDashboard() {
   // Calculate upcoming appointments
   const now = new Date();
   const upcomingAppointments = patient?.appointments
-    ?.filter((apt) => new Date(apt.date) > now && apt.status !== "cancelled")
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    ?.filter(
+      (apt: Appointment) =>
+        new Date(apt.date) > now && apt.status !== "cancelled"
+    )
+    .sort(
+      (a: Appointment, b: Appointment) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+    )
     .slice(0, 3);
 
   return (
@@ -156,7 +114,7 @@ export default function PatientDashboard() {
         <CardContent>
           {upcomingAppointments && upcomingAppointments.length > 0 ? (
             <div className="space-y-4">
-              {upcomingAppointments.map((apt) => (
+              {upcomingAppointments.map((apt: Appointment) => (
                 <Card key={apt.id}>
                   <CardContent className="p-4">
                     <div className="flex justify-between">
