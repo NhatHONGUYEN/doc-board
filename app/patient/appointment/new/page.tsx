@@ -112,7 +112,13 @@ export default function NewAppointmentPage() {
         const response = await fetch("/api/doctors");
         if (!response.ok) throw new Error("Failed to fetch doctors");
         const data = await response.json();
-        setDoctors(data);
+
+        if (data && Array.isArray(data)) {
+          setDoctors(data);
+          if (data.length === 0) {
+            toast.info("No doctors available in the system yet");
+          }
+        }
       } catch (error) {
         toast.error("Failed to load doctors");
         console.error(error);
@@ -277,12 +283,18 @@ export default function NewAppointmentPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {doctors.map((doctor) => (
-                          <SelectItem key={doctor.id} value={doctor.id}>
-                            Dr. {doctor.user.name}
-                            {doctor.specialty && ` • ${doctor.specialty}`}
-                          </SelectItem>
-                        ))}
+                        {doctors.length > 0 ? (
+                          doctors.map((doctor) => (
+                            <SelectItem key={doctor.id} value={doctor.id}>
+                              Dr. {doctor.user.name}
+                              {doctor.specialty && ` • ${doctor.specialty}`}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-2 text-center text-muted-foreground">
+                            No doctors available at this time
+                          </div>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
