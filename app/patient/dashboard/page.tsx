@@ -1,17 +1,25 @@
 "use client";
 
-import SideBarPatient from "@/components/SideBarPatient";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import useSessionStore from "@/lib/store/useSessionStore";
 
 export default function PatientDashboard() {
-  const { data: session, status } = useSession();
+  const { session, status } = useSessionStore();
 
-  useEffect(() => {}, [session, status]);
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <SideBarPatient></SideBarPatient>
+      <h1>Patient Dashboard</h1>
+      {session ? (
+        <div>
+          <p>Bienvenue, {session.user?.name}!</p>
+          <p>Email: {session.user?.email}</p>
+        </div>
+      ) : (
+        <p>Veuillez vous connecter</p>
+      )}
     </div>
   );
 }
