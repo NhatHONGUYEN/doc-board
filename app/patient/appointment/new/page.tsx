@@ -109,7 +109,7 @@ export default function NewAppointmentPage() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch("/api/doctors");
+        const response = await fetch("/api/doctor");
         if (!response.ok) throw new Error("Failed to fetch doctors");
         const data = await response.json();
 
