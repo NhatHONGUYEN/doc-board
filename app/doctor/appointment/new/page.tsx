@@ -86,17 +86,31 @@ type TimeSlot = {
   available: boolean;
 };
 
+// Main page component
 export default function NewDoctorAppointmentPage() {
   const router = useRouter();
 
   return (
-    <Suspense fallback={<div className="p-8">Loading...</div>}>
-      <AppointmentFormContent router={router} />
-    </Suspense>
+    <div className="container py-10">
+      <h1 className="text-3xl font-bold mb-8">Schedule New Appointment</h1>
+
+      <Suspense
+        fallback={
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="p-8 flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            </CardContent>
+          </Card>
+        }
+      >
+        <AppointmentForm router={router} />
+      </Suspense>
+    </div>
   );
 }
 
-function AppointmentFormContent({ router }: { router: AppRouterInstance }) {
+// Separated component that uses useSearchParams
+function AppointmentForm({ router }: { router: AppRouterInstance }) {
   const searchParams = useSearchParams();
   const selectedDateParam = searchParams.get("date");
   const selectedPatientParam = searchParams.get("patientId");
