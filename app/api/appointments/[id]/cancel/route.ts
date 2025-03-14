@@ -7,12 +7,13 @@ const prisma = new PrismaClient();
 
 // Change this signature to match what Vercel expects
 export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Access id through context.params instead
-    const appointmentId = context.params.id;
+    const params = await context.params;
+    const appointmentId = params.id;
     if (!appointmentId) {
       return NextResponse.json(
         { error: "Appointment ID is required" },
