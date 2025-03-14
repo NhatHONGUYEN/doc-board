@@ -57,6 +57,7 @@ export type Appointment = {
   reason: string | null;
   notes: string | null;
   status: string; // "confirmed", "cancelled", "pending", etc.
+  appointmentType?: string; // Add this field
 
   patientId: string;
   patient?: {

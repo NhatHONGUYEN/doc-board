@@ -76,12 +76,13 @@ model Doctor {
 }
 
 model Appointment {
-  id       String   @id @default(cuid())
-  date     DateTime
-  duration Int // Duration in minutes
-  reason   String?
-  notes    String?
-  status   String // "confirmed", "cancelled", "pending", etc.
+  id              String   @id @default(cuid())
+  date            DateTime
+  duration        Int // Duration in minutes
+  reason          String?
+  notes           String?
+  status          String // "confirmed", "cancelled", "pending", etc.
+  appointmentType String? // Add this field
 
   patientId String
   patient   Patient @relation(fields: [patientId], references: [id])
@@ -120,7 +121,7 @@ model Account {
   session_state     String?
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

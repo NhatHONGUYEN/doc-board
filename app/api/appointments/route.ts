@@ -6,12 +6,16 @@ import { z } from "zod";
 
 const prisma = new PrismaClient();
 
-// Validation schema for appointment creation
+// Updated validation schema that supports both patient and doctor-initiated appointments
 const appointmentSchema = z.object({
   date: z.string().datetime(),
   duration: z.number().int().min(15).max(120),
   reason: z.string().optional(),
   doctorId: z.string(),
+  patientId: z.string().optional(), // Optional - only required when doctor creates appointment
+  notes: z.string().optional(),
+  appointmentType: z.string().optional(),
+  status: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -39,18 +43,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { date, duration, reason, doctorId } = result.data;
+    const {
+      date,
+      duration,
+      reason,
+      doctorId,
+      patientId,
+      notes,
+      appointmentType,
+      status = "pending",
+    } = result.data;
 
-    // Find patient record for the current user
-    const patient = await prisma.patient.findFirst({
-      where: { userId: session.user.id },
-    });
+    let finalPatientId: string;
 
-    if (!patient) {
-      return NextResponse.json(
-        { error: "Patient record not found" },
-        { status: 404 }
-      );
+    if (session.user.role === "DOCTOR") {
+      // Doctor is creating appointment for a patient
+      if (!patientId) {
+        return NextResponse.json(
+          { error: "Patient ID is required when doctor creates appointment" },
+          { status: 400 }
+        );
+      }
+
+      // Verify the patient exists
+      const patient = await prisma.patient.findUnique({
+        where: { id: patientId },
+      });
+
+      if (!patient) {
+        return NextResponse.json(
+          { error: "Patient record not found" },
+          { status: 404 }
+        );
+      }
+
+      finalPatientId = patientId;
+    } else {
+      // Patient is creating their own appointment
+      const patient = await prisma.patient.findFirst({
+        where: { userId: session.user.id },
+      });
+
+      if (!patient) {
+        return NextResponse.json(
+          { error: "Patient record not found" },
+          { status: 404 }
+        );
+      }
+
+      finalPatientId = patient.id;
     }
 
     // Verify doctor exists
@@ -87,7 +128,7 @@ export async function POST(request: NextRequest) {
               },
               {
                 date: {
-                  gte: new Date(appointmentDateTime.getTime() - 60 * 60000), // Approximate check
+                  gte: new Date(appointmentDateTime.getTime() - 60 * 60000),
                 },
               },
             ],
@@ -109,10 +150,12 @@ export async function POST(request: NextRequest) {
         date: appointmentDateTime,
         duration,
         reason: reason || null,
-        status: "pending", // Default status
-        notes: null,
-        patientId: patient.id,
+        notes: notes || null,
+        status:
+          session.user.role === "DOCTOR" ? status || "confirmed" : "pending",
+        patientId: finalPatientId,
         doctorId,
+        appointmentType: appointmentType || "regular",
       },
       include: {
         doctor: {
@@ -120,6 +163,16 @@ export async function POST(request: NextRequest) {
             user: {
               select: {
                 name: true,
+              },
+            },
+          },
+        },
+        patient: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
               },
             },
           },
