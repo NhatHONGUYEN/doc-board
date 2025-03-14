@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -46,6 +46,7 @@ import { cn } from "@/lib/utils";
 import { useDoctorData } from "@/hooks/useDoctorData";
 
 import { Input } from "@/components/ui/input";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // Form validation schema
 const appointmentFormSchema = z.object({
@@ -87,6 +88,15 @@ type TimeSlot = {
 
 export default function NewDoctorAppointmentPage() {
   const router = useRouter();
+
+  return (
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
+      <AppointmentFormContent router={router} />
+    </Suspense>
+  );
+}
+
+function AppointmentFormContent({ router }: { router: AppRouterInstance }) {
   const searchParams = useSearchParams();
   const selectedDateParam = searchParams.get("date");
   const selectedPatientParam = searchParams.get("patientId");
