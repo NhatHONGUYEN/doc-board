@@ -7,10 +7,10 @@ const prisma = new PrismaClient();
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const appointmentId = params.id;
+    const appointmentId = (await params).id;
 
     // Get current session
     const session = await getServerSession(authOptions);
