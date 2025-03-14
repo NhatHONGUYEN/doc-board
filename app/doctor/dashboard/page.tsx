@@ -277,7 +277,7 @@ export default function DoctorDashboard() {
                 </CardDescription>
               </div>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/doctor/appointments">View All</Link>
+                <Link href="/doctor/appointment">View All</Link>
               </Button>
             </div>
           </CardHeader>
@@ -353,7 +353,7 @@ export default function DoctorDashboard() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
                             <Link
-                              href={`/doctor/appointments/${appointment.id}`}
+                              href={`/doctor/appointment/${appointment.id}`}
                             >
                               View Details
                             </Link>
@@ -464,7 +464,7 @@ export default function DoctorDashboard() {
                 className="w-full justify-start"
                 asChild
               >
-                <Link href="/doctor/appointments/new">
+                <Link href="/doctor/appointment/new">
                   <UserPlus size={16} className="mr-2" />
                   Schedule Appointment
                 </Link>
@@ -523,7 +523,7 @@ export default function DoctorDashboard() {
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link href="/doctor/appointments">View All</Link>
+                <Link href="/doctor/appointment">View All</Link>
               </Button>
             </CardFooter>
           </Card>
