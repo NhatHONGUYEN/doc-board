@@ -5,11 +5,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Change this signature to match what Vercel expects
 export async function PUT(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
+    // Access id through context.params instead
     const appointmentId = context.params.id;
     if (!appointmentId) {
       return NextResponse.json(
@@ -46,7 +48,6 @@ export async function PUT(
     }
 
     // Check if this user has permission to cancel this appointment
-    // Patient can cancel their own appointments
     let hasPermission = false;
 
     if (session.user.role === "PATIENT") {
