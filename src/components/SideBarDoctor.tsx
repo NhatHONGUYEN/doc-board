@@ -22,7 +22,7 @@ import Link from "next/link";
 // Navigation links for doctors
 const DoctorLinks = [
   { title: "Tableau de bord", url: "/doctor/dashboard", icon: Home },
-  { title: "Rendez-vous", url: "/doctor/appointments", icon: Calendar },
+  { title: "Rendez-vous", url: "/doctor/appointment", icon: Calendar },
   { title: "Patients", url: "/doctor/patients", icon: Users },
   { title: "Disponibilités", url: "/doctor/availability", icon: Clock },
   {
