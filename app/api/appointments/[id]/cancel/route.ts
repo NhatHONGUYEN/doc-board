@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth.config";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function PUT({ params }: { params: { id: string } }) {
+export async function PUT(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const appointmentId = params.id;
     if (!appointmentId) {
