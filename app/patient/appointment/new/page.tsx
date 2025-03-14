@@ -1,13 +1,42 @@
 "use client";
 
+import { Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+
+// Main page component - doesn't use useSearchParams
+export default function NewAppointmentPage() {
+  const router = useRouter();
+
+  return (
+    <div className="container py-10">
+      <h1 className="text-3xl font-bold mb-8">Book New Appointment</h1>
+
+      <Suspense
+        fallback={
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="p-8 flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            </CardContent>
+          </Card>
+        }
+      >
+        <AppointmentFormContent router={router} />
+      </Suspense>
+    </div>
+  );
+}
+
+// Separated component that uses useSearchParams
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 
 import {
   Form,
@@ -19,8 +48,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -78,12 +105,17 @@ type TimeSlot = {
   available: boolean;
 };
 
-export default function NewAppointmentPage() {
-  const router = useRouter();
+// Form component that uses useSearchParams
+function AppointmentFormContent({
+  router,
+}: {
+  router: ReturnType<typeof useRouter>;
+}) {
   const searchParams = useSearchParams();
   const selectedDateParam = searchParams.get("date");
   const { session, status } = useSessionStore();
 
+  // All your existing state and form logic
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
@@ -251,232 +283,227 @@ export default function NewAppointmentPage() {
     );
   }
 
+  // Return your existing Card element with all its contents
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-8">Book New Appointment</h1>
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Select Doctor and Time</CardTitle>
+        <CardDescription>
+          Choose your preferred doctor and appointment time
+        </CardDescription>
+      </CardHeader>
 
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Select Doctor and Time</CardTitle>
-          <CardDescription>
-            Choose your preferred doctor and appointment time
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Doctor Selection */}
-              <FormField
-                control={form.control}
-                name="doctorId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Doctor</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a doctor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {doctors.length > 0 ? (
-                          doctors.map((doctor) => (
-                            <SelectItem key={doctor.id} value={doctor.id}>
-                              Dr. {doctor.user.name}
-                              {doctor.specialty && ` • ${doctor.specialty}`}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <div className="p-2 text-center text-muted-foreground">
-                            No doctors available at this time
-                          </div>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Date Picker */}
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={
-                            (date) =>
-                              date <
-                                new Date(new Date().setHours(0, 0, 0, 0)) || // No past dates
-                              date >
-                                new Date(
-                                  new Date().setMonth(new Date().getMonth() + 3)
-                                ) // Max 3 months in advance
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription>
-                      Select a date for your appointment.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Time Slots */}
-              <FormField
-                control={form.control}
-                name="time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={
-                        isCheckingAvailability || timeSlots.length === 0
-                      }
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={
-                              isCheckingAvailability
-                                ? "Checking availability..."
-                                : timeSlots.length === 0
-                                ? "Select doctor and date first"
-                                : "Select a time"
-                            }
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isCheckingAvailability ? (
-                          <div className="flex items-center justify-center p-2">
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            Checking availability...
-                          </div>
-                        ) : (
-                          timeSlots.map((slot) => (
-                            <SelectItem
-                              key={slot.value}
-                              value={slot.value}
-                              disabled={!slot.available}
-                            >
-                              {slot.label}
-                              {!slot.available && " (Not Available)"}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Duration */}
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Duration</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="15">15 minutes</SelectItem>
-                        <SelectItem value="30">30 minutes</SelectItem>
-                        <SelectItem value="45">45 minutes</SelectItem>
-                        <SelectItem value="60">60 minutes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Reason for Visit */}
-              <FormField
-                control={form.control}
-                name="reason"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reason for Visit (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Brief description of your symptoms or reason for the appointment"
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      This helps the doctor prepare for your appointment.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <CardFooter className="px-0 pb-0">
-                <div className="flex justify-between w-full">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
+      <CardContent>
+        {/* Your existing form goes here */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Doctor Selection */}
+            <FormField
+              control={form.control}
+              name="doctorId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Doctor</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
                   >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    {isSubmitting ? "Booking..." : "Book Appointment"}
-                  </Button>
-                </div>
-              </CardFooter>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a doctor" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {doctors.length > 0 ? (
+                        doctors.map((doctor) => (
+                          <SelectItem key={doctor.id} value={doctor.id}>
+                            Dr. {doctor.user.name}
+                            {doctor.specialty && ` • ${doctor.specialty}`}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-center text-muted-foreground">
+                          No doctors available at this time
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Date Picker */}
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={
+                          (date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0)) || // No past dates
+                            date >
+                              new Date(
+                                new Date().setMonth(new Date().getMonth() + 3)
+                              ) // Max 3 months in advance
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    Select a date for your appointment.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Time Slots */}
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Time</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isCheckingAvailability || timeSlots.length === 0}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            isCheckingAvailability
+                              ? "Checking availability..."
+                              : timeSlots.length === 0
+                              ? "Select doctor and date first"
+                              : "Select a time"
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {isCheckingAvailability ? (
+                        <div className="flex items-center justify-center p-2">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Checking availability...
+                        </div>
+                      ) : (
+                        timeSlots.map((slot) => (
+                          <SelectItem
+                            key={slot.value}
+                            value={slot.value}
+                            disabled={!slot.available}
+                          >
+                            {slot.label}
+                            {!slot.available && " (Not Available)"}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Duration */}
+            <FormField
+              control={form.control}
+              name="duration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select duration" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="15">15 minutes</SelectItem>
+                      <SelectItem value="30">30 minutes</SelectItem>
+                      <SelectItem value="45">45 minutes</SelectItem>
+                      <SelectItem value="60">60 minutes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Reason for Visit */}
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reason for Visit (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Brief description of your symptoms or reason for the appointment"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    This helps the doctor prepare for your appointment.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <CardFooter className="px-0 pb-0">
+              <div className="flex justify-between w-full">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {isSubmitting ? "Booking..." : "Book Appointment"}
+                </Button>
+              </div>
+            </CardFooter>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
