@@ -6,11 +6,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function PUT(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const appointmentId = params.id;
+    const appointmentId = context.params.id;
     if (!appointmentId) {
       return NextResponse.json(
         { error: "Appointment ID is required" },
