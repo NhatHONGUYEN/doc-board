@@ -18,13 +18,20 @@ export async function GET() {
       );
     }
 
-    // Get all doctors
+    // Get all doctors with specialty included
     const doctors = await prisma.doctor.findMany({
-      include: {
+      select: {
+        id: true,
+        specialty: true,
+        licenseNumber: true,
+        phone: true,
+        officeAddress: true,
+        description: true,
         user: {
           select: {
             name: true,
             email: true,
+            image: true,
           },
         },
       },

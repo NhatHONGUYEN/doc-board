@@ -22,6 +22,24 @@ export async function GET(
 
     const doctorId = (await params).id;
 
+    // Find the doctor with specialty information
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: doctorId },
+      select: {
+        id: true,
+        specialty: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!doctor) {
+      return NextResponse.json({ error: "Doctor not found" }, { status: 404 });
+    }
+
     // Find the doctor's availability
     const availability = await prisma.doctorAvailability.findUnique({
       where: { doctorId },
@@ -30,6 +48,11 @@ export async function GET(
     // If no availability is set yet, return default data
     if (!availability) {
       return NextResponse.json({
+        doctor: {
+          id: doctor.id,
+          specialty: doctor.specialty,
+          name: doctor.user.name,
+        },
         weeklySchedule: {
           1: {
             enabled: true,
@@ -58,8 +81,13 @@ export async function GET(
       });
     }
 
-    // Return the availability data - no parsing needed, Prisma already deserializes JSON
+    // Return the availability data with doctor info
     return NextResponse.json({
+      doctor: {
+        id: doctor.id,
+        specialty: doctor.specialty,
+        name: doctor.user.name,
+      },
       weeklySchedule: availability.weeklySchedule,
       specialDates: availability.specialDates,
     });

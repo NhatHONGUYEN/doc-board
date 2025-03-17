@@ -150,7 +150,7 @@ export default function PatientDashboard() {
             <div className="text-center py-6">
               <p className="text-muted-foreground">No upcoming appointments</p>
               <Button asChild className="mt-4">
-                <Link href="/patient/appointments/new">Book Appointment</Link>
+                <Link href="/patient/appointment/new">Book Appointment</Link>
               </Button>
             </div>
           )}

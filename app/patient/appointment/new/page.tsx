@@ -70,6 +70,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { cn } from "@/lib/utils";
+import { Doctor } from "@/lib/types/patient";
 
 // Form validation schema
 const appointmentFormSchema = z.object({
@@ -89,15 +90,6 @@ const appointmentFormSchema = z.object({
 });
 
 type AppointmentFormValues = z.infer<typeof appointmentFormSchema>;
-
-type Doctor = {
-  id: string;
-  specialty: string | null;
-  user: {
-    name: string;
-    email: string;
-  };
-};
 
 type TimeSlot = {
   value: string;
@@ -141,9 +133,12 @@ function AppointmentFormContent({
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch("/api/doctor");
+        const response = await fetch("/api/allDoctor");
         if (!response.ok) throw new Error("Failed to fetch doctors");
         const data = await response.json();
+
+        // Debug what's coming from the API
+        console.log("Doctors data:", data);
 
         if (data && Array.isArray(data)) {
           setDoctors(data);
@@ -172,7 +167,7 @@ function AppointmentFormContent({
       try {
         const formattedDate = format(watchDate, "yyyy-MM-dd");
         const response = await fetch(
-          `/api/availability?doctorId=${watchDoctorId}&date=${formattedDate}`
+          `/api/doctor/availability?doctorId=${watchDoctorId}&date=${formattedDate}`
         );
 
         if (!response.ok) throw new Error("Failed to fetch availability");
@@ -218,6 +213,37 @@ function AppointmentFormContent({
       fetchAvailableTimeSlots();
     }
   }, [watchDoctorId, watchDate]);
+
+  // After your form initialization:
+  useEffect(() => {
+    // If we have a date from URL but no doctor selected yet, just set the form date
+    if (selectedDateParam && !form.getValues("doctorId")) {
+      form.setValue("date", new Date(selectedDateParam));
+    }
+
+    // If we have both date from URL and a doctor already selected, check availability
+    if (selectedDateParam && form.getValues("doctorId")) {
+      fetchAvailableTimeSlots(
+        form.getValues("doctorId"),
+        new Date(selectedDateParam)
+      );
+    }
+  }, [selectedDateParam, form]);
+
+  // Extract fetchAvailableTimeSlots to a separate function to reuse it
+  const fetchAvailableTimeSlots = async (doctorId: string, date: Date) => {
+    if (!doctorId || !date) return;
+
+    setIsCheckingAvailability(true);
+    try {
+      // Rest of your existing code for handling the response
+      // ...
+    } catch {
+      // ...
+    } finally {
+      setIsCheckingAvailability(false);
+    }
+  };
 
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!session) {
