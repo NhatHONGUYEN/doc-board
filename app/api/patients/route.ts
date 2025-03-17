@@ -26,7 +26,7 @@ export async function GET() {
       );
     }
 
-    // Get all patients with basic information
+    // Get all patients with complete information
     const patients = await prisma.patient.findMany({
       include: {
         user: {
@@ -35,9 +35,30 @@ export async function GET() {
             name: true,
             email: true,
             image: true,
+            role: true,
+            createdAt: true,
+            // Exclude password and other sensitive fields
           },
         },
+        // Include appointments for each patient
+        appointments: {
+          select: {
+            id: true,
+            date: true,
+            duration: true,
+            reason: true,
+            status: true,
+            appointmentType: true,
+            createdAt: true,
+          },
+          orderBy: {
+            date: "desc",
+          },
+          // Optionally limit to recent appointments
+          take: 5,
+        },
       },
+      // Include all fields from the Patient model by default
       orderBy: {
         user: {
           name: "asc",
