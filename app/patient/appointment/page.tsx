@@ -357,23 +357,6 @@ export default function AppointmentPage() {
                   </>
                 )}
               </div>
-
-              {new Date(selectedAppointment.date) > new Date() &&
-                selectedAppointment.status !== "cancelled" && (
-                  <div className="pt-2">
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() =>
-                        router.push(
-                          `/patient/appointment/${selectedAppointment.id}/reschedule`
-                        )
-                      }
-                    >
-                      Reschedule Appointment
-                    </Button>
-                  </div>
-                )}
             </div>
           )}
         </DialogContent>

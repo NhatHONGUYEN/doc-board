@@ -107,7 +107,7 @@ export default function PatientDashboard() {
               </CardDescription>
             </div>
             <Button asChild size="sm">
-              <Link href="/patient/appointments">View All</Link>
+              <Link href="/patient/appointment">View All</Link>
             </Button>
           </div>
         </CardHeader>

@@ -23,21 +23,51 @@ export async function PUT(
       );
     }
 
-    // Only doctors can add notes
+    // Only doctors can update appointment status
     if (session.user.role !== "DOCTOR") {
       return NextResponse.json(
-        { error: "Only doctors can add notes" },
+        { error: "Only doctors can update appointment status" },
         { status: 403 }
       );
     }
 
-    // Get notes from request body
-    const { notes } = await request.json();
+    // Get data from request body
+    const data = await request.json();
+    const { status, notes } = data;
 
-    // Update appointment with notes
+    // First, check the current status of the appointment
+    const currentAppointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      select: { status: true },
+    });
+
+    if (!currentAppointment) {
+      return NextResponse.json(
+        { error: "Appointment not found" },
+        { status: 404 }
+      );
+    }
+
+    // Prevent updating already completed appointments to completed again
+    if (currentAppointment.status === "completed" && status === "completed") {
+      return NextResponse.json(
+        {
+          error: "This appointment is already marked as completed",
+          appointment: currentAppointment,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Update the appointment with new status and/or notes
+    const updateData: { status?: string; notes?: string } = {};
+
+    if (status) updateData.status = status;
+    if (notes) updateData.notes = notes;
+
     const appointment = await prisma.appointment.update({
       where: { id: appointmentId },
-      data: { notes },
+      data: updateData,
       include: {
         doctor: {
           include: {
@@ -58,8 +88,11 @@ export async function PUT(
 
     return NextResponse.json(appointment);
   } catch (error) {
-    console.error("Error adding notes:", error);
-    return NextResponse.json({ error: "Failed to add notes" }, { status: 500 });
+    console.error("Error updating appointment status:", error);
+    return NextResponse.json(
+      { error: "Failed to update appointment status" },
+      { status: 500 }
+    );
   } finally {
     await prisma.$disconnect();
   }

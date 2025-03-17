@@ -31,7 +31,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -163,12 +162,6 @@ export default function DoctorDashboard() {
     )
     .slice(0, 5); // Show only next 5 upcoming appointments
 
-  // Calculate completion rate for progress bar
-  const completionRate =
-    stats.totalAppointments > 0
-      ? (stats.completedAppointments / stats.totalAppointments) * 100
-      : 0;
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -227,37 +220,6 @@ export default function DoctorDashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Performance Overview */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Appointment Completion Rate</CardTitle>
-          <CardDescription>
-            Performance based on appointment statuses
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex gap-1 items-center">
-                <CheckCircle size={16} className="text-green-500" />
-                <span className="text-sm">Completion Rate</span>
-              </div>
-              <span className="font-semibold">
-                {completionRate.toFixed(1)}%
-              </span>
-            </div>
-            <Progress value={completionRate} className="h-2" />
-          </div>
-        </CardContent>
-        <CardFooter className="pt-3">
-          <div className="flex justify-between w-full text-sm text-muted-foreground">
-            <div>Completed: {stats.completedAppointments}</div>
-            <div>Target: {Math.round(stats.totalAppointments * 0.9)}</div>
-            <div>Total: {stats.totalAppointments}</div>
-          </div>
-        </CardFooter>
-      </Card>
 
       {/* Main Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
