@@ -20,6 +20,17 @@ export async function POST(request: Request) {
       );
     }
 
+    const existingName = await prisma.user.findFirst({
+      where: { name },
+    });
+
+    if (existingName) {
+      return NextResponse.json(
+        { message: "Un utilisateur avec ce nom existe déjà." },
+        { status: 400 }
+      );
+    }
+
     // 2. Valider le rôle
     if (role !== "PATIENT" && role !== "DOCTOR") {
       return NextResponse.json(
