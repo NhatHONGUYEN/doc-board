@@ -27,7 +27,35 @@ export async function GET(
       );
     }
 
+    // Get the doctor's ID from their user ID
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!doctor) {
+      return NextResponse.json(
+        { error: "Doctor profile not found" },
+        { status: 404 }
+      );
+    }
+
     const patientId = (await params).id;
+
+    // Check if this doctor has any appointments with this patient
+    const hasAppointmentWithPatient = await prisma.appointment.findFirst({
+      where: {
+        doctorId: doctor.id,
+        patientId: patientId,
+      },
+    });
+
+    // If no appointment exists, deny access
+    if (!hasAppointmentWithPatient) {
+      return NextResponse.json(
+        { error: "You don't have permission to view this patient's records" },
+        { status: 403 }
+      );
+    }
 
     // Get the patient record with user details and appointments
     const patient = await prisma.patient.findUnique({
@@ -41,6 +69,10 @@ export async function GET(
           },
         },
         appointments: {
+          // Only include appointments with this doctor
+          where: {
+            doctorId: doctor.id,
+          },
           orderBy: {
             date: "desc",
           },

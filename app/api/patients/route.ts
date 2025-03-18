@@ -26,8 +26,27 @@ export async function GET() {
       );
     }
 
-    // Get all patients with complete information
+    // Get the doctor's ID from their user ID
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!doctor) {
+      return NextResponse.json(
+        { error: "Doctor profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Find patients who have appointments with this doctor
     const patients = await prisma.patient.findMany({
+      where: {
+        appointments: {
+          some: {
+            doctorId: doctor.id,
+          },
+        },
+      },
       include: {
         user: {
           select: {
@@ -37,11 +56,13 @@ export async function GET() {
             image: true,
             role: true,
             createdAt: true,
-            // Exclude password and other sensitive fields
           },
         },
-        // Include appointments for each patient
+        // Include only appointments with this doctor
         appointments: {
+          where: {
+            doctorId: doctor.id,
+          },
           select: {
             id: true,
             date: true,
@@ -58,7 +79,6 @@ export async function GET() {
           take: 5,
         },
       },
-      // Include all fields from the Patient model by default
       orderBy: {
         user: {
           name: "asc",
