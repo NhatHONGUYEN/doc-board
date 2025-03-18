@@ -163,9 +163,10 @@ export default function DoctorDashboard() {
     .slice(0, 5); // Show only next 5 upcoming appointments
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
         <Button asChild>
           <Link href="/doctor/availability">
             <Clock className="mr-2 h-4 w-4" />
@@ -175,7 +176,7 @@ export default function DoctorDashboard() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex flex-col gap-2 items-center">
@@ -221,10 +222,10 @@ export default function DoctorDashboard() {
         </Card>
       </div>
 
-      {/* Main Content */}
+      {/* Three-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Today's Appointments */}
-        <Card className="md:col-span-2">
+        {/* First column: Today's Appointments */}
+        <Card className="h-[calc(100vh-280px)] flex flex-col">
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
               <div>
@@ -232,8 +233,7 @@ export default function DoctorDashboard() {
                 <CardDescription>
                   {today.toLocaleDateString(undefined, {
                     weekday: "long",
-                    year: "numeric",
-                    month: "long",
+                    month: "short",
                     day: "numeric",
                   })}
                 </CardDescription>
@@ -243,7 +243,7 @@ export default function DoctorDashboard() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-grow overflow-auto">
             {todaysAppointments && todaysAppointments.length > 0 ? (
               <div className="space-y-4">
                 {todaysAppointments.map((appointment: Appointment) => (
@@ -375,7 +375,91 @@ export default function DoctorDashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Info Panel */}
+        {/* Second column: Upcoming Appointments */}
+        <Card className="h-[calc(100vh-280px)] flex flex-col">
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Upcoming Appointments</CardTitle>
+                <CardDescription>Next scheduled appointments</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/doctor/appointment">View All</Link>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="flex-grow overflow-auto">
+            {upcomingAppointments && upcomingAppointments.length > 0 ? (
+              <div className="space-y-4">
+                {upcomingAppointments.map((appointment: Appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="flex items-start justify-between border-b pb-4 last:border-b-0 last:pb-0"
+                  >
+                    <div className="flex gap-3">
+                      <Avatar>
+                        <AvatarImage
+                          src={appointment.patient?.user?.image || ""}
+                          alt="Patient"
+                        />
+                        <AvatarFallback>
+                          {appointment.patient?.user?.name
+                            ?.charAt(0)
+                            .toUpperCase() || "P"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">
+                          {appointment.patient?.user?.name || "Patient"}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                          <CalendarIcon size={14} />
+                          <span>
+                            {new Date(appointment.date).toLocaleDateString(
+                              undefined,
+                              {
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )}
+                          </span>
+                          <span>•</span>
+                          <span>
+                            {new Date(appointment.date).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        {appointment.reason && (
+                          <p className="text-sm mt-2 text-muted-foreground line-clamp-1">
+                            {appointment.reason}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <Badge variant="outline">{appointment.duration} mins</Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <CalendarIcon
+                  size={40}
+                  className="text-muted-foreground mb-4"
+                />
+                <p className="text-muted-foreground">
+                  No upcoming appointments
+                </p>
+                <Button className="mt-4" asChild>
+                  <Link href="/doctor/availability">Update Availability</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Third column: Doctor Info + Quick Actions */}
         <div className="space-y-6">
           {/* Doctor Info Card */}
           <Card>
@@ -442,52 +526,6 @@ export default function DoctorDashboard() {
                 </Link>
               </Button>
             </CardContent>
-          </Card>
-
-          {/* Upcoming Appointments Preview */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Upcoming Appointments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {upcomingAppointments && upcomingAppointments.length > 0 ? (
-                <div className="space-y-3">
-                  {upcomingAppointments.map((appointment: Appointment) => (
-                    <div
-                      key={appointment.id}
-                      className="flex items-center justify-between text-sm border-b pb-2 last:border-b-0 last:pb-0"
-                    >
-                      <div>
-                        <p className="font-medium">
-                          {appointment.patient?.user?.name || "Patient"}
-                        </p>
-                        <div className="flex items-center gap-1 text-muted-foreground mt-1">
-                          <CalendarIcon size={12} />
-                          <span>
-                            {new Date(appointment.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="ml-2">
-                        {new Date(appointment.date).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-sm text-muted-foreground py-4">
-                  No upcoming appointments
-                </p>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link href="/doctor/appointment">View All</Link>
-              </Button>
-            </CardFooter>
           </Card>
         </div>
       </div>
