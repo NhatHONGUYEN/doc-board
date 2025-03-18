@@ -28,13 +28,6 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { EventClickArg } from "@fullcalendar/core";
 import { DateClickArg } from "@fullcalendar/interaction";
@@ -54,9 +47,6 @@ export default function AppointmentPage() {
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
-  const [calendarView, setCalendarView] = useState<
-    "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-  >("dayGridMonth");
   const calendarRef = useRef<FullCalendar | null>(null);
   const router = useRouter();
 
@@ -151,20 +141,11 @@ export default function AppointmentPage() {
       .appointment as Appointment;
     openDetailsDialog(appointment);
   };
+
   // Handle date click (for booking)
   const handleDateClick = (info: DateClickArg) => {
     // Navigate to booking page with selected date
     router.push(`/patient/appointment/new?date=${info.dateStr}`);
-  };
-
-  // Handle view change
-  const handleViewChange = (
-    view: "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-  ) => {
-    setCalendarView(view);
-    if (calendarRef.current) {
-      calendarRef.current.getApi().changeView(view);
-    }
   };
 
   return (
@@ -179,32 +160,12 @@ export default function AppointmentPage() {
         </Button>
       </div>
 
-      <div className="mb-4 flex justify-end space-x-2">
-        <Select
-          defaultValue={calendarView}
-          onValueChange={(val) =>
-            handleViewChange(
-              val as "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-            )
-          }
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select view" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dayGridMonth">Month</SelectItem>
-            <SelectItem value="timeGridWeek">Week</SelectItem>
-            <SelectItem value="timeGridDay">Day</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       <Card>
         <CardContent className="p-4 md:p-6 h-[70vh]">
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView={calendarView}
+            initialView="dayGridMonth"
             headerToolbar={{
               left: "prev,next today",
               center: "title",
