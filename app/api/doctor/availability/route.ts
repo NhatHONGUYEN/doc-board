@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth.config";
 import { PrismaClient } from "@prisma/client";
+import { addMinutes } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Create time slots based on availability
-    const availableSlots: string[] = [];
+    const potentialSlots: string[] = [];
     const bookedSlots: string[] = [];
 
     // If doctor has availability set for this day
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
           const timeSlot = `${currentHour
             .toString()
             .padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-          availableSlots.push(timeSlot);
+          potentialSlots.push(timeSlot);
 
           // Advance by 30 minutes
           currentMinute += 30;
@@ -101,20 +102,48 @@ export async function GET(request: NextRequest) {
           const timeSlot = `${hour.toString().padStart(2, "0")}:${minute
             .toString()
             .padStart(2, "0")}`;
-          availableSlots.push(timeSlot);
+          potentialSlots.push(timeSlot);
         }
       }
     }
 
-    // Mark booked slots
-    appointments.forEach((appointment) => {
-      const aptDate = new Date(appointment.date);
-      const hour = aptDate.getHours();
-      const minute = aptDate.getMinutes();
-      const timeSlot = `${hour.toString().padStart(2, "0")}:${minute
-        .toString()
-        .padStart(2, "0")}`;
-      bookedSlots.push(timeSlot);
+    // Filter out booked/overlapping slots
+    const availableSlots = potentialSlots.filter((timeSlot) => {
+      // Parse the time slot
+      const [hours, minutes] = timeSlot.split(":").map(Number);
+
+      // Create a Date object for this slot
+      const slotDateTime = new Date(date);
+      slotDateTime.setHours(hours, minutes, 0, 0);
+
+      // Default appointment duration (30 mins)
+      const slotEndTime = addMinutes(slotDateTime, 30);
+
+      // Check if this slot overlaps with any existing appointment
+      const isOverlapping = appointments.some((appointment) => {
+        const appointmentStart = new Date(appointment.date);
+        const appointmentEnd = addMinutes(
+          appointmentStart,
+          appointment.duration
+        );
+
+        // Check for overlap using the same logic as the appointment creation endpoint
+        return (
+          // Slot starts during an existing appointment
+          (slotDateTime >= appointmentStart && slotDateTime < appointmentEnd) ||
+          // Slot ends during an existing appointment
+          (slotEndTime > appointmentStart && slotEndTime <= appointmentEnd) ||
+          // Slot completely contains an existing appointment
+          (slotDateTime <= appointmentStart && slotEndTime >= appointmentEnd)
+        );
+      });
+
+      if (isOverlapping) {
+        bookedSlots.push(timeSlot);
+        return false; // Filter out this slot
+      }
+
+      return true; // Keep this slot
     });
 
     return NextResponse.json({

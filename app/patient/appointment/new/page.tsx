@@ -174,14 +174,16 @@ function AppointmentFormContent({
 
         const data = await response.json();
 
-        // Create time slots from 9 AM to 5 PM in 30-minute increments
+        // Only create slots for the available times returned from API
         const slots: TimeSlot[] = [];
-        for (let hour = 9; hour < 17; hour++) {
-          for (const minute of [0, 30]) {
-            const timeString = `${hour.toString().padStart(2, "0")}:${minute
-              .toString()
-              .padStart(2, "0")}`;
-            const isAvailable = data.availableSlots.includes(timeString);
+
+        if (data.availableSlots && data.availableSlots.length > 0) {
+          // Sort time slots for proper display order
+          const sortedSlots = [...data.availableSlots].sort();
+
+          // Create UI-friendly time slots only for available times
+          sortedSlots.forEach((timeString) => {
+            const [hour, minute] = timeString.split(":").map(Number);
 
             // Format for display (12-hour format)
             const displayHour = hour % 12 === 0 ? 12 : hour % 12;
@@ -193,12 +195,18 @@ function AppointmentFormContent({
             slots.push({
               value: timeString,
               label: displayTime,
-              available: isAvailable,
+              available: true, // All slots we show are available
             });
-          }
+          });
         }
 
         setTimeSlots(slots);
+
+        // Clear any previously selected time if it's no longer available
+        const currentTime = form.getValues("time");
+        if (currentTime && !data.availableSlots.includes(currentTime)) {
+          form.setValue("time", "");
+        }
       } catch (error) {
         toast.error("Failed to check availability");
         console.error(error);
@@ -212,7 +220,7 @@ function AppointmentFormContent({
       setSelectedDate(watchDate);
       fetchAvailableTimeSlots();
     }
-  }, [watchDoctorId, watchDate]);
+  }, [watchDoctorId, watchDate, form]);
 
   // After your form initialization:
   useEffect(() => {
@@ -428,6 +436,10 @@ function AppointmentFormContent({
                           placeholder={
                             isCheckingAvailability
                               ? "Checking availability..."
+                              : timeSlots.length === 0 &&
+                                watchDoctorId &&
+                                watchDate
+                              ? "No available times for this day"
                               : timeSlots.length === 0
                               ? "Select doctor and date first"
                               : "Select a time"
@@ -441,15 +453,17 @@ function AppointmentFormContent({
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                           Checking availability...
                         </div>
+                      ) : timeSlots.length === 0 &&
+                        watchDoctorId &&
+                        watchDate ? (
+                        <div className="p-2 text-center text-muted-foreground">
+                          No available slots on this day. Please select another
+                          date.
+                        </div>
                       ) : (
                         timeSlots.map((slot) => (
-                          <SelectItem
-                            key={slot.value}
-                            value={slot.value}
-                            disabled={!slot.available}
-                          >
+                          <SelectItem key={slot.value} value={slot.value}>
                             {slot.label}
-                            {!slot.available && " (Not Available)"}
                           </SelectItem>
                         ))
                       )}
