@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,15 +16,13 @@ import {
   Clock,
   Users,
   UserPlus,
-  CheckCircle,
-  XCircle,
   Calendar as CalendarIcon,
   MoreHorizontal,
   Loader2,
 } from "lucide-react";
 
 import useSessionStore from "@/lib/store/useSessionStore";
-import { toast } from "sonner";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,131 +34,51 @@ import { Badge } from "@/components/ui/badge";
 
 import { useDoctorData } from "@/hooks/useDoctorData";
 import { Appointment } from "@/lib/types/patient";
+import useDoctorDashboardStore from "@/lib/store/useDoctorDashboardStore";
+import { StatsOverview } from "@/components/Dashboard/StatsOverview";
 
 export default function DoctorDashboard() {
   const { session, status: sessionStatus } = useSessionStore();
+
+  // Use TanStack Query for data fetching, loading and error states
   const {
     data: doctor,
     isLoading,
     isError,
     error,
-    refetch,
   } = useDoctorData(session?.user?.id);
 
-  const [stats, setStats] = useState({
-    totalPatients: 0,
-    totalAppointments: 0,
-    completedAppointments: 0,
-    cancelledAppointments: 0,
-  });
+  // Use Zustand just for derived state and actions
+  const {
+    stats,
+    todaysAppointments,
+    upcomingAppointments,
+    updatingAppointmentId,
+    setDoctorData,
+    updateAppointmentStatus,
+  } = useDoctorDashboardStore();
 
-  const [updatingAppointmentId, setUpdatingAppointmentId] = useState<
-    string | null
-  >(null);
-
+  // Update derived state when doctor data changes
   useEffect(() => {
-    if (doctor?.appointments) {
-      // Get unique patient IDs to count total patients
-      const uniquePatientIds = new Set(
-        doctor.appointments.map((apt: Appointment) => apt.patientId)
-      );
-
-      // Count different appointment statuses
-      const completed = doctor.appointments.filter(
-        (apt: Appointment) => apt.status === "completed"
-      ).length;
-
-      const cancelled = doctor.appointments.filter(
-        (apt: Appointment) => apt.status === "cancelled"
-      ).length;
-
-      setStats({
-        totalPatients: uniquePatientIds.size,
-        totalAppointments: doctor.appointments.length,
-        completedAppointments: completed,
-        cancelledAppointments: cancelled,
-      });
+    if (doctor) {
+      setDoctorData(doctor);
     }
-  }, [doctor]);
+  }, [doctor, setDoctorData]);
 
-  // Function to update appointment status
-  const updateAppointmentStatus = async (
-    appointmentId: string,
-    newStatus: string
-  ) => {
-    setUpdatingAppointmentId(appointmentId);
-
-    try {
-      const response = await fetch(
-        `/api/appointments/${appointmentId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update appointment status");
-      }
-
-      toast.success(`Appointment marked as ${newStatus}`);
-      refetch(); // Refresh doctor data to update UI
-    } catch (error) {
-      toast.error("Failed to update appointment status");
-      console.error(error);
-    } finally {
-      setUpdatingAppointmentId(null);
-    }
-  };
-
+  // Handle loading state - from TanStack Query
   if (sessionStatus === "loading" || isLoading) {
     return <div className="p-8">Loading your dashboard...</div>;
   }
 
+  // Handle error state - from TanStack Query
   if (isError) {
     return <div className="p-8 text-red-500">Error: {error.message}</div>;
   }
 
+  // Handle no session
   if (!session) {
     return <div className="p-8">Please sign in to view your dashboard</div>;
   }
-
-  // Get today's date and format it
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Calculate appointments for today
-  const todaysAppointments = doctor?.appointments
-    ?.filter((apt: Appointment) => {
-      const appointmentDate = new Date(apt.date);
-      appointmentDate.setHours(0, 0, 0, 0);
-      return (
-        appointmentDate.getTime() === today.getTime() &&
-        apt.status !== "cancelled"
-      );
-    })
-    .sort(
-      (a: Appointment, b: Appointment) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-  // Calculate upcoming appointments (excluding today)
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const upcomingAppointments = doctor?.appointments
-    ?.filter(
-      (apt: Appointment) =>
-        new Date(apt.date) >= tomorrow && apt.status !== "cancelled"
-    )
-    .sort(
-      (a: Appointment, b: Appointment) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-    )
-    .slice(0, 5); // Show only next 5 upcoming appointments
 
   return (
     <div className="p-8 space-y-6">
@@ -177,109 +95,8 @@ export default function DoctorDashboard() {
         </Button>
       </div>
 
-      {/* Stats Overview - Horizontal cards with icons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {/* Keep all four stats cards the same */}
-        <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-          <CardContent className="p-5 relative">
-            <div className="flex items-center">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <Users
-                    size={20}
-                    className="text-blue-600 dark:text-blue-400"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                  <span className="text-xs font-bold text-blue-600">+</span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold">{stats.totalPatients}</p>
-                <p className="text-xs text-muted-foreground">Total Patients</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-          <CardContent className="p-5 relative">
-            <div className="flex items-center">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                  <Calendar
-                    size={20}
-                    className="text-purple-600 dark:text-purple-400"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                  <span className="text-xs font-bold text-purple-600">
-                    {stats.totalAppointments}
-                  </span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold">{stats.totalAppointments}</p>
-                <p className="text-xs text-muted-foreground">
-                  All Appointments
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-          <CardContent className="p-5 relative">
-            <div className="flex items-center">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <CheckCircle
-                    size={20}
-                    className="text-green-600 dark:text-green-400"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                  <span className="text-xs font-bold text-green-600">
-                    {stats.completedAppointments}
-                  </span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold">
-                  {stats.completedAppointments}
-                </p>
-                <p className="text-xs text-muted-foreground">Completed</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-          <CardContent className="p-5 relative">
-            <div className="flex items-center">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                  <XCircle
-                    size={20}
-                    className="text-red-600 dark:text-red-400"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                  <span className="text-xs font-bold text-red-600">
-                    {stats.cancelledAppointments}
-                  </span>
-                </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold">
-                  {stats.cancelledAppointments}
-                </p>
-                <p className="text-xs text-muted-foreground">Cancelled</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Stats Overview - Now using our extracted component */}
+      <StatsOverview stats={stats} />
 
       {/* Three equal columns layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -295,7 +112,7 @@ export default function DoctorDashboard() {
                   <div>
                     <CardTitle>Today&apos;s Appointments</CardTitle>
                     <CardDescription>
-                      {today.toLocaleDateString(undefined, {
+                      {new Date().toLocaleDateString(undefined, {
                         weekday: "long",
                         month: "short",
                         day: "numeric",
