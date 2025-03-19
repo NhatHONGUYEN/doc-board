@@ -9,7 +9,7 @@ import useDoctorDashboardStore from "@/lib/store/useDoctorDashboardStore";
 import { StatsOverview } from "@/components/Dashboard/StatsOverview";
 import { WeeklyActivity } from "@/components/Dashboard/WeeklyActivity";
 import { Clock } from "lucide-react";
-import { DashboardColumns } from "@/components/Dashboard/DashboardColumns";
+import { DashboardColumns } from "@/components/Dashboard/DashboardColumns/DashboardColumns";
 
 export default function DoctorDashboard() {
   const { session, status: sessionStatus } = useSessionStore();
