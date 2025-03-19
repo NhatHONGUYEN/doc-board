@@ -317,7 +317,7 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
       }
 
       toast.success("Appointment scheduled successfully");
-      router.push("/doctor/appointments");
+      router.push("/doctor/appointment");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
