@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useDoctorData } from "@/hooks/useDoctorData";
-
 import useSessionStore from "@/lib/store/useSessionStore";
-import { toast } from "sonner";
+import useAppointmentStore from "@/lib/store/useAppointmentStore";
 import Link from "next/link";
 import {
   Dialog,
@@ -53,15 +52,28 @@ export default function DoctorAppointmentPage() {
     refetch,
   } = useDoctorData(session?.user?.id);
 
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [updateStatusDialogOpen, setUpdateStatusDialogOpen] = useState(false);
-  const [addNotesDialogOpen, setAddNotesDialogOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<Appointment | null>(null);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [isSavingNotes, setIsSavingNotes] = useState(false);
-  const [notes, setNotes] = useState("");
-  const [newStatus, setNewStatus] = useState("");
+  // Use the appointment store instead of local state
+  const {
+    detailsDialogOpen,
+    updateStatusDialogOpen,
+    addNotesDialogOpen,
+    selectedAppointment,
+    isUpdatingStatus,
+    isSavingNotes,
+    notes,
+    newStatus,
+    openDetailsDialog,
+    closeDetailsDialog,
+    openUpdateStatusDialog,
+    closeUpdateStatusDialog,
+    openAddNotesDialog,
+    closeAddNotesDialog,
+    setNotes,
+    setNewStatus,
+    updateAppointmentStatus,
+    addNotes: saveNotes,
+  } = useAppointmentStore();
+
   const calendarRef = useRef<FullCalendar | null>(null);
   const router = useRouter();
 
@@ -76,86 +88,6 @@ export default function DoctorAppointmentPage() {
   if (!session) {
     return <div className="p-8">Please sign in to view appointments</div>;
   }
-
-  const handleUpdateAppointmentStatus = async () => {
-    if (!selectedAppointment || !newStatus) return;
-
-    setIsUpdatingStatus(true);
-    try {
-      const response = await fetch(
-        `/api/appointments/${selectedAppointment.id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update appointment status");
-      }
-
-      toast.success(`Appointment marked as ${newStatus}`);
-      setUpdateStatusDialogOpen(false);
-      refetch();
-    } catch (error) {
-      toast.error("Failed to update appointment status");
-      console.error(error);
-    } finally {
-      setIsUpdatingStatus(false);
-    }
-  };
-
-  const handleAddNotes = async () => {
-    if (!selectedAppointment || !notes.trim()) return;
-
-    setIsSavingNotes(true);
-    try {
-      const response = await fetch(
-        `/api/appointments/${selectedAppointment.id}/notes`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ notes }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to add notes");
-      }
-
-      toast.success("Notes added successfully");
-      setAddNotesDialogOpen(false);
-      refetch();
-    } catch (error) {
-      toast.error("Failed to add notes");
-      console.error(error);
-    } finally {
-      setIsSavingNotes(false);
-    }
-  };
-
-  const openDetailsDialog = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setNotes(appointment.notes || "");
-    setDetailsDialogOpen(true);
-  };
-
-  const openUpdateStatusDialog = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setNewStatus(appointment.status);
-    setUpdateStatusDialogOpen(true);
-  };
-
-  const openAddNotesDialog = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setNotes(appointment.notes || "");
-    setAddNotesDialogOpen(true);
-  };
 
   // Format appointments for FullCalendar
   const calendarEvents =
@@ -211,6 +143,27 @@ export default function DoctorAppointmentPage() {
     router.push(`/doctor/appointment/new?date=${info.dateStr}`);
   };
 
+  // Handle after action completion
+  const handleActionComplete = async () => {
+    await refetch();
+  };
+
+  // Handle updating status with refetch after success
+  const handleUpdateStatus = async () => {
+    const success = await updateAppointmentStatus();
+    if (success) {
+      handleActionComplete();
+    }
+  };
+
+  // Handle adding notes with refetch after success
+  const handleAddNotes = async () => {
+    const success = await saveNotes();
+    if (success) {
+      handleActionComplete();
+    }
+  };
+
   // Get today's appointments
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -225,6 +178,7 @@ export default function DoctorAppointmentPage() {
 
   return (
     <div className="container py-10">
+      {/* Rest of your component - no changes to render output */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <h1 className="text-3xl font-bold">Appointments</h1>
         <div className="flex flex-wrap gap-2">
@@ -387,7 +341,7 @@ export default function DoctorAppointmentPage() {
       </Tabs>
 
       {/* Appointment Details Dialog */}
-      <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+      <Dialog open={detailsDialogOpen} onOpenChange={closeDetailsDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Appointment Details</DialogTitle>
@@ -416,7 +370,7 @@ export default function DoctorAppointmentPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => {
-                      setDetailsDialogOpen(false);
+                      closeDetailsDialog();
                       setTimeout(
                         () => openAddNotesDialog(selectedAppointment),
                         100
@@ -433,7 +387,7 @@ export default function DoctorAppointmentPage() {
                         size="sm"
                         variant="default"
                         onClick={() => {
-                          setDetailsDialogOpen(false);
+                          closeDetailsDialog();
                           setTimeout(
                             () => openUpdateStatusDialog(selectedAppointment),
                             100
@@ -446,6 +400,7 @@ export default function DoctorAppointmentPage() {
                 </div>
               </div>
 
+              {/* Rest of details dialog content - no changes */}
               <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-3 items-start">
                 <User className="h-5 w-5 text-primary" />
                 <div>
@@ -517,7 +472,7 @@ export default function DoctorAppointmentPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setDetailsDialogOpen(false);
+                    closeDetailsDialog();
                     // Navigate to patient's medical record
                     if (selectedAppointment.patientId) {
                       router.push(
@@ -528,10 +483,7 @@ export default function DoctorAppointmentPage() {
                 >
                   View Patient Record
                 </Button>
-                <Button
-                  variant="default"
-                  onClick={() => setDetailsDialogOpen(false)}
-                >
+                <Button variant="default" onClick={closeDetailsDialog}>
                   Close
                 </Button>
               </div>
@@ -543,7 +495,7 @@ export default function DoctorAppointmentPage() {
       {/* Update Status Dialog */}
       <Dialog
         open={updateStatusDialogOpen}
-        onOpenChange={setUpdateStatusDialogOpen}
+        onOpenChange={closeUpdateStatusDialog}
       >
         <DialogContent>
           <DialogHeader>
@@ -598,16 +550,10 @@ export default function DoctorAppointmentPage() {
           )}
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setUpdateStatusDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={closeUpdateStatusDialog}>
               Cancel
             </Button>
-            <Button
-              onClick={handleUpdateAppointmentStatus}
-              disabled={isUpdatingStatus}
-            >
+            <Button onClick={handleUpdateStatus} disabled={isUpdatingStatus}>
               {isUpdatingStatus && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
@@ -618,7 +564,7 @@ export default function DoctorAppointmentPage() {
       </Dialog>
 
       {/* Add Notes Dialog */}
-      <Dialog open={addNotesDialogOpen} onOpenChange={setAddNotesDialogOpen}>
+      <Dialog open={addNotesDialogOpen} onOpenChange={closeAddNotesDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Clinical Notes</DialogTitle>
@@ -654,10 +600,7 @@ export default function DoctorAppointmentPage() {
           )}
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setAddNotesDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={closeAddNotesDialog}>
               Cancel
             </Button>
             <Button onClick={handleAddNotes} disabled={isSavingNotes}>
