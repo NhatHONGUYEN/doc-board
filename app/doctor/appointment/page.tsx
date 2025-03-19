@@ -42,7 +42,7 @@ import { DateClickArg } from "@fullcalendar/interaction";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Appointment } from "@/lib/types/patient";
+import { Appointment } from "@/lib/types/core-entities";
 
 export default function DoctorAppointmentPage() {
   const { session, status: sessionStatus } = useSessionStore();

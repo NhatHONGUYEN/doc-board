@@ -26,7 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Appointment, Doctor } from "@/lib/types/patient";
+import { Appointment, Doctor } from "@/lib/types/core-entities";
 
 type DashboardColumnsProps = {
   doctor: Doctor | null;

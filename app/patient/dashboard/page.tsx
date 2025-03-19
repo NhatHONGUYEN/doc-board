@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Calendar, Clock, FileText, User } from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
-import { Appointment } from "@/lib/types/patient";
+import { Appointment } from "@/lib/types/core-entities";
 import useSessionStore from "@/lib/store/useSessionStore";
 
 export default function PatientDashboard() {

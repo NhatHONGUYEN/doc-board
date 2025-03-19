@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Appointment } from "@/lib/types/patient";
+import { Appointment } from "@/lib/types/core-entities";
 import { Stats } from "@/lib/types/dashboard";
 
 type WeeklyActivityProps = {

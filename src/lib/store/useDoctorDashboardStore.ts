@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "sonner";
-import { Appointment, Doctor } from "@/lib/types/patient";
+import { Appointment, Doctor } from "@/lib/types/core-entities";
 
 type Stats = {
   totalPatients: number;

@@ -1,4 +1,4 @@
-import { Doctor } from "@/lib/types/patient";
+import { Doctor } from "@/lib/types/core-entities";
 import { useQuery } from "@tanstack/react-query";
 
 export function useDoctorData(userId: string | undefined) {

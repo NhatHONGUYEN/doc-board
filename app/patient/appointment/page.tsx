@@ -12,7 +12,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
-import { Appointment } from "@/lib/types/patient";
+import { Appointment } from "@/lib/types/core-entities";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { toast } from "sonner";
 import Link from "next/link";

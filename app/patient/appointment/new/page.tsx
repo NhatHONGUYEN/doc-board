@@ -70,7 +70,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { cn } from "@/lib/utils";
-import { Doctor } from "@/lib/types/patient";
+import { Doctor } from "@/lib/types/core-entities";
 
 // Form validation schema
 const appointmentFormSchema = z.object({

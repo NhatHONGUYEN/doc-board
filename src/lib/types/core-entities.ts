@@ -1,21 +1,19 @@
+/**
+ * Core application entities for the DocBoard system
+ */
+
+// Auth & Identity types
 export type User = {
   id: string;
   name: string | null;
   email: string;
   image?: string | null;
-  role: "PATIENT" | "DOCTOR";
+  role: UserRole;
 };
 
-export type Availability = {
-  id: string;
-  day: number; // 0-6 for Monday-Sunday
-  startTime: string; // Format "HH:MM"
-  endTime: string; // Format "HH:MM"
-  doctorId: string;
-  createdAt: string;
-  updatedAt: string;
-};
+export type UserRole = "PATIENT" | "DOCTOR" | "ADMIN";
 
+// Medical professional types
 export type Doctor = {
   id: string;
   userId: string;
@@ -30,12 +28,23 @@ export type Doctor = {
     email: string;
     image?: string | null;
   };
-  appointments: Appointment[]; // Non-optional to match schema
-  availabilities?: Availability[]; // Added availabilities
+  appointments: Appointment[];
+  availabilities?: Availability[];
   createdAt: string;
   updatedAt: string;
 };
 
+export type Availability = {
+  id: string;
+  day: number; // 0-6 for Monday-Sunday
+  startTime: string; // Format "HH:MM"
+  endTime: string; // Format "HH:MM"
+  doctorId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Patient & medical record types
 export type Patient = {
   id: string;
   userId: string;
@@ -50,14 +59,23 @@ export type Patient = {
   updatedAt: string;
 };
 
+// Appointment status options for better type safety
+export type AppointmentStatus =
+  | "confirmed"
+  | "completed"
+  | "cancelled"
+  | "pending"
+  | "no-show";
+
+// Appointment types
 export type Appointment = {
   id: string;
   date: string; // ISO string from DateTime
   duration: number;
   reason: string | null;
   notes: string | null;
-  status: string; // "confirmed", "cancelled", "pending", etc.
-  appointmentType?: string; // Add this field
+  status: AppointmentStatus;
+  appointmentType?: string;
 
   patientId: string;
   patient?: {
@@ -79,4 +97,12 @@ export type Appointment = {
 
   createdAt: string;
   updatedAt: string;
+};
+
+// Analytics & Statistics
+export type Stats = {
+  totalPatients: number;
+  totalAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
 };
