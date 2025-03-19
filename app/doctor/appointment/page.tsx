@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import {
   Select,
@@ -63,9 +62,6 @@ export default function DoctorAppointmentPage() {
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [notes, setNotes] = useState("");
   const [newStatus, setNewStatus] = useState("");
-  const [calendarView, setCalendarView] = useState<
-    "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-  >("dayGridMonth");
   const calendarRef = useRef<FullCalendar | null>(null);
   const router = useRouter();
 
@@ -215,16 +211,6 @@ export default function DoctorAppointmentPage() {
     router.push(`/doctor/appointment/new?date=${info.dateStr}`);
   };
 
-  // Handle view change
-  const handleViewChange = (
-    view: "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-  ) => {
-    setCalendarView(view);
-    if (calendarRef.current) {
-      calendarRef.current.getApi().changeView(view);
-    }
-  };
-
   // Get today's appointments
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -261,32 +247,12 @@ export default function DoctorAppointmentPage() {
         </TabsList>
 
         <TabsContent value="calendar">
-          <div className="mb-4 flex justify-end space-x-2">
-            <Select
-              defaultValue={calendarView}
-              onValueChange={(val) =>
-                handleViewChange(
-                  val as "dayGridMonth" | "timeGridWeek" | "timeGridDay"
-                )
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select view" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dayGridMonth">Month</SelectItem>
-                <SelectItem value="timeGridWeek">Week</SelectItem>
-                <SelectItem value="timeGridDay">Day</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <Card>
             <CardContent className="p-4 md:p-6 h-[70vh]">
               <FullCalendar
                 ref={calendarRef}
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                initialView={calendarView}
+                plugins={[dayGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
@@ -301,8 +267,6 @@ export default function DoctorAppointmentPage() {
                   minute: "2-digit",
                   meridiem: "short",
                 }}
-                slotMinTime="08:00:00"
-                slotMaxTime="20:00:00"
                 businessHours={{
                   daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
                   startTime: "09:00",

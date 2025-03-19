@@ -360,8 +360,6 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
 
   return (
     <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-8">Schedule New Appointment</h1>
-
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Patient and Appointment Details</CardTitle>
