@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Only allow users to access their own data
-    if (session.user.id !== userId) {
+    // Allow doctors to access patient data
+    if (session.user.id !== userId && session.user.role !== "DOCTOR") {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 
@@ -147,8 +147,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Only allow users to update their own data
-    if (session.user.id !== userId) {
+    // Allow doctors to update patient records
+    if (session.user.id !== userId && session.user.role !== "DOCTOR") {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 

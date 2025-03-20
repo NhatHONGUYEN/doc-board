@@ -15,7 +15,7 @@ type MedicalRecordsState = {
   isSaving: boolean;
 
   // Actions
-  fetchPatientRecord: (patientId: string, userId: string) => Promise<void>;
+  fetchPatientRecord: (patientId: string, doctorId: string) => Promise<void>;
   updateMedicalHistory: (
     patientId: string,
     medicalHistory: string
@@ -40,13 +40,14 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>(
     ...initialState,
 
     // Action to fetch patient record
-    fetchPatientRecord: async (patientId: string, userId: string) => {
-      if (!patientId || !userId) return;
+    fetchPatientRecord: async (patientId: string) => {
+      if (!patientId) return;
 
       try {
         set({ isLoading: true, isError: false, error: null });
 
-        const response = await fetch(`/api/patients/${patientId}/records`);
+        // Using the correct endpoint
+        const response = await fetch(`/api/patient?userId=${patientId}`);
 
         if (!response.ok) {
           throw new Error(
@@ -91,12 +92,15 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>(
         );
 
         if (!patientResponse.ok) {
-          throw new Error("Failed to fetch patient data");
+          const errorText = await patientResponse.text();
+          throw new Error(
+            `Failed to fetch patient data: ${patientResponse.status} ${errorText}`
+          );
         }
 
         const patientData = await patientResponse.json();
 
-        // Then update with the new medical history
+        // Update with the new medical history - using the correct endpoint
         const response = await fetch(`/api/patient?userId=${patient.userId}`, {
           method: "PUT",
           headers: {
@@ -109,7 +113,10 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>(
         });
 
         if (!response.ok) {
-          throw new Error("Failed to update medical record");
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to update medical record: ${response.status} ${errorText}`
+          );
         }
 
         // Update local state
