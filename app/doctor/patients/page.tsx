@@ -49,32 +49,8 @@ import { Separator } from "@/components/ui/separator";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { toast } from "sonner";
 
-type Patient = {
-  id: string;
-  userId: string;
-  birthDate: string | null;
-  address: string | null;
-  phone: string | null;
-  socialSecurityNumber: string | null;
-  medicalHistory: string | null;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string | null;
-    role: string;
-    createdAt: string;
-  };
-  appointments: Array<{
-    id: string;
-    date: string;
-    duration: number;
-    reason?: string;
-    status: string;
-    appointmentType?: string;
-    createdAt: string;
-  }>;
-};
+// Import types from core-entities
+import { Patient } from "@/lib/types/core-entities";
 
 export default function DoctorPatientsPage() {
   const router = useRouter();
@@ -129,11 +105,15 @@ export default function DoctorPatientsPage() {
     const filtered = patients.filter((patient) => {
       const searchString = searchTerm.toLowerCase();
       return (
-        patient.user.name.toLowerCase().includes(searchString) ||
-        patient.user.email.toLowerCase().includes(searchString) ||
-        patient.phone?.toLowerCase().includes(searchString) ||
-        patient.address?.toLowerCase().includes(searchString) ||
-        patient.socialSecurityNumber?.toLowerCase().includes(searchString)
+        (patient.user.name &&
+          patient.user.name.toLowerCase().includes(searchString)) ||
+        (patient.user.email &&
+          patient.user.email.toLowerCase().includes(searchString)) ||
+        (patient.phone && patient.phone.toLowerCase().includes(searchString)) ||
+        (patient.address &&
+          patient.address.toLowerCase().includes(searchString)) ||
+        (patient.socialSecurityNumber &&
+          patient.socialSecurityNumber.toLowerCase().includes(searchString))
       );
     });
 
@@ -343,7 +323,7 @@ export default function DoctorPatientsPage() {
                                 src={patient.user.image || undefined}
                               />
                               <AvatarFallback>
-                                {patient.user.name
+                                {(patient.user.name || "User")
                                   .split(" ")
                                   .map((n) => n[0])
                                   .join("")
@@ -467,7 +447,7 @@ export default function DoctorPatientsPage() {
                         src={selectedPatient.user.image || undefined}
                       />
                       <AvatarFallback className="text-lg">
-                        {selectedPatient.user.name
+                        {(selectedPatient.user.name || "User")
                           .split(" ")
                           .map((n) => n[0])
                           .join("")
@@ -480,10 +460,12 @@ export default function DoctorPatientsPage() {
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         Member since{" "}
-                        {format(
-                          new Date(selectedPatient.user.createdAt),
-                          "MMMM yyyy"
-                        )}
+                        {selectedPatient.createdAt
+                          ? format(
+                              new Date(selectedPatient.createdAt),
+                              "MMMM yyyy"
+                            )
+                          : "Unknown date"}
                       </p>
                     </div>
                   </div>
