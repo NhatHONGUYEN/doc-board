@@ -1,9 +1,9 @@
-// src/lib/store/useMedicalRecordsListStore.ts
+// src/hooks/useMedicalRecordsListStore.ts
 import { create } from "zustand";
 import { toast } from "sonner";
 import { PatientRecord } from "@/lib/types/medical-records";
 
-interface MedicalRecordsState {
+type MedicalRecordsState = {
   // Data
   patients: PatientRecord[];
   filteredPatients: PatientRecord[];
@@ -29,7 +29,7 @@ interface MedicalRecordsState {
   setEditableNotes: (notes: string) => void;
   updateMedicalRecord: () => Promise<void>;
   resetStore: () => void;
-}
+};
 
 export const useMedicalRecordsListStore = create<MedicalRecordsState>(
   (set, get) => ({
