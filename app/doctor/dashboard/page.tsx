@@ -59,7 +59,7 @@ export default function DoctorDashboard() {
       {/* Header with gradient underline */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
+          <h1 className="text-3xl font-bold ">Dashboard</h1>
         </div>
         <Button asChild>
           <Link href="/doctor/availability">

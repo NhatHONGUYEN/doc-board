@@ -1,8 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar as CalendarIcon, Clock, PlusCircle } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  PlusCircle,
+  ChevronRight,
+} from "lucide-react";
 import { Appointment } from "@/lib/types/core-entities";
 import Link from "next/link";
 import useAppointmentStore from "@/lib/store/useAppointmentStore";
@@ -16,47 +21,32 @@ export function TodaysAppointments({
 }: TodaysAppointmentsProps) {
   const { openDetailsDialog, openUpdateStatusDialog } = useAppointmentStore();
 
+  // Group appointments by time slot
+  const sortAppointments = (appts: Appointment[]) => {
+    return [...appts].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  };
+
+  const sortedAppointments = sortAppointments(appointments);
+
   return (
-    <Card>
-      <CardContent className="p-4 md:p-6">
-        {appointments && appointments.length > 0 ? (
-          <div className="space-y-4">
-            {appointments.map((appointment) => (
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-muted/40 py-3 px-4">
+        <CardTitle className="text-base flex items-center gap-2">
+          <CalendarIcon className="h-4 w-4" />
+          Today's Appointments
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {sortedAppointments && sortedAppointments.length > 0 ? (
+          <div className="divide-y">
+            {sortedAppointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-md gap-4"
+                className="flex items-center p-3 hover:bg-muted/30 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage
-                      src={appointment.patient?.user?.image || ""}
-                      alt="Patient"
-                    />
-                    <AvatarFallback>
-                      {appointment.patient?.user?.name
-                        ?.charAt(0)
-                        .toUpperCase() || "P"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">
-                      {appointment.patient?.user?.name || "Patient"}
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>
-                        {new Date(appointment.date).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                      <span>•</span>
-                      <span>{appointment.duration} mins</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Badge
                     variant={
                       appointment.status === "confirmed"
@@ -67,24 +57,65 @@ export function TodaysAppointments({
                         ? "outline"
                         : "secondary"
                     }
+                    className="w-[80px] justify-center"
                   >
                     {appointment.status}
                   </Badge>
-                  <div className="flex gap-2">
+
+                  <div className="flex-shrink-0">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={appointment.patient?.user?.image || ""}
+                        alt="Patient"
+                      />
+                      <AvatarFallback className="text-xs">
+                        {appointment.patient?.user?.name
+                          ?.charAt(0)
+                          .toUpperCase() || "P"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">
+                      {appointment.patient?.user?.name || "Patient"}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>
+                        {new Date(appointment.date).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      <span>•</span>
+                      <span>{appointment.duration} mins</span>
+                      {appointment.appointmentType && (
+                        <>
+                          <span>•</span>
+                          <span>{appointment.appointmentType}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => openDetailsDialog(appointment)}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => openDetailsDialog(appointment)}
-                    >
-                      View Details
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
+                      className="h-8 px-2 py-0"
                       onClick={() => openUpdateStatusDialog(appointment)}
                       disabled={appointment.status === "cancelled"}
                     >
-                      Update Status
+                      Update
                     </Button>
                   </div>
                 </div>
@@ -92,15 +123,17 @@ export function TodaysAppointments({
             ))}
           </div>
         ) : (
-          <div className="py-12 text-center">
-            <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground opacity-30 mb-4" />
-            <h3 className="text-lg font-medium mb-2">No appointments today</h3>
-            <p className="text-muted-foreground mb-4">
+          <div className="py-8 px-4 text-center">
+            <CalendarIcon className="mx-auto h-10 w-10 text-muted-foreground opacity-30 mb-3" />
+            <h3 className="text-base font-medium mb-1">
+              No appointments today
+            </h3>
+            <p className="text-sm text-muted-foreground mb-3">
               You have no scheduled appointments for today.
             </p>
-            <Button asChild>
+            <Button asChild size="sm">
               <Link href="/doctor/appointment/new">
-                <PlusCircle className="mr-2 h-4 w-4" />
+                <PlusCircle className="mr-1 h-3.5 w-3.5" />
                 Schedule New Appointment
               </Link>
             </Button>

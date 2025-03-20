@@ -11,6 +11,10 @@ import {
   Clock,
   ClipboardList,
   Loader2,
+  Save,
+  X,
+  Edit,
+  PlusSquare,
 } from "lucide-react";
 
 import {
@@ -26,6 +30,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
 import useSessionStore from "@/lib/store/useSessionStore";
@@ -63,6 +69,11 @@ export default function PatientMedicalRecordsPage() {
   const [patient, setPatient] = useState<PatientRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Medical history editing states
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableNotes, setEditableNotes] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
     const fetchPatientRecords = async () => {
       if (!session?.user?.id) return;
@@ -77,6 +88,7 @@ export default function PatientMedicalRecordsPage() {
 
         const data = await response.json();
         setPatient(data);
+        setEditableNotes(data.medicalHistory || "");
       } catch (error) {
         console.error(error);
         toast.error("Failed to load patient records");
@@ -87,6 +99,55 @@ export default function PatientMedicalRecordsPage() {
 
     fetchPatientRecords();
   }, [patientId, session?.user?.id]);
+
+  // Update medical record
+  const updateMedicalRecord = async () => {
+    if (!patient) return;
+
+    setIsSaving(true);
+    try {
+      // First get the full patient data
+      const patientResponse = await fetch(
+        `/api/patient?userId=${patient.userId}`
+      );
+
+      if (!patientResponse.ok) {
+        throw new Error("Failed to fetch patient data");
+      }
+
+      const patientData = await patientResponse.json();
+
+      // Then update with the new medical history
+      const response = await fetch(`/api/patient?userId=${patient.userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...patientData,
+          medicalHistory: editableNotes,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update medical record");
+      }
+
+      // Update local state
+      setPatient({
+        ...patient,
+        medicalHistory: editableNotes,
+      });
+
+      setIsEditing(false);
+      toast.success("Medical record updated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update medical record");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Authentication and loading states
   if (sessionStatus === "loading" || isLoading) {
@@ -236,35 +297,98 @@ export default function PatientMedicalRecordsPage() {
           {/* Medical History */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Medical History</CardTitle>
-              <CardDescription>
-                Patient&apos;s medical background and conditions
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <FileText className="h-5 w-5 mr-2" />
+                    Medical History
+                  </CardTitle>
+                  <CardDescription>
+                    Patient&apos;s medical background and conditions
+                  </CardDescription>
+                </div>
+
+                {!isEditing ? (
+                  <Button
+                    onClick={() => {
+                      setEditableNotes(patient.medicalHistory || "");
+                      setIsEditing(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Record
+                  </Button>
+                ) : (
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEditableNotes(patient.medicalHistory || "");
+                        setIsEditing(false);
+                      }}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                    <Button onClick={updateMedicalRecord} disabled={isSaving}>
+                      {isSaving ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      Save Changes
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              {patient.medicalHistory ? (
-                <div className="whitespace-pre-wrap">
-                  {patient.medicalHistory}
-                </div>
+              {isEditing ? (
+                <Textarea
+                  value={editableNotes}
+                  onChange={(e) => setEditableNotes(e.target.value)}
+                  className="min-h-[300px] font-mono"
+                  placeholder="Enter medical history details such as:
+
+ALLERGIES:
+• List allergies and reactions
+
+MEDICATIONS:
+• Current medications and dosages
+
+PAST MEDICAL HISTORY:
+• Chronic conditions
+• Previous surgeries
+• Significant illnesses
+
+FAMILY HISTORY:
+• Relevant family medical conditions
+
+NOTES:
+• Additional observations or concerns"
+                />
               ) : (
-                <div className="text-center py-6 text-muted-foreground">
-                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No medical history recorded</p>
-                </div>
+                <ScrollArea className="h-[300px] rounded-md border p-4">
+                  {patient.medicalHistory ? (
+                    <div className="whitespace-pre-wrap">
+                      {patient.medicalHistory}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <PlusSquare className="h-12 w-12 mb-2" />
+                      <p>No medical history recorded for this patient</p>
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Add Medical Record
+                      </Button>
+                    </div>
+                  )}
+                </ScrollArea>
               )}
             </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  // Implement edit medical history functionality
-                  toast.info("Medical history editing not implemented yet");
-                }}
-              >
-                Edit Medical History
-              </Button>
-            </CardFooter>
           </Card>
 
           {/* Appointments */}

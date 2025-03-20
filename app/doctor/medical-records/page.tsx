@@ -38,21 +38,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useSessionStore from "@/lib/store/useSessionStore";
+import { Patient as CorePatient } from "@/lib/types/core-entities";
 
-type Patient = {
-  id: string;
-  userId: string;
-  birthDate: string | null;
-  address: string | null;
-  phone: string | null;
-  socialSecurityNumber: string | null;
-  medicalHistory: string | null;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string | null;
-  };
+// Create a simplified type that extends the core type
+type MedicalRecordPatient = Omit<CorePatient, "appointments"> & {
   appointments: Array<{
     id: string;
     date: string;
@@ -63,13 +52,16 @@ export default function MedicalRecordsPage() {
   const router = useRouter();
   const { session, status } = useSessionStore();
 
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<MedicalRecordPatient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<
+    MedicalRecordPatient[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   // For record detail dialog
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedPatient, setSelectedPatient] =
+    useState<MedicalRecordPatient | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editableNotes, setEditableNotes] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -114,7 +106,7 @@ export default function MedicalRecordsPage() {
 
       // Search in patient name, ID, and medical history
       return (
-        patient.user.name.toLowerCase().includes(searchString) ||
+        (patient.user?.name ?? "").toLowerCase().includes(searchString) ||
         patient.socialSecurityNumber?.toLowerCase().includes(searchString) ||
         patient.medicalHistory?.toLowerCase().includes(searchString)
       );
@@ -124,7 +116,7 @@ export default function MedicalRecordsPage() {
   }, [searchTerm, patients]);
 
   // View patient medical record
-  const viewMedicalRecord = (patient: Patient) => {
+  const viewMedicalRecord = (patient: MedicalRecordPatient) => {
     setSelectedPatient(patient);
     setEditableNotes(patient.medicalHistory || "");
     setIsEditing(false);
@@ -285,7 +277,7 @@ export default function MedicalRecordsPage() {
                         <Avatar>
                           <AvatarImage src={patient.user.image || undefined} />
                           <AvatarFallback>
-                            {patient.user.name
+                            {(patient.user?.name || "User")
                               .split(" ")
                               .map((n) => n[0])
                               .join("")
@@ -445,7 +437,7 @@ export default function MedicalRecordsPage() {
                           src={selectedPatient.user.image || undefined}
                         />
                         <AvatarFallback className="text-lg">
-                          {selectedPatient.user.name
+                          {(selectedPatient.user?.name ?? "Unknown User")
                             .split(" ")
                             .map((n) => n[0])
                             .join("")
