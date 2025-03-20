@@ -16,6 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 
+// Import your components
 import {
   Card,
   CardContent,
@@ -51,111 +52,56 @@ import { toast } from "sonner";
 
 // Import types from core-entities
 import { Patient } from "@/lib/types/core-entities";
+import { usePatients } from "@/hooks/usePatients"; // Import your hook
+import { usePatientsStore } from "@/lib/store/usePatientsStore";
 
 export default function DoctorPatientsPage() {
   const router = useRouter();
   const { session, status } = useSessionStore();
 
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof Patient["user"] | "appointments" | "birthDate";
-    direction: "ascending" | "descending";
-  }>({ key: "name", direction: "ascending" });
+  // Patient data from API
+  const {
+    data: patients = [],
+    isLoading: isLoadingPatients,
+    isError,
+    error,
+  } = usePatients();
 
-  // For patient details dialog
+  // Get state and actions from Zustand store
+  const {
+    filteredPatients,
+    searchTerm,
+    sortConfig,
+    setSearchTerm,
+    setSortConfig,
+    updateFilteredPatients,
+  } = usePatientsStore();
+
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  // Fetch patients on mount
+  // Show error message if query fails
   useEffect(() => {
-    const fetchPatients = async () => {
-      if (!session?.user?.id) return;
+    if (isError && error instanceof Error) {
+      console.error(error);
+      toast.error(`Failed to load patients: ${error.message}`);
+    }
+  }, [isError, error]);
 
-      try {
-        const response = await fetch("/api/patients");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch patients");
-        }
-
-        const data = await response.json();
-        setPatients(data);
-        setFilteredPatients(data);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load patients");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPatients();
-  }, [session?.user?.id]);
-
-  // Filter patients based on search term
+  // Update filtered patients when data, search, or sort changes
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredPatients(patients);
-      return;
+    if (patients && patients.length > 0) {
+      updateFilteredPatients(patients);
     }
+  }, [patients, searchTerm, sortConfig, updateFilteredPatients]);
 
-    const filtered = patients.filter((patient) => {
-      const searchString = searchTerm.toLowerCase();
-      return (
-        (patient.user.name &&
-          patient.user.name.toLowerCase().includes(searchString)) ||
-        (patient.user.email &&
-          patient.user.email.toLowerCase().includes(searchString)) ||
-        (patient.phone && patient.phone.toLowerCase().includes(searchString)) ||
-        (patient.address &&
-          patient.address.toLowerCase().includes(searchString)) ||
-        (patient.socialSecurityNumber &&
-          patient.socialSecurityNumber.toLowerCase().includes(searchString))
-      );
-    });
+  // Simplified handler functions
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
-    setFilteredPatients(filtered);
-  }, [searchTerm, patients]);
-
-  // Sort patients
-  const sortPatients = (key: typeof sortConfig.key) => {
-    let direction: "ascending" | "descending" = "ascending";
-
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-
-    setSortConfig({ key, direction });
-
-    setFilteredPatients((prev) => {
-      return [...prev].sort((a, b) => {
-        if (key === "appointments") {
-          return direction === "ascending"
-            ? a.appointments.length - b.appointments.length
-            : b.appointments.length - a.appointments.length;
-        }
-
-        if (key === "birthDate") {
-          if (!a.birthDate) return direction === "ascending" ? 1 : -1;
-          if (!b.birthDate) return direction === "ascending" ? -1 : 1;
-
-          return direction === "ascending"
-            ? new Date(a.birthDate).getTime() - new Date(b.birthDate).getTime()
-            : new Date(b.birthDate).getTime() - new Date(a.birthDate).getTime();
-        }
-
-        // For user properties
-        if (!a.user[key]) return direction === "ascending" ? 1 : -1;
-        if (!b.user[key]) return direction === "ascending" ? -1 : 1;
-
-        return direction === "ascending"
-          ? a.user[key].localeCompare(b.user[key])
-          : b.user[key].localeCompare(a.user[key]);
-      });
-    });
+  const handleSort = (key: typeof sortConfig.key) => {
+    setSortConfig(key);
   };
 
   // View patient details
@@ -202,6 +148,9 @@ export default function DoctorPatientsPage() {
     );
   }
 
+  // Use isLoadingPatients instead of isLoading for loading state
+  const isLoading = isLoadingPatients;
+
   return (
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
@@ -224,7 +173,7 @@ export default function DoctorPatientsPage() {
                 placeholder="Search patients..."
                 className="pl-8 w-[250px]"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
             </div>
           </div>
@@ -233,6 +182,10 @@ export default function DoctorPatientsPage() {
           {isLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : isError ? (
+            <div className="text-center py-8 text-destructive">
+              Error loading patients. Please try again.
             </div>
           ) : filteredPatients.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -247,7 +200,7 @@ export default function DoctorPatientsPage() {
                   <TableRow>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => sortPatients("name")}
+                      onClick={() => handleSort("name")}
                     >
                       <div className="flex items-center">
                         Name
@@ -262,7 +215,7 @@ export default function DoctorPatientsPage() {
                     <TableHead>Contact</TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => sortPatients("birthDate")}
+                      onClick={() => handleSort("birthDate")}
                     >
                       <div className="flex items-center">
                         Age
@@ -276,7 +229,7 @@ export default function DoctorPatientsPage() {
                     </TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => sortPatients("appointments")}
+                      onClick={() => handleSort("appointments")}
                     >
                       <div className="flex items-center">
                         Appointments
