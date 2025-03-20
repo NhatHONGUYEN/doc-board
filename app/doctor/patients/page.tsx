@@ -16,7 +16,7 @@ import { usePatientsStore } from "@/lib/store/usePatientsStore";
 // Import custom components
 import { PatientHeader } from "@/components/DoctorPatients/PatientHeader";
 import { PatientContent } from "@/components/DoctorPatients/PatientContent";
-import { PatientDetailsDialog } from "@/components/DoctorPatients/PatientDetailsDialog";
+import { PatientDetailsDialog } from "@/components/DoctorPatients/PatientDetails/PatientDetailsDialog";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 
 export default function DoctorPatientsPage() {
