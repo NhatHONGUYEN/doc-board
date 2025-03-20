@@ -1,5 +1,12 @@
 import { format } from "date-fns";
-import { ChevronDown, ChevronUp, Loader2, Phone } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Phone,
+  User,
+} from "lucide-react";
 import { Patient } from "@/lib/types/core-entities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -210,16 +217,20 @@ export function PatientContent({
                       <div className="flex justify-end space-x-2">
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="icon"
+                          className="h-8 w-8"
                           onClick={() => viewPatientDetails(patient)}
+                          title="View Patient Details"
                         >
-                          View Details
+                          <User className="h-4 w-4" />
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
+                          className="h-8 w-8"
                           onClick={() => scheduleAppointment(patient.id)}
+                          title="Schedule Appointment"
                         >
-                          Schedule
+                          <Calendar className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>

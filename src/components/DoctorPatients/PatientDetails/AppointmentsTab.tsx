@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Calendar, Clock } from "lucide-react";
 import { Patient } from "@/lib/types/core-entities";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 
@@ -11,10 +11,7 @@ type AppointmentsTabProps = {
   onScheduleAppointment: (patientId: string) => void;
 };
 
-export function AppointmentsTab({
-  patient,
-  onScheduleAppointment,
-}: AppointmentsTabProps) {
+export function AppointmentsTab({ patient }: AppointmentsTabProps) {
   return (
     <TabsContent value="appointments">
       {patient.appointments.length === 0 ? (
@@ -77,12 +74,6 @@ export function AppointmentsTab({
           ))}
         </div>
       )}
-
-      <div className="mt-4 flex justify-end">
-        <Button onClick={() => onScheduleAppointment(patient.id)}>
-          Schedule New Appointment
-        </Button>
-      </div>
     </TabsContent>
   );
 }
