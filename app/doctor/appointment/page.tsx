@@ -75,7 +75,10 @@ export default function DoctorAppointmentPage() {
         </TabsList>
 
         <TabsContent value="calendar">
-          <AppointmentCalendar appointments={doctor?.appointments || []} />
+          <AppointmentCalendar
+            appointments={doctor?.appointments || []}
+            doctorId={doctor?.id} // Pass the doctor ID directly
+          />
         </TabsContent>
 
         <TabsContent value="today">
