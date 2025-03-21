@@ -125,14 +125,16 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
                                 />
                               </div>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeTimeSlot(day, i)}
-                              disabled={dayData.slots.length === 1}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                            {/* Only show delete button when there are multiple slots */}
+                            {dayData.slots.length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeTimeSlot(day, i)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            )}
                           </div>
                         ))
                       )}
