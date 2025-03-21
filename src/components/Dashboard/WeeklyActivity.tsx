@@ -1,7 +1,15 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Appointment } from "@/lib/types/core-entities";
 import { Stats } from "@/lib/types/dashboard";
+import { BarChart3, TrendingUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type WeeklyActivityProps = {
   stats: Stats;
@@ -15,37 +23,33 @@ export function WeeklyActivity({
   upcomingAppointments,
 }: WeeklyActivityProps) {
   return (
-    <Card className="backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-md overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-3 w-3 text-white"
-            >
-              <path d="M12 20V10"></path>
-              <path d="M18 20V4"></path>
-              <path d="M6 20v-4"></path>
-            </svg>
+    <Card className="overflow-hidden transition-all duration-300 group border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]">
+      <CardHeader className="bg-card border-b border-border p-5 pb-3">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
+              <BarChart3 className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-card-foreground">
+                Weekly Activity
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Your appointments and completion metrics
+              </CardDescription>
+            </div>
           </div>
-          Weekly Activity
-        </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="px-4 pb-4">
+      <CardContent className="p-5 bg-card">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left column - Completion rate */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Completion Rate</p>
+                <p className="text-sm text-muted-foreground">Completion Rate</p>
                 <div className="flex items-center">
-                  <span className="text-2xl font-bold mr-1">
+                  <span className="text-2xl font-bold text-card-foreground mr-1">
                     {stats.totalAppointments > 0
                       ? Math.round(
                           (stats.completedAppointments /
@@ -55,23 +59,11 @@ export function WeeklyActivity({
                       : 0}
                     %
                   </span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4 text-green-500"
-                  >
-                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                    <polyline points="16 7 22 7 22 13"></polyline>
-                  </svg>
+                  <TrendingUp className="h-4 w-4 text-primary" />
                 </div>
               </div>
-              <div className="w-14 h-14 rounded-full border-4 border-green-100 dark:border-green-900/30 flex items-center justify-center">
-                <div className="text-sm font-semibold text-green-600 dark:text-green-400">
+              <div className="w-14 h-14 rounded-full border-4 border-primary/10 flex items-center justify-center">
+                <div className="text-sm font-semibold text-primary">
                   {stats.completedAppointments}/{stats.totalAppointments}
                 </div>
               </div>
@@ -81,13 +73,13 @@ export function WeeklyActivity({
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Today</span>
-                  <span className="font-medium">
+                  <span className="font-medium text-card-foreground">
                     {todaysAppointments?.length || 0} appointments
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 rounded-full"
+                    className="h-full bg-primary rounded-full"
                     style={{
                       width: `${
                         todaysAppointments?.length
@@ -102,13 +94,13 @@ export function WeeklyActivity({
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">This Week</span>
-                  <span className="font-medium">
+                  <span className="font-medium text-card-foreground">
                     {upcomingAppointments?.length || 0} upcoming
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-500 rounded-full"
+                    className="h-full bg-primary/80 rounded-full"
                     style={{
                       width: `${
                         upcomingAppointments?.length
@@ -124,53 +116,70 @@ export function WeeklyActivity({
 
           {/* Middle column - Days of Week Activity */}
           <div className="flex flex-col">
-            <h3 className="text-sm font-medium mb-2">Daily Activity</h3>
+            <h3 className="text-sm font-medium text-card-foreground mb-2">
+              Daily Activity
+            </h3>
             <div className="flex-grow flex items-end justify-between">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                (day, i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <div className="h-24 w-full rounded-md flex items-end mb-1">
-                      <div
-                        className={`w-full ${
-                          i === new Date().getDay() - 1
-                            ? "bg-green-500"
-                            : "bg-slate-200 dark:bg-slate-700"
-                        } rounded-md`}
-                        style={{
-                          height: `${Math.max(
-                            15,
-                            Math.floor(Math.random() * 100)
-                          )}%`,
-                        }}
-                      ></div>
+                (day, i) => {
+                  const isToday = i === new Date().getDay() - 1;
+                  return (
+                    <div key={i} className="flex flex-col items-center">
+                      <div className="h-24 w-full flex items-end mb-1">
+                        <div
+                          className={cn(
+                            "w-full rounded-md transition-all",
+                            isToday
+                              ? "bg-primary"
+                              : "bg-muted hover:bg-primary/20"
+                          )}
+                          style={{
+                            height: `${Math.max(
+                              15,
+                              Math.floor(Math.random() * 100)
+                            )}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <span
+                        className={cn(
+                          "text-xs",
+                          isToday
+                            ? "text-primary font-medium"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {day}
+                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">{day}</span>
-                  </div>
-                )
+                  );
+                }
               )}
             </div>
           </div>
 
           {/* Right column - Activity Distribution */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Distribution by Status</h3>
+            <h3 className="text-sm font-medium text-card-foreground mb-2">
+              Distribution by Status
+            </h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+                  <span className="flex items-center text-card-foreground">
+                    <span className="w-2 h-2 bg-primary/80 rounded-full mr-1"></span>
                     Confirmed
                   </span>
-                  <span className="font-medium">
+                  <span className="font-medium text-card-foreground">
                     {stats.totalAppointments -
                       stats.completedAppointments -
                       stats.cancelledAppointments}{" "}
                     appointments
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 rounded-full"
+                    className="h-full bg-primary/80 rounded-full"
                     style={{
                       width: `${
                         stats.totalAppointments
@@ -191,17 +200,17 @@ export function WeeklyActivity({
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                  <span className="flex items-center text-card-foreground">
+                    <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full mr-1"></span>
                     Completed
                   </span>
-                  <span className="font-medium">
+                  <span className="font-medium text-card-foreground">
                     {stats.completedAppointments} appointments
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 rounded-full"
+                    className="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full"
                     style={{
                       width: `${
                         stats.totalAppointments
@@ -220,17 +229,17 @@ export function WeeklyActivity({
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                  <span className="flex items-center text-card-foreground">
+                    <span className="w-2 h-2 bg-destructive rounded-full mr-1"></span>
                     Cancelled
                   </span>
-                  <span className="font-medium">
+                  <span className="font-medium text-card-foreground">
                     {stats.cancelledAppointments} appointments
                   </span>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-red-500 rounded-full"
+                    className="h-full bg-destructive rounded-full"
                     style={{
                       width: `${
                         stats.totalAppointments
