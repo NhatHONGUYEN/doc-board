@@ -22,12 +22,27 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Stethoscope,
+  FileText,
+  Award,
+  Save,
+  ArrowLeft,
+  AlertTriangle,
+} from "lucide-react";
 import { useDoctorData } from "@/hooks/useDoctorData";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 // Form schema with validation
 const formSchema = z.object({
@@ -121,41 +136,134 @@ export default function DoctorSettingsPage() {
   }
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Loading your profile...</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground text-sm">
+            Loading your profile settings...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (isError) {
-    return <div className="p-8 text-red-500">Error: {error.message}</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="text-center max-w-md">
+          <div className="bg-destructive/10 rounded-full p-3 mx-auto mb-4 w-fit">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium text-card-foreground mb-1">
+            Error Loading Profile
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            {error.message ||
+              "There was a problem loading your profile. Please try again."}
+          </p>
+          <Button asChild>
+            <Link href="/doctor/dashboard">Return to Dashboard</Link>
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (!session) {
-    return <div className="p-8">Please sign in to edit your profile</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="text-center max-w-md">
+          <div className="bg-muted rounded-full p-3 mx-auto mb-4 w-fit">
+            <User className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium text-card-foreground mb-1">
+            Authentication Required
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            Please sign in to edit your profile settings.
+          </p>
+          <Button asChild>
+            <Link href="/api/auth/signin">Sign In</Link>
+          </Button>
+        </div>
+      </div>
+    );
   }
+
+  // Calculate profile completeness
+  const calculateProfileCompleteness = () => {
+    const values = form.getValues();
+    const fields = [
+      values.name,
+      values.email,
+      values.specialty,
+      values.licenseNumber,
+      values.phone,
+      values.officeAddress,
+      values.description,
+    ];
+
+    const filledFields = fields.filter(
+      (field) => field && field.trim().length > 0
+    ).length;
+    return Math.round((filledFields / fields.length) * 100);
+  };
 
   return (
     <div className="container max-w-3xl py-10">
-      <h1 className="text-3xl font-bold mb-8">Doctor Profile Settings</h1>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-card-foreground">
+            Doctor Profile Settings
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Update your profile information and practice details
+          </p>
+        </div>
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="h-9 border-border hover:bg-muted transition-colors"
+        >
+          <Link href="/doctor/profile" className="flex items-center gap-1">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Profile
+          </Link>
+        </Button>
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Personal Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+          <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+            <CardHeader className="bg-card border-b border-border">
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-primary/70" />
+                Personal Information
+              </CardTitle>
               <CardDescription>
                 Update your personal and contact details
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6 bg-card">
               {/* Name */}
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <User className="h-4 w-4 mr-2 text-primary/70" />
+                      Full Name
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Dr. Jane Smith" {...field} />
+                      <Input
+                        placeholder="Dr. Jane Smith"
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -168,11 +276,15 @@ export default function DoctorSettingsPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <Mail className="h-4 w-4 mr-2 text-primary/70" />
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="your@email.com"
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
@@ -187,11 +299,18 @@ export default function DoctorSettingsPage() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <Phone className="h-4 w-4 mr-2 text-primary/70" />
+                      Phone Number
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="+1 (555) 123-4567" {...field} />
+                      <Input
+                        placeholder="+1 (555) 123-4567"
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground pl-6">
                       Contact number for patients and staff
                     </FormDescription>
                     <FormMessage />
@@ -205,14 +324,18 @@ export default function DoctorSettingsPage() {
                 name="officeAddress"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Office Address</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <MapPin className="h-4 w-4 mr-2 text-primary/70" />
+                      Office Address
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="123 Medical Plaza, Suite 100, City, State, ZIP"
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground pl-6">
                       Where patients can visit you for appointments
                     </FormDescription>
                     <FormMessage />
@@ -223,28 +346,35 @@ export default function DoctorSettingsPage() {
           </Card>
 
           {/* Professional Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional Information</CardTitle>
+          <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+            <CardHeader className="bg-card border-b border-border">
+              <CardTitle className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5 text-primary/70" />
+                Professional Information
+              </CardTitle>
               <CardDescription>
                 Update your professional and practice details
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6 bg-card">
               {/* Specialty */}
               <FormField
                 control={form.control}
                 name="specialty"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Medical Specialty</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <Award className="h-4 w-4 mr-2 text-primary/70" />
+                      Medical Specialty
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Cardiology, Family Medicine, etc."
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground pl-6">
                       Your area of medical expertise
                     </FormDescription>
                     <FormMessage />
@@ -258,11 +388,18 @@ export default function DoctorSettingsPage() {
                 name="licenseNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Medical License Number</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <FileText className="h-4 w-4 mr-2 text-primary/70" />
+                      Medical License Number
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="MD12345678" {...field} />
+                      <Input
+                        placeholder="MD12345678"
+                        className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground pl-6">
                       Your official medical license identification
                     </FormDescription>
                     <FormMessage />
@@ -276,15 +413,18 @@ export default function DoctorSettingsPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Professional Bio</FormLabel>
+                    <FormLabel className="flex items-center text-card-foreground">
+                      <FileText className="h-4 w-4 mr-2 text-primary/70" />
+                      Professional Bio
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Enter your professional background, expertise, and approach to patient care"
-                        className="min-h-32"
+                        className="min-h-32 border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground pl-6">
                       This description will be visible to patients when booking
                       appointments
                     </FormDescription>
@@ -293,13 +433,45 @@ export default function DoctorSettingsPage() {
                 )}
               />
             </CardContent>
+            <CardFooter className="bg-card border-t border-border py-4 px-6">
+              <div className="flex items-center text-sm text-primary/70">
+                <span className="font-medium mr-2">Profile Completeness:</span>
+                <div className="h-2 w-40 bg-muted rounded-full overflow-hidden mr-2">
+                  <div
+                    className="h-full bg-primary rounded-full"
+                    style={{
+                      width: `${calculateProfileCompleteness()}%`,
+                    }}
+                  ></div>
+                </div>
+                <span className="text-xs">
+                  {calculateProfileCompleteness()}%
+                </span>
+              </div>
+            </CardFooter>
           </Card>
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSaving}>
-              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSaving ? "Saving..." : "Save Changes"}
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className={cn(
+                "h-10 transition-all",
+                isSaving ? "bg-primary/80" : "bg-primary hover:bg-primary/90"
+              )}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           </div>
         </form>
