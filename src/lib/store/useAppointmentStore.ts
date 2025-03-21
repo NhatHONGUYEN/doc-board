@@ -155,14 +155,17 @@ const useAppointmentStore = create<AppointmentState>((set, get) => ({
       );
 
       if (!response.ok) {
-        throw new Error("Failed to add notes");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add notes");
       }
 
       toast.success("Notes added successfully");
       set({ addNotesDialogOpen: false });
       return true;
     } catch (error) {
-      toast.error("Failed to add notes");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to add notes"
+      );
       console.error(error);
       return false;
     } finally {
