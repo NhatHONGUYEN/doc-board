@@ -153,9 +153,10 @@ export function AppointmentDetailsDialog() {
               variant="outline"
               onClick={() => {
                 closeDetailsDialog();
-                if (selectedAppointment.patientId) {
+                // Use patient.id instead of patientId
+                if (selectedAppointment.patient?.id) {
                   router.push(
-                    `/doctor/medical-records/${selectedAppointment.patientId}`
+                    `/doctor/medical-records/${selectedAppointment.patient.id}`
                   );
                 }
               }}

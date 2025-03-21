@@ -46,8 +46,8 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>(
       try {
         set({ isLoading: true, isError: false, error: null });
 
-        // Using the correct endpoint
-        const response = await fetch(`/api/patient?userId=${patientId}`);
+        // Use the patient ID directly with your existing API endpoint
+        const response = await fetch(`/api/patients/${patientId}/records`);
 
         if (!response.ok) {
           throw new Error(
@@ -73,55 +73,42 @@ export const useMedicalRecordsStore = create<MedicalRecordsState>(
 
     // Action to update medical history
     updateMedicalHistory: async (patientId: string, medicalHistory: string) => {
-      const { patient } = get();
-
-      if (!patient) {
-        set({
-          isError: true,
-          error: new Error("Patient data is required"),
-        });
-        return;
-      }
-
       try {
         set({ isSaving: true });
 
-        // First get the full patient data
-        const patientResponse = await fetch(
-          `/api/patient?userId=${patient.userId}`
+        // Update the medical history using the patient ID
+        const response = await fetch(
+          `/api/patients/${patientId}/medical-history`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ medicalHistory }),
+          }
         );
 
-        if (!patientResponse.ok) {
-          const errorText = await patientResponse.text();
-          throw new Error(
-            `Failed to fetch patient data: ${patientResponse.status} ${errorText}`
-          );
-        }
-
-        const patientData = await patientResponse.json();
-
-        // Update with the new medical history - using the correct endpoint
-        const response = await fetch(`/api/patient?userId=${patient.userId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...patientData,
-            medicalHistory,
-          }),
-        });
-
         if (!response.ok) {
-          const errorText = await response.text();
           throw new Error(
-            `Failed to update medical record: ${response.status} ${errorText}`
+            `Failed to update medical history: ${response.statusText}`
           );
         }
 
-        // Update local state
+        const updatedPatient = await response.json();
+
+        const currentPatient = get().patient;
+        if (!currentPatient) {
+          throw new Error(
+            "Cannot update medical history for non-existent patient"
+          );
+        }
+
+        // Update the patient in the store
         set({
-          patient: { ...patient, medicalHistory },
+          patient: {
+            ...currentPatient,
+            medicalHistory: updatedPatient.medicalHistory,
+          },
           isEditing: false,
           isSaving: false,
         });
