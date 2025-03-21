@@ -1,109 +1,136 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Calendar, CheckCircle, XCircle } from "lucide-react";
-import type { Stats } from "@/lib/types/dashboard"; // We'll create this type file
+import {
+  Users,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  ArrowUpRight,
+} from "lucide-react";
+import type { Stats } from "@/lib/types/dashboard";
+import { cn } from "@/lib/utils";
 
-// If you prefer to import directly from the store:
-// import type { Stats } from "@/lib/store/useDoctorDashboardStore";
+type StatCardProps = {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  trend?: {
+    value: number;
+    isPositive: boolean;
+  };
+  bgClass: string;
+  textClass: string;
+};
+
+export default function StatCard({
+  title,
+  value,
+  icon,
+  trend,
+  bgClass,
+}: StatCardProps) {
+  return (
+    <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] transition-all duration-300">
+      <CardContent className="p-5 relative">
+        <div className="flex items-center">
+          <div className="relative">
+            <div
+              className={cn(
+                "w-12 h-12 rounded-md flex items-center justify-center",
+                bgClass
+              )}
+            >
+              {icon}
+            </div>
+          </div>
+          <div className="ml-4">
+            <p className="text-2xl font-bold text-card-foreground">{value}</p>
+            <p className="text-sm text-muted-foreground">{title}</p>
+          </div>
+        </div>
+
+        {trend && (
+          <div
+            className={cn(
+              "absolute bottom-5 right-5 flex items-center text-xs font-medium",
+              trend.isPositive
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-destructive"
+            )}
+          >
+            <ArrowUpRight
+              className={cn(
+                "h-3.5 w-3.5 mr-0.5",
+                !trend.isPositive && "rotate-180"
+              )}
+            />
+            {trend.value}%
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export function StatsOverview({ stats }: { stats: Stats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {/* Total Patients */}
-      <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-        <CardContent className="p-5 relative">
-          <div className="flex items-center">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <Users size={20} className="text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                <span className="text-xs font-bold text-blue-600">+</span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold">{stats.totalPatients}</p>
-              <p className="text-xs text-muted-foreground">Total Patients</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <StatCard
+        title="Total Patients"
+        value={stats.totalPatients}
+        icon={<Users size={24} className="text-primary" />}
+        bgClass="bg-primary/10"
+        textClass="text-primary"
+        trend={{
+          value: 5,
+          isPositive: true,
+        }}
+      />
 
       {/* All Appointments */}
-      <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-        <CardContent className="p-5 relative">
-          <div className="flex items-center">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                <Calendar
-                  size={20}
-                  className="text-purple-600 dark:text-purple-400"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                <span className="text-xs font-bold text-purple-600">
-                  {stats.totalAppointments}
-                </span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold">{stats.totalAppointments}</p>
-              <p className="text-xs text-muted-foreground">All Appointments</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <StatCard
+        title="All Appointments"
+        value={stats.totalAppointments}
+        icon={<Calendar size={24} className="text-primary" />}
+        bgClass="bg-primary/15"
+        textClass="text-primary"
+        trend={{
+          value: 12,
+          isPositive: true,
+        }}
+      />
 
       {/* Completed Appointments */}
-      <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-        <CardContent className="p-5 relative">
-          <div className="flex items-center">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle
-                  size={20}
-                  className="text-green-600 dark:text-green-400"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                <span className="text-xs font-bold text-green-600">
-                  {stats.completedAppointments}
-                </span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold">
-                {stats.completedAppointments}
-              </p>
-              <p className="text-xs text-muted-foreground">Completed</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <StatCard
+        title="Completed"
+        value={stats.completedAppointments}
+        icon={
+          <CheckCircle
+            size={24}
+            className="text-emerald-600 dark:text-emerald-400"
+          />
+        }
+        bgClass="bg-emerald-100 dark:bg-emerald-900/30"
+        textClass="text-emerald-600 dark:text-emerald-400"
+        trend={{
+          value: 8,
+          isPositive: true,
+        }}
+      />
 
       {/* Cancelled Appointments */}
-      <Card className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all group">
-        <CardContent className="p-5 relative">
-          <div className="flex items-center">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <XCircle size={20} className="text-red-600 dark:text-red-400" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
-                <span className="text-xs font-bold text-red-600">
-                  {stats.cancelledAppointments}
-                </span>
-              </div>
-            </div>
-            <div className="ml-4">
-              <p className="text-2xl font-bold">
-                {stats.cancelledAppointments}
-              </p>
-              <p className="text-xs text-muted-foreground">Cancelled</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <StatCard
+        title="Cancelled"
+        value={stats.cancelledAppointments}
+        icon={<XCircle size={24} className="text-destructive" />}
+        bgClass="bg-destructive/10"
+        textClass="text-destructive"
+        trend={{
+          value: 3,
+          isPositive: false,
+        }}
+      />
     </div>
   );
 }

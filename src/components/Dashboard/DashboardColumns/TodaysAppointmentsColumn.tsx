@@ -17,7 +17,7 @@ import {
   Loader2,
   MoreHorizontal,
   FileText,
-  MapPin,
+  User,
 } from "lucide-react";
 import {
   Dialog,
@@ -25,6 +25,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -33,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Appointment, AppointmentStatus } from "@/lib/types/core-entities";
+import { cn } from "@/lib/utils";
 
 type TodaysAppointmentsProps = {
   appointments: Appointment[];
@@ -59,18 +61,34 @@ export function TodaysAppointmentsColumn({
     setIsDetailsOpen(true);
   };
 
+  // Helper function to get badge variant based on status
+  const getStatusBadgeClass = (status: AppointmentStatus) => {
+    switch (status) {
+      case "confirmed":
+        return "bg-primary/10 text-primary border-primary/20";
+      case "completed":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/30";
+      case "cancelled":
+        return "bg-destructive/10 text-destructive border-destructive/20";
+      default:
+        return "bg-muted text-muted-foreground border-border";
+    }
+  };
+
   return (
     <>
-      <Card className="flex flex-col backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-md h-full">
-        <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800">
+      <Card className="overflow-hidden transition-all duration-300 group border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] flex flex-col h-full">
+        <CardHeader className="bg-card border-b border-border p-5 pb-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                 <Calendar className="h-4 w-4 text-white" />
               </div>
               <div>
-                <CardTitle>Today&apos;s Appointments</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-card-foreground">
+                  Today&apos;s Appointments
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
                   {new Date().toLocaleDateString(undefined, {
                     weekday: "long",
                     month: "short",
@@ -79,51 +97,59 @@ export function TodaysAppointmentsColumn({
                 </CardDescription>
               </div>
             </div>
-            <Button variant="outline" asChild>
-              <Link href="/doctor/appointment">View All</Link>
+            <Button
+              variant="outline"
+              asChild
+              className="h-9 bg-card border-border hover:bg-primary/10 hover:text-primary transition-all"
+            >
+              <Link href="/doctor/appointment" className="flex items-center">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                View All
+              </Link>
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="flex-grow overflow-auto p-0">
+
+        <CardContent className="flex-grow overflow-auto p-0 bg-card">
           {appointments && appointments.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {appointments.map((appointment) => (
                 <div
                   key={appointment.id}
-                  className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  className="p-4 hover:bg-primary/5 transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex gap-3">
-                      <Avatar className="border-2 border-white dark:border-slate-800 shadow-sm">
+                      <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
                         <AvatarImage
                           src={appointment.patient?.user?.image || ""}
                           alt="Patient"
                         />
-                        <AvatarFallback className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <AvatarFallback className="bg-primary/5 text-primary font-semibold">
                           {appointment.patient?.user?.name
-                            ?.charAt(0)
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")
                             .toUpperCase() || "P"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">
+                        <p className="font-medium text-card-foreground">
                           {appointment.patient?.user?.name || "Patient"}
                         </p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                          <Clock size={14} className="text-blue-500" />
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <Clock size={14} className="text-primary/70" />
                           <span>
                             {new Date(appointment.date).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
                           </span>
-                          <span className="text-slate-300 dark:text-slate-700">
-                            •
-                          </span>
+                          <span className="text-border">•</span>
                           <span>{appointment.duration} mins</span>
                         </div>
                         {appointment.reason && (
-                          <p className="text-sm mt-2 text-muted-foreground line-clamp-1 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-md border border-slate-100 dark:border-slate-800">
+                          <p className="text-xs mt-2 text-muted-foreground line-clamp-1 bg-muted p-2 rounded-md border border-border">
                             {appointment.reason}
                           </p>
                         )}
@@ -132,13 +158,10 @@ export function TodaysAppointmentsColumn({
                     <div className="flex gap-2">
                       <Badge
                         variant="outline"
-                        className={
-                          appointment.status === "confirmed"
-                            ? "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
-                            : appointment.status === "completed"
-                            ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800"
-                            : "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
-                        }
+                        className={cn(
+                          "font-normal",
+                          getStatusBadgeClass(appointment.status)
+                        )}
                       >
                         {appointment.status}
                       </Badge>
@@ -147,7 +170,7 @@ export function TodaysAppointmentsColumn({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full"
+                            className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary"
                             disabled={updatingAppointmentId === appointment.id}
                           >
                             {updatingAppointmentId === appointment.id ? (
@@ -160,17 +183,17 @@ export function TodaysAppointmentsColumn({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="w-48 rounded-xl p-1"
+                          className="w-48 rounded-md border-border"
                         >
                           <DropdownMenuItem
                             onClick={() => handleViewDetails(appointment)}
-                            className="cursor-pointer rounded-lg"
+                            className="cursor-pointer hover:bg-primary/10 hover:text-primary"
                           >
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             asChild
-                            className="cursor-pointer rounded-lg"
+                            className="cursor-pointer hover:bg-primary/10 hover:text-primary"
                           >
                             <Link
                               href={`/doctor/medical-records/${appointment.patientId}`}
@@ -186,7 +209,7 @@ export function TodaysAppointmentsColumn({
                                   "completed"
                                 )
                               }
-                              className="cursor-pointer rounded-lg"
+                              className="cursor-pointer hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
                             >
                               Mark as Completed
                             </DropdownMenuItem>
@@ -199,7 +222,7 @@ export function TodaysAppointmentsColumn({
                                   "cancelled"
                                 )
                               }
-                              className="text-destructive cursor-pointer rounded-lg"
+                              className="cursor-pointer hover:bg-destructive/10 hover:text-destructive"
                             >
                               Cancel Appointment
                             </DropdownMenuItem>
@@ -212,18 +235,24 @@ export function TodaysAppointmentsColumn({
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-10 text-center p-4">
-              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
-                <CalendarIcon size={32} className="text-blue-500" />
+            <div className="flex flex-col items-center justify-center py-12 text-center p-4">
+              <div className="p-3 bg-primary/5 border border-primary/10 rounded-full mb-4">
+                <CalendarIcon size={24} className="text-primary" />
               </div>
-              <p className="text-muted-foreground font-medium">
+              <p className="text-card-foreground font-medium mb-1">
                 No appointments for today
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Your schedule is clear
+              <p className="text-sm text-muted-foreground mb-6">
+                Your schedule is clear for the day
               </p>
-              <Button className="bg-blue-500 hover:bg-blue-600" asChild>
-                <Link href="/doctor/availability">Update Availability</Link>
+              <Button
+                className="h-10 bg-primary hover:bg-primary/90 transition-all"
+                asChild
+              >
+                <Link href="/doctor/availability" className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Update Availability
+                </Link>
               </Button>
             </div>
           )}
@@ -232,10 +261,12 @@ export function TodaysAppointmentsColumn({
 
       {/* Appointment Details Dialog */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Appointment Details</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-md border-border bg-card">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-card-foreground">
+              Appointment Details
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               {selectedAppointment &&
                 new Date(selectedAppointment.date).toLocaleDateString(
                   undefined,
@@ -250,22 +281,24 @@ export function TodaysAppointmentsColumn({
           </DialogHeader>
 
           {selectedAppointment && (
-            <div className="space-y-4">
+            <div className="space-y-5 pt-2">
               {/* Patient information */}
-              <div className="flex items-center space-x-4 pb-4 border-b">
-                <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-800 shadow-sm">
+              <div className="flex items-center space-x-4 pb-4 border-b border-border">
+                <Avatar className="h-12 w-12 border-2 border-background shadow-md">
                   <AvatarImage
                     src={selectedAppointment.patient?.user?.image || ""}
                     alt="Patient"
                   />
-                  <AvatarFallback className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <AvatarFallback className="bg-primary/5 text-primary font-semibold">
                     {selectedAppointment.patient?.user?.name
-                      ?.charAt(0)
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
                       .toUpperCase() || "P"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">
+                  <h3 className="font-semibold text-card-foreground">
                     {selectedAppointment.patient?.user?.name || "Patient"}
                   </h3>
                   <p className="text-sm text-muted-foreground">Patient</p>
@@ -273,12 +306,12 @@ export function TodaysAppointmentsColumn({
               </div>
 
               {/* Appointment details */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center">
-                  <Clock size={18} className="text-blue-500 mr-2" />
+                  <Clock size={18} className="text-primary/70 mr-2" />
                   <div>
                     <p className="text-sm text-muted-foreground">Time</p>
-                    <p>
+                    <p className="text-card-foreground">
                       {new Date(selectedAppointment.date).toLocaleTimeString(
                         [],
                         {
@@ -299,31 +332,35 @@ export function TodaysAppointmentsColumn({
                 </div>
 
                 <div className="flex items-center">
-                  <Calendar size={18} className="text-purple-500 mr-2" />
+                  <Calendar size={18} className="text-primary/70 mr-2" />
                   <div>
                     <p className="text-sm text-muted-foreground">Duration</p>
-                    <p>{selectedAppointment.duration} minutes</p>
+                    <p className="text-card-foreground">
+                      {selectedAppointment.duration} minutes
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center">
-                  <FileText size={18} className="text-green-500 mr-2" />
+                <div className="flex items-start">
+                  <FileText size={18} className="text-primary/70 mr-2 mt-1" />
                   <div>
                     <p className="text-sm text-muted-foreground">
                       Reason for Visit
                     </p>
-                    <p>{selectedAppointment.reason || "Not specified"}</p>
+                    <p className="text-card-foreground">
+                      {selectedAppointment.reason || "Not specified"}
+                    </p>
                   </div>
                 </div>
 
                 {selectedAppointment.notes && (
-                  <div className="flex items-start">
-                    <FileText size={18} className="text-amber-500 mr-2 mt-1" />
+                  <div className="flex items-start p-3 bg-muted rounded-md border border-border">
+                    <FileText size={18} className="text-primary/70 mr-2 mt-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm font-medium text-card-foreground mb-1">
                         Doctor Notes
                       </p>
-                      <p className="whitespace-pre-wrap">
+                      <p className="whitespace-pre-wrap text-muted-foreground text-sm">
                         {selectedAppointment.notes}
                       </p>
                     </div>
@@ -331,18 +368,15 @@ export function TodaysAppointmentsColumn({
                 )}
 
                 <div className="flex items-center">
-                  <MapPin size={18} className="text-red-500 mr-2" />
+                  <User size={18} className="text-primary/70 mr-2" />
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
                     <Badge
                       variant="outline"
-                      className={
-                        selectedAppointment.status === "confirmed"
-                          ? "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
-                          : selectedAppointment.status === "completed"
-                          ? "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800"
-                          : "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
-                      }
+                      className={cn(
+                        "font-normal",
+                        getStatusBadgeClass(selectedAppointment.status)
+                      )}
                     >
                       {selectedAppointment.status}
                     </Badge>
@@ -351,21 +385,27 @@ export function TodaysAppointmentsColumn({
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end space-x-2 pt-4 border-t">
+              <DialogFooter className="flex justify-end space-x-2 pt-4 border-t border-border mt-4">
                 <Button
                   variant="outline"
                   onClick={() => setIsDetailsOpen(false)}
+                  className="h-10 bg-card hover:bg-primary/10 hover:text-primary transition-all"
                 >
                   Close
                 </Button>
-                <Button variant="default" asChild>
+                <Button
+                  className="h-10 bg-primary hover:bg-primary/90 transition-all"
+                  asChild
+                >
                   <Link
                     href={`/doctor/medical-records/${selectedAppointment.patientId}`}
+                    className="flex items-center"
                   >
+                    <FileText className="h-4 w-4 mr-2" />
                     View Medical Records
                   </Link>
                 </Button>
-              </div>
+              </DialogFooter>
             </div>
           )}
         </DialogContent>
