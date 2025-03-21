@@ -35,7 +35,7 @@ export function TodaysAppointments({
       <CardHeader className="bg-muted/40 py-3 px-4">
         <CardTitle className="text-base flex items-center gap-2">
           <CalendarIcon className="h-4 w-4" />
-          Today's Appointments
+          Today&apos;s Appointments
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
