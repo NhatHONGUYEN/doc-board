@@ -18,6 +18,7 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
+import { SignOutButton } from "@/components/SignOutButton";
 
 // Navigation links for doctors
 const DoctorLinks = [
@@ -36,7 +37,7 @@ const DoctorLinks = [
 
 export default function SideBarDoctor() {
   return (
-    <Sidebar>
+    <Sidebar className="flex flex-col justify-between">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Docteur</SidebarGroupLabel>
@@ -46,7 +47,7 @@ export default function SideBarDoctor() {
                 <SidebarMenuItem key={link.title}>
                   <SidebarMenuButton asChild>
                     <Link href={link.url} className="flex items-center gap-2">
-                      <link.icon />
+                      <link.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                       <span>{link.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -56,6 +57,11 @@ export default function SideBarDoctor() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Sign Out Button */}
+      <div className="p-4 border-t border-border mt-auto">
+        <SignOutButton />
+      </div>
     </Sidebar>
   );
 }

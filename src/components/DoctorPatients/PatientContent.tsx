@@ -119,7 +119,7 @@ export function PatientContent({
 
   return (
     <>
-      <CardContent className="p-0 border rounded-md border-border overflow-hidden">
+      <CardContent className="p-6 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-card">
@@ -333,7 +333,7 @@ export function PatientContent({
           </Table>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between py-4 px-6 bg-card border border-t-0 border-border rounded-b-md">
+      <CardFooter className="flex justify-between py-4 px-6 ">
         <p className="text-sm font-medium text-primary/70">
           Showing {filteredPatients.length} of {patients.length} patients
         </p>
