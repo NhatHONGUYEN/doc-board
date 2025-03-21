@@ -23,11 +23,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  User,
+  Save,
+  AlertTriangle,
+  FileText,
+  Phone,
+  Mail,
+  Calendar,
+  MapPin,
+  Shield,
+  ClipboardList,
+  ArrowLeft,
+} from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 // Form schema with validation
 const formSchema = z.object({
@@ -120,41 +135,123 @@ export default function SettingsPage() {
   }
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Loading your profile...</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground text-sm">
+            Loading your profile settings...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (isError) {
-    return <div className="p-8 text-red-500">Error: {error.message}</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="text-center max-w-md">
+          <div className="bg-destructive/10 rounded-full p-3 mx-auto mb-4 w-fit">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium text-card-foreground mb-1">
+            Error Loading Settings
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            {error.message ||
+              "There was a problem loading your profile settings. Please try again."}
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-primary hover:bg-primary/90"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (!session) {
-    return <div className="p-8">Please sign in to edit your profile</div>;
+    return (
+      <div className="flex justify-center py-12">
+        <div className="text-center max-w-md">
+          <div className="bg-primary/10 rounded-full p-3 mx-auto mb-4 w-fit">
+            <User className="h-6 w-6 text-primary" />
+          </div>
+          <h3 className="text-lg font-medium text-card-foreground mb-1">
+            Authentication Required
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            Please sign in to edit your profile settings.
+          </p>
+          <Button asChild className="bg-primary hover:bg-primary/90">
+            <Link href="/api/auth/signin">Sign In</Link>
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="container max-w-3xl py-10">
-      <h1 className="text-3xl font-bold mb-8">Profile Settings</h1>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-card-foreground">
+            Profile Settings
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Update your personal and medical information
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          asChild
+          className="h-10 bg-card border-border hover:bg-primary/10 hover:text-primary transition-all self-start"
+        >
+          <Link href="/patient/profile" className="flex items-center">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Profile
+          </Link>
+        </Button>
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Personal Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>
-                Update your personal and contact details
-              </CardDescription>
+          <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+            <CardHeader className="bg-card border-b border-border pb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-card-foreground">
+                    Personal Information
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    Update your personal and contact details
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6">
               {/* Name */}
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <User className="h-3.5 w-3.5 text-primary/70" />
+                      Full Name
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input
+                        placeholder="John Doe"
+                        {...field}
+                        className="border-border"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,12 +264,16 @@ export default function SettingsPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <Mail className="h-3.5 w-3.5 text-primary/70" />
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="your@email.com"
                         {...field}
+                        className="border-border"
                       />
                     </FormControl>
                     <FormMessage />
@@ -186,11 +287,14 @@ export default function SettingsPage() {
                 name="birthDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date of Birth</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5 text-primary/70" />
+                      Date of Birth
+                    </FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input type="date" {...field} className="border-border" />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-xs">
                       Your date of birth helps doctors provide appropriate care
                     </FormDescription>
                     <FormMessage />
@@ -204,9 +308,16 @@ export default function SettingsPage() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <Phone className="h-3.5 w-3.5 text-primary/70" />
+                      Phone Number
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="+1 (555) 123-4567" {...field} />
+                      <Input
+                        placeholder="+1 (555) 123-4567"
+                        {...field}
+                        className="border-border"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -219,11 +330,15 @@ export default function SettingsPage() {
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Home Address</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-primary/70" />
+                      Home Address
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="123 Main St, City, State, ZIP"
                         {...field}
+                        className="border-border"
                       />
                     </FormControl>
                     <FormMessage />
@@ -234,25 +349,41 @@ export default function SettingsPage() {
           </Card>
 
           {/* Medical Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Medical Information</CardTitle>
-              <CardDescription>
-                Update your health information and medical details
-              </CardDescription>
+          <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+            <CardHeader className="bg-card border-b border-border pb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
+                  <FileText className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-card-foreground">
+                    Medical Information
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    Update your health information and medical details
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-6 space-y-6">
               {/* Social Security Number */}
               <FormField
                 control={form.control}
                 name="socialSecurityNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Social Security Number</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <Shield className="h-3.5 w-3.5 text-primary/70" />
+                      Social Security Number
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="XXX-XX-XXXX" {...field} />
+                      <Input
+                        placeholder="XXX-XX-XXXX"
+                        {...field}
+                        className="border-border"
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-xs">
                       Your SSN is securely stored and only used for insurance
                       purposes
                     </FormDescription>
@@ -267,15 +398,18 @@ export default function SettingsPage() {
                 name="medicalHistory"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Medical History</FormLabel>
+                    <FormLabel className="flex items-center gap-1">
+                      <ClipboardList className="h-3.5 w-3.5 text-primary/70" />
+                      Medical History
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Enter any relevant medical history, allergies, or conditions"
-                        className="min-h-32"
+                        className="min-h-32 border-border"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-xs">
                       Please include any chronic conditions, allergies, or past
                       surgeries
                     </FormDescription>
@@ -286,11 +420,36 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSaving}>
-              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSaving ? "Saving..." : "Save Changes"}
+          {/* Form Actions */}
+          <div className="flex gap-4 justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 bg-card border-border hover:bg-muted transition-all"
+              onClick={() => form.reset()}
+              disabled={isSaving}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className={cn(
+                "h-10 transition-all",
+                isSaving ? "bg-primary/80" : "bg-primary hover:bg-primary/90"
+              )}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
             </Button>
           </div>
         </form>

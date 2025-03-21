@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Calendar, Home, User, Settings } from "lucide-react";
 import Link from "next/link";
+import { SignOutButton } from "./SignOutButton";
 
 // Liens pour le patient
 const PatientLinks = [
@@ -41,6 +42,11 @@ export default function SideBarPatient() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Sign Out Button */}
+      <div className="p-4 border-t border-border mt-auto">
+        <SignOutButton />
+      </div>
     </Sidebar>
   );
 }
