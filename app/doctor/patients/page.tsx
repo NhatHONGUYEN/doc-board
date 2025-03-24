@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 
 // Import your components
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
+import { Users, UserPlus, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 import { toast } from "sonner";
 
@@ -18,6 +22,7 @@ import { PatientHeader } from "@/components/DoctorPatients/PatientHeader";
 import { PatientContent } from "@/components/DoctorPatients/PatientContent";
 import { PatientDetailsDialog } from "@/components/DoctorPatients/PatientDetails/PatientDetailsDialog";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
+import { InfoNotice } from "@/components/InfoNotice";
 
 export default function DoctorPatientsPage() {
   const router = useRouter();
@@ -81,9 +86,20 @@ export default function DoctorPatientsPage() {
   return (
     <RoleAuthCheck allowedRoles="DOCTOR">
       <div className="container py-10">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">My Patients</h1>
-        </div>
+        {/* Replace simple heading with PageHeader */}
+        <PageHeader
+          title="My Patients"
+          icon={<Users className="h-5 w-5 text-primary" />}
+          description="View and manage all patients under your care. Search, filter, or select a patient to see their complete medical history."
+          actions={
+            <Button asChild>
+              <Link href="/doctor/patients/add" className="flex items-center">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add New Patient
+              </Link>
+            </Button>
+          }
+        />
 
         <Card className="mb-8">
           <PatientHeader searchTerm={searchTerm} handleSearch={handleSearch} />
@@ -99,6 +115,19 @@ export default function DoctorPatientsPage() {
             scheduleAppointment={scheduleAppointment}
           />
         </Card>
+
+        {/* InfoNotice with note removed */}
+        <div className="mt-6">
+          <InfoNotice icon={<FileText size={14} />}>
+            This table displays all patients under your care. You can sort the
+            list by clicking on column headers and filter patients using the
+            search box. Use the action buttons to view details or schedule
+            appointments. Click on the{" "}
+            <span className="text-blue-200">user icon</span> to view patient
+            details or the <span className="text-blue-200">calendar icon</span>{" "}
+            to schedule an appointment directly.
+          </InfoNotice>
+        </div>
 
         {/* Use our PatientDetailsDialog component */}
         <PatientDetailsDialog
