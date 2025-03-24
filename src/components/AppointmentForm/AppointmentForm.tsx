@@ -138,7 +138,7 @@ export default function AppointmentForm({
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-2xl  ">
       <CardHeader>
         <CardTitle>Patient and Appointment Details</CardTitle>
         <CardDescription>
