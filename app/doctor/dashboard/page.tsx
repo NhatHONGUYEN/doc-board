@@ -8,8 +8,9 @@ import { useDoctorData } from "@/hooks/useDoctorData";
 import useDoctorDashboardStore from "@/lib/store/useDoctorDashboardStore";
 import { StatsOverview } from "@/components/Dashboard/StatsOverview";
 import { WeeklyActivity } from "@/components/Dashboard/WeeklyActivity";
-import { Clock } from "lucide-react";
+import { Clock, LayoutDashboard } from "lucide-react";
 import { DashboardColumns } from "@/components/Dashboard/DashboardColumns/DashboardColumns";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function DoctorDashboard() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -56,20 +57,25 @@ export default function DoctorDashboard() {
 
   return (
     <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Welcome back, Dr. {doctor?.user?.name?.split(" ")[0]}. View your
-            appointments and patient statistics.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/doctor/availability">
-            <Clock className="mr-2 h-4 w-4" />
-            Manage Availability
-          </Link>
-        </Button>
+      <div className="mb-8">
+        {/* Top section with heading and action button */}
+        <PageHeader
+          title="Dashboard"
+          icon={<LayoutDashboard className="h-5 w-5 text-primary" />}
+          actions={
+            <Button asChild>
+              <Link href="/doctor/availability" className="flex items-center">
+                <Clock className="mr-2 h-4 w-4" />
+                Manage Availability
+              </Link>
+            </Button>
+          }
+          highlightedText={{
+            prefix: "Welcome back,",
+            text: `Dr. ${doctor?.user?.name?.split(" ")[0]}`,
+            suffix: ". View your appointments and patient statistics.",
+          }}
+        />
       </div>
 
       {/* Stats Overview */}
