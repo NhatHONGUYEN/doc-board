@@ -133,7 +133,7 @@ export default function DoctorProfilePage() {
           {/* Professional Information */}
           <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pb-4">
                 <div className="space-y-1">
                   <CardTitle className="flex items-center">
                     <Stethoscope className="h-5 w-5 mr-2 text-primary/70" />
@@ -273,10 +273,10 @@ export default function DoctorProfilePage() {
           {/* Practice Information Card */}
           <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pb-4">
                 <div className="space-y-1">
                   <CardTitle className="flex items-center">
-                    <Calendar className="h-5 w-5 mr-2 text-primary/70" />
+                    <Calendar className="h-5 w-5 mr-2  text-primary/70" />
                     Practice Information
                   </CardTitle>
                   <CardDescription>

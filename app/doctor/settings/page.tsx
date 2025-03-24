@@ -238,8 +238,8 @@ export default function DoctorSettingsPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Personal Information Card */}
           <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
-            <CardHeader className="bg-card border-b border-border">
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="bg-card border-b border-border pb-4">
+              <CardTitle className="flex items-center gap-2 ">
                 <User className="h-5 w-5 text-primary/70" />
                 Personal Information
               </CardTitle>
@@ -347,7 +347,7 @@ export default function DoctorSettingsPage() {
 
           {/* Professional Information Card */}
           <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
-            <CardHeader className="bg-card border-b border-border">
+            <CardHeader className="bg-card border-b border-border pb-4">
               <CardTitle className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-primary/70" />
                 Professional Information

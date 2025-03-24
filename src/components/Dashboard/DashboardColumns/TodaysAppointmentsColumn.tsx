@@ -79,7 +79,7 @@ export function TodaysAppointmentsColumn({
     <>
       <Card className="overflow-hidden transition-all duration-300 group border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] flex flex-col h-full">
         <CardHeader className="bg-card border-b border-border p-5 pb-3">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center pb-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                 <Calendar className="h-4 w-4 text-white" />
