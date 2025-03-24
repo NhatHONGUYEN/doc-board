@@ -43,6 +43,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { InfoNotice } from "@/components/InfoNotice";
 
 // Form schema with validation
 const formSchema = z.object({
@@ -212,26 +213,37 @@ export default function DoctorSettingsPage() {
 
   return (
     <div className="container max-w-3xl py-10">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-card-foreground">
-            Doctor Profile Settings
-          </h1>
-          <p className="text-muted-foreground mt-1">
+      <div className="mb-10">
+        {/* Top section with heading and back button */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <div className="mr-3 p-2.5 bg-primary/10 rounded-full">
+              <User className="h-5 w-5 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-card-foreground">
+              Doctor Profile Settings
+            </h1>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="h-9 border-border hover:bg-muted transition-colors"
+          >
+            <Link href="/doctor/profile" className="flex items-center gap-1">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Profile
+            </Link>
+          </Button>
+        </div>
+
+        {/* Description with visual separator */}
+        <div className="flex items-center gap-2 mt-2 mb-6">
+          <div className="h-0.5 w-8 bg-primary/30 rounded-full"></div>
+          <p className="text-muted-foreground">
             Update your profile information and practice details
           </p>
         </div>
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-          className="h-9 border-border hover:bg-muted transition-colors"
-        >
-          <Link href="/doctor/profile" className="flex items-center gap-1">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Profile
-          </Link>
-        </Button>
       </div>
 
       <Form {...form}>
@@ -345,6 +357,15 @@ export default function DoctorSettingsPage() {
             </CardContent>
           </Card>
 
+          {/* Personal Information Notice */}
+          <InfoNotice
+            icon={<User size={14} />}
+            note="Note: Providing clear contact details improves patient communication and reduces missed appointments."
+          >
+            Your contact information helps patients reach you for appointments
+            and inquiries.
+          </InfoNotice>
+
           {/* Professional Information Card */}
           <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border pb-4">
@@ -450,6 +471,15 @@ export default function DoctorSettingsPage() {
               </div>
             </CardFooter>
           </Card>
+
+          {/* Professional Information Notice */}
+          <InfoNotice
+            icon={<Stethoscope size={14} />}
+            note="Note: A detailed professional bio significantly increases patient confidence when selecting a doctor."
+          >
+            Your professional information establishes credibility and helps
+            patients understand your expertise.
+          </InfoNotice>
 
           {/* Submit Button */}
           <div className="flex justify-end">

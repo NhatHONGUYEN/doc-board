@@ -54,7 +54,14 @@ export default function DoctorAppointmentPage() {
   return (
     <div className="container py-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold">Appointments</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Appointments</h1>
+          <p className="text-muted-foreground mt-1 max-w-2xl">
+            Manage your patient appointments, view your schedule, and update
+            appointment statuses. Use the calendar view to see your full
+            schedule or focus on today&apos;s upcoming appointments.
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" asChild>
             <Link href="/doctor/availability">Manage Availability</Link>
