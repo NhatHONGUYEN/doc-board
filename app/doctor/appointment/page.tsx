@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { PageHeader } from "@/components/PageHeader";
+import { InfoNotice } from "@/components/InfoNotice";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Calendar, PlusCircle, Clock, CalendarDays } from "lucide-react";
 import { useDoctorData } from "@/hooks/useDoctorData";
 import useSessionStore from "@/lib/store/useSessionStore";
 import Link from "next/link";
@@ -21,6 +24,9 @@ export default function DoctorAppointmentPage() {
     error,
     refetch,
   } = useDoctorData(session?.user?.id);
+
+  // Add state to track the active tab
+  const [activeTab, setActiveTab] = useState("calendar");
 
   if (sessionStatus === "loading" || isLoading) {
     return <div className="p-8">Loading appointments...</div>;
@@ -53,29 +59,31 @@ export default function DoctorAppointmentPage() {
 
   return (
     <div className="container py-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Appointments</h1>
-          <p className="text-muted-foreground mt-1 max-w-2xl">
-            Manage your patient appointments, view your schedule, and update
-            appointment statuses. Use the calendar view to see your full
-            schedule or focus on today&apos;s upcoming appointments.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" asChild>
-            <Link href="/doctor/availability">Manage Availability</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/doctor/appointment/new">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Schedule Appointment
-            </Link>
-          </Button>
-        </div>
-      </div>
+      {/* PageHeader component */}
+      <PageHeader
+        title="Appointments"
+        icon={<Calendar className="h-5 w-5 text-primary" />}
+        description="Manage your patient appointments, view your schedule, and update appointment statuses."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/doctor/availability">Manage Availability</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/doctor/appointment/new">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Schedule Appointment
+              </Link>
+            </Button>
+          </div>
+        }
+      />
 
-      <Tabs defaultValue="calendar" className="mb-6">
+      <Tabs
+        defaultValue="calendar"
+        className="mb-6"
+        onValueChange={setActiveTab}
+      >
         <TabsList>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
           <TabsTrigger value="today">Today&apos;s Appointments</TabsTrigger>
@@ -84,7 +92,7 @@ export default function DoctorAppointmentPage() {
         <TabsContent value="calendar">
           <AppointmentCalendar
             appointments={doctor?.appointments || []}
-            doctorId={doctor?.id} // Pass the doctor ID directly
+            doctorId={doctor?.id}
           />
         </TabsContent>
 
@@ -97,6 +105,31 @@ export default function DoctorAppointmentPage() {
       <AppointmentDetailsDialog />
       <UpdateStatusDialog onSuccessfulUpdate={handleActionComplete} />
       <AddNotesDialog onSuccessfulSave={handleActionComplete} />
+
+      {/* InfoNotice components moved to the end */}
+      <div className="mt-10">
+        {activeTab === "calendar" && (
+          <InfoNotice
+            icon={<CalendarDays size={14} />}
+            note="Note: Click on any date to view appointments or drag to create new appointment slots."
+          >
+            The calendar provides a comprehensive view of all your scheduled
+            appointments. Different colors indicate different appointment
+            statuses.
+          </InfoNotice>
+        )}
+
+        {activeTab === "today" && (
+          <InfoNotice
+            icon={<Clock size={14} />}
+            note="Note: You can update appointment status or add notes by clicking on an appointment."
+          >
+            Here are all your appointments scheduled for today. Manage them
+            efficiently by updating their status as you complete each
+            consultation.
+          </InfoNotice>
+        )}
+      </div>
     </div>
   );
 }
