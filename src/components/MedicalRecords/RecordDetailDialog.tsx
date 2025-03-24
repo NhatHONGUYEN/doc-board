@@ -51,8 +51,12 @@ export default function RecordDetailDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5 mr-2" />
-            <span>Medical Record: {patient.user.name}</span>
+            <div className="w-7 h-7 bg-primary/90 rounded-md flex items-center justify-center">
+              <User className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-card-foreground">
+              Medical Record: {patient.user.name}
+            </span>
           </DialogTitle>
           <DialogDescription>
             View and update patient medical history
@@ -69,8 +73,10 @@ export default function RecordDetailDialog({
           <TabsContent value="record" className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Medical History
+                <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center mr-2">
+                  <FileText className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <span className="text-card-foreground">Medical History</span>
               </h3>
               {!isEditing ? (
                 <Button onClick={onEdit}>Edit Record</Button>
@@ -93,19 +99,23 @@ export default function RecordDetailDialog({
               <Textarea
                 value={editableNotes}
                 onChange={(e) => onNotesChange(e.target.value)}
-                className="min-h-[300px] font-mono"
+                className="min-h-[300px] font-mono text-sm"
                 placeholder="Enter medical history, conditions, allergies, medications, etc."
               />
             ) : (
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 {patient.medicalHistory ? (
-                  <div style={{ whiteSpace: "pre-line" }}>
+                  <div className="text-sm" style={{ whiteSpace: "pre-line" }}>
                     {patient.medicalHistory}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <PlusSquare className="h-12 w-12 mb-2" />
-                    <p>No medical history recorded for this patient</p>
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                      <PlusSquare className="h-6 w-6 text-primary" />
+                    </div>
+                    <p className="text-sm font-medium">
+                      No medical history recorded for this patient
+                    </p>
                     <Button variant="outline" className="mt-4" onClick={onEdit}>
                       Add Medical Record
                     </Button>
@@ -119,9 +129,9 @@ export default function RecordDetailDialog({
           <TabsContent value="info">
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-16 w-16 border-2 border-background shadow-md">
                   <AvatarImage src={patient.user.image || undefined} />
-                  <AvatarFallback className="text-lg">
+                  <AvatarFallback className="text-lg bg-primary/10 text-primary font-semibold">
                     {(patient.user?.name ?? "Unknown User")
                       .split(" ")
                       .map((n) => n[0])
@@ -130,8 +140,10 @@ export default function RecordDetailDialog({
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-lg font-semibold">{patient.user.name}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-lg font-semibold text-card-foreground">
+                    {patient.user.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
                     {patient.user.email}
                   </p>
                 </div>
@@ -140,74 +152,113 @@ export default function RecordDetailDialog({
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Patient info section */}
                 <div>
-                  <h4 className="font-medium mb-2">Personal Information</h4>
-                  <div className="space-y-2">
+                  <h4 className="font-medium mb-3 flex items-center">
+                    <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
+                      <User className="h-3 w-3 text-primary" />
+                    </div>
+                    <span className="text-card-foreground">
+                      Personal Information
+                    </span>
+                  </h4>
+                  <div className="space-y-3">
                     <div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Birth Date
                       </p>
-                      <p>
-                        {patient.birthDate
-                          ? format(new Date(patient.birthDate), "MMMM d, yyyy")
-                          : "Not provided"}
+                      <p className="text-sm font-medium text-card-foreground">
+                        {patient.birthDate ? (
+                          format(new Date(patient.birthDate), "MMMM d, yyyy")
+                        ) : (
+                          <span className="text-muted-foreground italic text-xs">
+                            Not provided
+                          </span>
+                        )}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Phone</p>
-                      <p>{patient.phone || "Not provided"}</p>
+                      <p className="text-xs text-muted-foreground">Phone</p>
+                      <p className="text-sm font-medium text-card-foreground">
+                        {patient.phone || (
+                          <span className="text-muted-foreground italic text-xs">
+                            Not provided
+                          </span>
+                        )}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Social Security
                       </p>
-                      <p>{patient.socialSecurityNumber || "Not provided"}</p>
+                      <p className="text-sm font-medium text-card-foreground">
+                        {patient.socialSecurityNumber || (
+                          <span className="text-muted-foreground italic text-xs">
+                            Not provided
+                          </span>
+                        )}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Address</p>
-                      <p>{patient.address || "Not provided"}</p>
+                      <p className="text-xs text-muted-foreground">Address</p>
+                      <p className="text-sm font-medium text-card-foreground">
+                        {patient.address || (
+                          <span className="text-muted-foreground italic text-xs">
+                            Not provided
+                          </span>
+                        )}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Appointments section */}
                 <div>
-                  <h4 className="font-medium mb-2">Recent Appointments</h4>
+                  <h4 className="font-medium mb-3 flex items-center">
+                    <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
+                      <Calendar className="h-3 w-3 text-primary" />
+                    </div>
+                    <span className="text-card-foreground">
+                      Recent Appointments
+                    </span>
+                  </h4>
                   {patient.appointments.length > 0 ? (
                     <div className="space-y-2">
                       {patient.appointments.slice(0, 3).map((appointment) => (
                         <div
                           key={appointment.id}
-                          className="flex items-center p-2 rounded-md border"
+                          className="flex items-center p-2 rounded-md border text-sm"
                         >
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>
+                          <div className="w-5 h-5 rounded-md bg-primary/5 flex items-center justify-center mr-2">
+                            <Calendar className="h-3 w-3 text-primary" />
+                          </div>
+                          <span className="text-card-foreground">
                             {format(new Date(appointment.date), "MMMM d, yyyy")}{" "}
                             at {format(new Date(appointment.date), "h:mm a")}
                           </span>
                         </div>
                       ))}
                       {patient.appointments.length > 3 && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                           and {patient.appointments.length - 3} more
                           appointments
                         </p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">
+                    <p className="text-sm text-muted-foreground italic">
                       No appointments found
                     </p>
                   )}
 
                   <Button
                     variant="outline"
-                    className="mt-4"
+                    className="mt-4 bg-card hover:bg-primary/10 hover:text-primary transition-all"
                     onClick={() =>
                       router.push(
                         `/doctor/appointment/new?patientId=${patient.id}`
                       )
                     }
                   >
+                    <Calendar className="h-4 w-4 mr-2" />
                     Schedule Appointment
                   </Button>
                 </div>

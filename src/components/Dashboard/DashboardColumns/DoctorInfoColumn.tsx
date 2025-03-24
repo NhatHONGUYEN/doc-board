@@ -47,9 +47,9 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Specialty</p>
-              <p className="font-medium text-card-foreground">
+              <p className="text-sm font-medium text-card-foreground">
                 {doctor?.specialty || (
-                  <span className="text-muted-foreground italic text-sm">
+                  <span className="text-muted-foreground italic text-xs">
                     Not provided
                   </span>
                 )}
@@ -63,9 +63,9 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">License Number</p>
-              <p className="font-medium text-card-foreground">
+              <p className="text-sm font-medium text-card-foreground">
                 {doctor?.licenseNumber || (
-                  <span className="text-muted-foreground italic text-sm">
+                  <span className="text-muted-foreground italic text-xs">
                     Not provided
                   </span>
                 )}
@@ -79,9 +79,9 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Office</p>
-              <p className="font-medium text-card-foreground">
+              <p className="text-sm font-medium text-card-foreground">
                 {doctor?.officeAddress || (
-                  <span className="text-muted-foreground italic text-sm">
+                  <span className="text-muted-foreground italic text-xs">
                     Not provided
                   </span>
                 )}
@@ -108,8 +108,8 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
 
       {/* Quick Actions */}
       <Card className="overflow-hidden transition-all duration-300 group border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)]">
-        <CardHeader className="bg-card border-b border-border  pb-3">
-          <CardTitle className="flex items-center gap-2 pb-4">
+        <CardHeader className="bg-card border-b border-border p-5 pb-3">
+          <CardTitle className="flex items-center gap-2 pb4">
             <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
               <ClipboardList className="h-4 w-4 text-white" />
             </div>
