@@ -5,12 +5,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoTab } from "./PersonalInfoTab";
 import { AppointmentsTab } from "./AppointmentsTab";
 import { MedicalHistoryTab } from "./MedicalHistoryTab";
+import { User, Calendar, FileText } from "lucide-react";
 
 type PatientDetailsDialogProps = {
   isOpen: boolean;
@@ -31,19 +33,36 @@ export function PatientDetailsDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <span>Patient Details: {patient.user.name}</span>
+          <DialogTitle className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-primary/90 rounded-md flex items-center justify-center">
+              <User className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-card-foreground">
+              Patient Details: {patient.user.name}
+            </span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm text-muted-foreground">
             Complete patient information and medical history
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="info">
+        <Tabs defaultValue="info" className="mt-2">
           <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="info">Personal Info</TabsTrigger>
-            <TabsTrigger value="appointments">Appointments</TabsTrigger>
-            <TabsTrigger value="medical">Medical History</TabsTrigger>
+            <TabsTrigger value="info" className="flex items-center gap-1.5">
+              <User className="h-3.5 w-3.5" />
+              Personal Info
+            </TabsTrigger>
+            <TabsTrigger
+              value="appointments"
+              className="flex items-center gap-1.5"
+            >
+              <Calendar className="h-3.5 w-3.5" />
+              Appointments
+            </TabsTrigger>
+            <TabsTrigger value="medical" className="flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5" />
+              Medical History
+            </TabsTrigger>
           </TabsList>
 
           {/* Tabs content */}
@@ -55,14 +74,22 @@ export function PatientDetailsDialog({
           <MedicalHistoryTab patient={patient} />
         </Tabs>
 
-        <div className="flex justify-end space-x-2 mt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="mt-4">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="border-border bg-card hover:bg-muted-foreground/10"
+          >
             Close
           </Button>
-          <Button onClick={() => onScheduleAppointment(patient.id)}>
+          <Button
+            onClick={() => onScheduleAppointment(patient.id)}
+            className="bg-primary hover:bg-primary/90 transition-all flex items-center gap-1.5"
+          >
+            <Calendar className="h-4 w-4" />
             Schedule Appointment
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
