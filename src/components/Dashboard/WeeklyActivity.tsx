@@ -10,6 +10,7 @@ import { Appointment } from "@/lib/types/core-entities";
 import { Stats } from "@/lib/types/dashboard";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InfoNotice } from "@/components/InfoNotice";
 
 type WeeklyActivityProps = {
   stats: Stats;
@@ -263,21 +264,16 @@ export function WeeklyActivity({
           </div>
         </CardContent>
       </Card>
-      {/* Explanatory Notice */}
-      <div className="mt-6 text-sm text-white bg-slate-800 dark:bg-slate-900 p-3 rounded-md border border-slate-700 flex items-start">
-        <div className="mr-2 mt-0.5 text-blue-300">
-          <BarChart3 size={14} />
-        </div>
-        <p>
-          This chart visualizes your weekly appointment activity and status
-          distribution. The completion rate shows the percentage of appointments
-          that were successfully completed.
-          <span className="font-medium block mt-1 text-blue-200">
-            Note: Daily activity bars represent the relative distribution of
-            appointments across the week.
-          </span>
-        </p>
-      </div>
+
+      {/* Using InfoNotice component instead of hardcoded notice */}
+      <InfoNotice
+        icon={<BarChart3 size={14} />}
+        note="Note: Daily activity bars represent the relative distribution of appointments across the week."
+      >
+        This chart visualizes your weekly appointment activity and status
+        distribution. The completion rate shows the percentage of appointments
+        that were successfully completed.
+      </InfoNotice>
     </>
   );
 }

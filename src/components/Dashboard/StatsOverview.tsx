@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { Stats } from "@/lib/types/dashboard";
 import { cn } from "@/lib/utils";
+import { InfoNotice } from "@/components/InfoNotice";
 
 type StatCardProps = {
   title: string;
@@ -144,20 +145,14 @@ export function StatsOverview({ stats }: { stats: Stats }) {
         />
       </div>
 
-      {/* Explanatory Notice */}
-      <div className="text-sm text-white bg-slate-800 dark:bg-slate-900 p-3 rounded-md border border-slate-700 flex items-start">
-        <div className="mr-2 mt-0.5 text-blue-300">
-          <Calendar size={14} />
-        </div>
-        <p>
-          These statistics represent your all-time activity. Percentage
-          indicators show month-over-month changes.
-          <span className="font-medium block mt-1 text-blue-200">
-            Note: Trend percentages are calculated based on the last 30 days
-            compared to the previous period.
-          </span>
-        </p>
-      </div>
+      {/* Using InfoNotice component instead of hardcoded notice */}
+      <InfoNotice
+        icon={<Calendar size={14} />}
+        note="Note: Trend percentages are calculated based on the last 30 days compared to the previous period."
+      >
+        These statistics represent your all-time activity. Percentage indicators
+        show month-over-month changes.
+      </InfoNotice>
     </div>
   );
 }
