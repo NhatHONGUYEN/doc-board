@@ -74,63 +74,90 @@ export default function StatCard({
 
 export function StatsOverview({ stats }: { stats: Stats }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {/* Total Patients */}
-      <StatCard
-        title="Total Patients"
-        value={stats.totalPatients}
-        icon={<Users size={24} className="text-primary" />}
-        bgClass="bg-primary/10"
-        textClass="text-primary"
-        trend={{
-          value: 5,
-          isPositive: true,
-        }}
-      />
+    <div className="space-y-6 py-10">
+      {/* Component Title */}
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-lg font-semibold text-card-foreground flex items-center">
+          <div className="mr-2 bg-primary/10 p-1.5 rounded">
+            <ArrowUpRight className="h-4 w-4 text-primary" />
+          </div>
+          Performance Metrics
+        </h2>
+      </div>
 
-      {/* All Appointments */}
-      <StatCard
-        title="All Appointments"
-        value={stats.totalAppointments}
-        icon={<Calendar size={24} className="text-primary" />}
-        bgClass="bg-primary/15"
-        textClass="text-primary"
-        trend={{
-          value: 12,
-          isPositive: true,
-        }}
-      />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Total Patients */}
+        <StatCard
+          title="Total Patients"
+          value={stats.totalPatients}
+          icon={<Users size={24} className="text-primary" />}
+          bgClass="bg-primary/10"
+          textClass="text-primary"
+          trend={{
+            value: 5,
+            isPositive: true,
+          }}
+        />
 
-      {/* Completed Appointments */}
-      <StatCard
-        title="Completed"
-        value={stats.completedAppointments}
-        icon={
-          <CheckCircle
-            size={24}
-            className="text-emerald-600 dark:text-emerald-400"
-          />
-        }
-        bgClass="bg-emerald-100 dark:bg-emerald-900/30"
-        textClass="text-emerald-600 dark:text-emerald-400"
-        trend={{
-          value: 8,
-          isPositive: true,
-        }}
-      />
+        {/* All Appointments */}
+        <StatCard
+          title="All Appointments"
+          value={stats.totalAppointments}
+          icon={<Calendar size={24} className="text-primary" />}
+          bgClass="bg-primary/15"
+          textClass="text-primary"
+          trend={{
+            value: 12,
+            isPositive: true,
+          }}
+        />
 
-      {/* Cancelled Appointments */}
-      <StatCard
-        title="Cancelled"
-        value={stats.cancelledAppointments}
-        icon={<XCircle size={24} className="text-destructive" />}
-        bgClass="bg-destructive/10"
-        textClass="text-destructive"
-        trend={{
-          value: 3,
-          isPositive: false,
-        }}
-      />
+        {/* Completed Appointments */}
+        <StatCard
+          title="Completed"
+          value={stats.completedAppointments}
+          icon={
+            <CheckCircle
+              size={24}
+              className="text-emerald-600 dark:text-emerald-400"
+            />
+          }
+          bgClass="bg-emerald-100 dark:bg-emerald-900/30"
+          textClass="text-emerald-600 dark:text-emerald-400"
+          trend={{
+            value: 8,
+            isPositive: true,
+          }}
+        />
+
+        {/* Cancelled Appointments */}
+        <StatCard
+          title="Cancelled"
+          value={stats.cancelledAppointments}
+          icon={<XCircle size={24} className="text-destructive" />}
+          bgClass="bg-destructive/10"
+          textClass="text-destructive"
+          trend={{
+            value: 3,
+            isPositive: false,
+          }}
+        />
+      </div>
+
+      {/* Explanatory Notice */}
+      <div className="text-sm text-white bg-slate-800 dark:bg-slate-900 p-3 rounded-md border border-slate-700 flex items-start">
+        <div className="mr-2 mt-0.5 text-blue-300">
+          <Calendar size={14} />
+        </div>
+        <p>
+          These statistics represent your all-time activity. Percentage
+          indicators show month-over-month changes.
+          <span className="font-medium block mt-1 text-blue-200">
+            Note: Trend percentages are calculated based on the last 30 days
+            compared to the previous period.
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

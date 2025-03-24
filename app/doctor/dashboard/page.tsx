@@ -56,10 +56,13 @@ export default function DoctorDashboard() {
 
   return (
     <div className="p-8 space-y-6">
-      {/* Header with gradient underline */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold ">Dashboard</h1>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            Welcome back, Dr. {doctor?.user?.name?.split(" ")[0]}. View your
+            appointments and patient statistics.
+          </p>
         </div>
         <Button asChild>
           <Link href="/doctor/availability">
