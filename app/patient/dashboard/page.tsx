@@ -239,9 +239,9 @@ export default function PatientDashboard() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
+        <Card className="overflow-hidden  border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+          <CardContent className="p-6  ">
+            <div className="flex items-center gap-4 ">
               <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
                 <Calendar className="h-6 w-6 text-primary" />
               </div>
@@ -321,7 +321,7 @@ export default function PatientDashboard() {
         <div className="lg:col-span-2">
           <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
             <CardHeader className="bg-card border-b border-border">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                     <CalendarIcon className="h-4 w-4 text-white" />
@@ -449,7 +449,7 @@ export default function PatientDashboard() {
         <div className="lg:col-span-1">
           <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
             <CardHeader className="bg-card border-b border-border">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                     <User className="h-4 w-4 text-white" />
