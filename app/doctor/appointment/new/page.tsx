@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, Loader2, Search } from "lucide-react";
@@ -42,70 +41,40 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import useSessionStore from "@/lib/store/useSessionStore";
+import useAppointmentFormStore from "@/lib/store/useAppointmentFormStore";
 import { cn } from "@/lib/utils";
 import { useDoctorData } from "@/hooks/useDoctorData";
+import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 
 import { Input } from "@/components/ui/input";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-// Form validation schema
-const appointmentFormSchema = z.object({
-  patientId: z.string({
-    required_error: "Please select a patient",
-  }),
-  date: z.date({
-    required_error: "Please select a date",
-  }),
-  time: z.string({
-    required_error: "Please select a time",
-  }),
-  duration: z.string({
-    required_error: "Please select an appointment duration",
-  }),
-  appointmentType: z.string().optional(),
-  reason: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-type AppointmentFormValues = z.infer<typeof appointmentFormSchema>;
-
-type Patient = {
-  id: string;
-  userId: string;
-  birthDate: string | null;
-  user: {
-    name: string;
-    email: string;
-    image?: string | null;
-  };
-};
-
-type TimeSlot = {
-  value: string;
-  label: string;
-  available: boolean;
-};
+import {
+  appointmentFormSchema,
+  AppointmentFormValues,
+} from "@/lib/schema/appointment";
 
 // Main page component
 export default function NewDoctorAppointmentPage() {
   const router = useRouter();
 
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-8">Schedule New Appointment</h1>
+    <RoleAuthCheck allowedRoles="DOCTOR">
+      <div className="container py-10">
+        <h1 className="text-3xl font-bold mb-8">Schedule New Appointment</h1>
 
-      <Suspense
-        fallback={
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="p-8 flex justify-center items-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-            </CardContent>
-          </Card>
-        }
-      >
-        <AppointmentForm router={router} />
-      </Suspense>
-    </div>
+        <Suspense
+          fallback={
+            <Card className="max-w-2xl mx-auto">
+              <CardContent className="p-8 flex justify-center items-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              </CardContent>
+            </Card>
+          }
+        >
+          <AppointmentForm router={router} />
+        </Suspense>
+      </div>
+    </RoleAuthCheck>
   );
 }
 
@@ -116,17 +85,25 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
   const selectedPatientParam = searchParams.get("patientId");
   const { session, status } = useSessionStore();
 
+  // Get doctor data
   const { data: doctor, isLoading: isLoadingDoctor } = useDoctorData(
     session?.user?.id
   );
 
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingPatients, setIsLoadingPatients] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  // Use the store for appointment form state
+  const {
+    patients,
+    filteredPatients,
+    searchTerm,
+    isLoadingPatients,
+    timeSlots,
+    isCheckingAvailability,
+    isSubmitting,
+    setSearchTerm,
+    fetchPatients,
+    checkAvailability,
+    submitAppointment,
+  } = useAppointmentFormStore();
 
   // Initialize form with default values
   const form = useForm<AppointmentFormValues>({
@@ -142,136 +119,23 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
     },
   });
 
-  // Fetch patients on component mount
+  // Fetch patients data on initial load
   useEffect(() => {
-    const fetchPatients = async () => {
-      if (!session?.user?.id) return;
-
-      setIsLoadingPatients(true);
-      try {
-        const response = await fetch("/api/patients");
-        if (!response.ok) throw new Error("Failed to fetch patients");
-        const data = await response.json();
-
-        if (data && Array.isArray(data)) {
-          setPatients(data);
-          setFilteredPatients(data);
-          if (data.length === 0) {
-            toast.info("No patients found in the system");
-          }
-        }
-      } catch (error) {
-        toast.error("Failed to load patients");
-        console.error(error);
-      } finally {
-        setIsLoadingPatients(false);
-      }
-    };
-
-    fetchPatients();
-  }, [session?.user?.id]);
-
-  // Filter patients based on search term
-  useEffect(() => {
-    const filtered = patients.filter(
-      (patient) =>
-        patient.user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredPatients(filtered);
-  }, [searchTerm, patients]);
+    if (session?.user?.id) {
+      fetchPatients();
+    }
+  }, [session?.user?.id, fetchPatients]);
 
   // Watch for changes to date to fetch available time slots
   const watchDate = form.watch("date");
 
   useEffect(() => {
-    const fetchAvailableTimeSlots = async () => {
-      if (!doctor?.id || !watchDate) return;
-
-      setIsCheckingAvailability(true);
-      try {
-        const formattedDate = format(watchDate, "yyyy-MM-dd");
-        const response = await fetch(
-          `/api/doctor/availability?doctorId=${doctor.id}&date=${formattedDate}`
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch availability");
-
-        const data = await response.json();
-
-        // Create time slots from the doctor's availability
-        const slots: TimeSlot[] = [];
-
-        // If no availability is set for this day
-        if (!data.availableSlots || data.availableSlots.length === 0) {
-          // Create default work hours (9 AM to 5 PM in 30-minute increments)
-          for (let hour = 9; hour < 17; hour++) {
-            for (const minute of [0, 30]) {
-              const timeString = `${hour.toString().padStart(2, "0")}:${minute
-                .toString()
-                .padStart(2, "0")}`;
-
-              // Format for display (12-hour format)
-              const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-              const period = hour < 12 ? "AM" : "PM";
-              const displayTime = `${displayHour}:${minute
-                .toString()
-                .padStart(2, "0")} ${period}`;
-
-              slots.push({
-                value: timeString,
-                label: displayTime,
-                // For doctors, we'll say all slots are available by default
-                // They can override based on their knowledge
-                available: true,
-              });
-            }
-          }
-        } else {
-          // Use the available slots from the API
-          for (const slot of data.availableSlots) {
-            const [hour, minute] = slot.split(":");
-            const hourNum = parseInt(hour);
-
-            // Format for display (12-hour format)
-            const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
-            const period = hourNum < 12 ? "AM" : "PM";
-            const displayTime = `${displayHour}:${minute} ${period}`;
-
-            slots.push({
-              value: slot,
-              label: displayTime,
-              available: true,
-            });
-          }
-        }
-
-        // Mark booked slots as unavailable
-        if (data.bookedSlots) {
-          data.bookedSlots.forEach((bookedSlot: string) => {
-            const slotToUpdate = slots.find(
-              (slot) => slot.value === bookedSlot
-            );
-            if (slotToUpdate) {
-              slotToUpdate.available = false;
-            }
-          });
-        }
-
-        setTimeSlots(slots);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to check availability");
-      } finally {
-        setIsCheckingAvailability(false);
-      }
-    };
-
     if (doctor?.id && watchDate) {
-      fetchAvailableTimeSlots();
+      checkAvailability(watchDate, doctor.id);
     }
-  }, [watchDate, doctor?.id]);
+  }, [watchDate, doctor?.id, checkAvailability]);
 
+  // Handle form submission
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!session) {
       toast.error("You must be logged in to schedule an appointment");
@@ -283,50 +147,28 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      // Convert date and time to ISO string
-      const [hours, minutes] = data.time.split(":");
-      const appointmentDate = new Date(data.date);
-      appointmentDate.setHours(parseInt(hours, 10));
-      appointmentDate.setMinutes(parseInt(minutes, 10));
+    // Convert date and time to ISO string
+    const [hours, minutes] = data.time.split(":");
+    const appointmentDate = new Date(data.date);
+    appointmentDate.setHours(parseInt(hours, 10));
+    appointmentDate.setMinutes(parseInt(minutes, 10));
 
-      const appointmentData = {
-        patientId: data.patientId,
-        doctorId: doctor.id,
-        date: appointmentDate.toISOString(),
-        duration: parseInt(data.duration),
-        reason: data.reason || undefined,
-        notes: data.notes || undefined,
-        appointmentType: data.appointmentType || "regular",
-        // Doctors can directly set appointments as confirmed
-        status: "confirmed",
-      };
+    const appointmentData = {
+      patientId: data.patientId,
+      doctorId: doctor.id,
+      date: appointmentDate.toISOString(),
+      timeSlot: data.time, // Add the required timeSlot property
+      duration: parseInt(data.duration),
+      reason: data.reason || undefined,
+      notes: data.notes || undefined,
+      appointmentType: data.appointmentType || "regular",
+      // Doctors can directly set appointments as confirmed
+      status: "confirmed",
+    };
 
-      const response = await fetch("/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(appointmentData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to book appointment");
-      }
-
-      toast.success("Appointment scheduled successfully");
+    const success = await submitAppointment(appointmentData);
+    if (success) {
       router.push("/doctor/appointment");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to schedule appointment");
-      }
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -334,17 +176,8 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
     return <div className="p-8">Loading...</div>;
   }
 
-  if (!session) {
-    return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Sign in required</h1>
-        <p>Please sign in to schedule appointments.</p>
-        <Button className="mt-4" onClick={() => router.push("/auth/login")}>
-          Sign In
-        </Button>
-      </div>
-    );
-  }
+  // We no longer need the session check because RoleAuthCheck handles it
+  // The session check has been removed
 
   if (!doctor) {
     return (
@@ -492,6 +325,7 @@ function AppointmentForm({ router }: { router: AppRouterInstance }) {
                 )}
               />
 
+              {/* Remaining form fields - unchanged */}
               {/* Appointment Type */}
               <FormField
                 control={form.control}
