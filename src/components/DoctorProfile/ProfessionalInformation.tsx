@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Doctor } from "@/lib/types/core-entities";
 import { InfoNotice } from "@/components/InfoNotice";
-import { calculateProfileCompleteness } from "../../../app/doctor/profile/page";
+import { calculateProfileCompleteness } from "@/lib/utils/profileUtils";
 
 type ProfessionalInformationProps = {
   doctor?: Doctor;

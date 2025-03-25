@@ -5,7 +5,6 @@ import Link from "next/link";
 import { User } from "lucide-react";
 import { useDoctorData } from "@/hooks/useDoctorData";
 import useSessionStore from "@/lib/store/useSessionStore";
-import { Doctor } from "@/lib/types/core-entities";
 import { PageHeader } from "@/components/PageHeader";
 import { ProfessionalInformation } from "@/components/DoctorProfile/ProfessionalInformation";
 import { PracticeInformation } from "@/components/DoctorProfile/PracticeInformation";
@@ -78,26 +77,6 @@ export default function DoctorProfilePage() {
       </div>
     </div>
   );
-}
-
-// Helper function to calculate profile completeness (kept in main file)
-export function calculateProfileCompleteness(doctor: Doctor | undefined) {
-  if (!doctor) return 0;
-
-  const fields = [
-    doctor.user?.name,
-    doctor.user?.email,
-    doctor.specialty,
-    doctor.licenseNumber,
-    doctor.phone,
-    doctor.officeAddress,
-    doctor.description,
-  ];
-
-  const filledFields = fields.filter(
-    (field) => field && field.trim().length > 0
-  ).length;
-  return Math.round((filledFields / fields.length) * 100);
 }
 
 // State components
