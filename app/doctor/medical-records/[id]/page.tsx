@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, ClipboardList, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 import { PatientNotFound } from "@/components/PatientRecords/PatientNotFound";
 import { PatientInfoCard } from "@/components/PatientRecords/PatientInfoCard";
 import { MedicalHistoryCard } from "@/components/PatientRecords/MedicalHistoryCard";
-import { AppointmentsCard } from "@/components/PatientRecords/AppointmentsCard";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function PatientMedicalRecordsPage() {
   const params = useParams();
@@ -91,20 +91,26 @@ export default function PatientMedicalRecordsPage() {
         <PatientNotFound />
       ) : (
         <div className="container py-10">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Patient Medical Records</h1>
-            <Button variant="outline" onClick={() => router.back()}>
-              Back
-            </Button>
-          </div>
+          <PageHeader
+            title="Patient Medical Records"
+            icon={<ClipboardList className="h-5 w-5 text-primary" />}
+            description={`View and manage medical history for ${patient.user.name}`}
+            actions={
+              <Button variant="outline" onClick={() => router.back()}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            }
+          />
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Patient Information */}
-            <PatientInfoCard patient={patient} />
+          <div className="grid md:grid-cols-3 gap-6 auto-rows-fr">
+            {/* Patient Information - will stretch to full height */}
+            <div className="h-full flex flex-col">
+              <PatientInfoCard patient={patient} />
+            </div>
 
-            {/* Medical History and Appointments */}
-            <div className="md:col-span-2 space-y-6">
-              {/* Medical History */}
+            {/* Medical History - will stretch to full height */}
+            <div className="md:col-span-2 h-full flex flex-col">
               <MedicalHistoryCard
                 patient={patient}
                 isEditing={isEditing}
@@ -115,9 +121,6 @@ export default function PatientMedicalRecordsPage() {
                 onSave={handleSave}
                 onNotesChange={setEditableNotes}
               />
-
-              {/* Appointments */}
-              <AppointmentsCard patient={patient} />
             </div>
           </div>
         </div>
