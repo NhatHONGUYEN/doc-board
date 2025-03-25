@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
+import { InfoNotice } from "@/components/InfoNotice";
 
 export default function SpecialDatesCard({ isLoading = false }) {
   const {
@@ -348,16 +348,13 @@ export default function SpecialDatesCard({ isLoading = false }) {
       </CardContent>
 
       <CardFooter className="bg-card border-t border-border p-5">
-        <Alert className="bg-primary/5 border-primary/20">
-          <Info className="h-4 w-4 text-primary" />
-          <AlertTitle className="text-sm font-medium text-card-foreground">
-            Important
-          </AlertTitle>
-          <AlertDescription className="text-xs text-muted-foreground">
-            Special dates override your regular weekly schedule. Remember to
-            save your changes.
-          </AlertDescription>
-        </Alert>
+        <InfoNotice
+          icon={<Info size={14} />}
+          note="Special dates override your regular weekly schedule. Remember to save your changes."
+        >
+          Important: These exceptions will take priority over your normal
+          availability when patients book appointments.
+        </InfoNotice>
       </CardFooter>
     </Card>
   );

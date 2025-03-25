@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoNotice } from "@/components/InfoNotice";
 
 const dayNames = [
   "Monday",
@@ -161,13 +161,10 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
       </CardContent>
 
       <CardFooter className="bg-card border-t border-border p-5">
-        <Alert className="bg-primary/5 border-primary/20 w-full">
-          <Clock className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-xs text-muted-foreground">
-            These hours will be used for scheduling appointments unless
-            overridden by special dates.
-          </AlertDescription>
-        </Alert>
+        <InfoNotice icon={<Clock size={14} />}>
+          These hours will be used for scheduling appointments unless overridden
+          by special dates.
+        </InfoNotice>
       </CardFooter>
     </Card>
   );

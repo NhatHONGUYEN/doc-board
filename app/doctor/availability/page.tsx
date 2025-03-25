@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useDoctorData } from "@/hooks/useDoctorData";
@@ -13,8 +13,7 @@ import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
 import WeeklyScheduleCard from "@/components/DoctorAvailability/WeeklyScheduleCard";
 import SpecialDatesCard from "@/components/DoctorAvailability/SpecialDatesCard";
-
-// Import our new components
+import { PageHeader } from "@/components/PageHeader";
 
 export default function DoctorAvailabilityPage() {
   const router = useRouter();
@@ -88,24 +87,29 @@ export default function DoctorAvailabilityPage() {
         doctorProfileCheck
       ) : (
         <div className="container py-10">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Manage Availability</h1>
-            <Button
-              onClick={handleSaveAvailability}
-              disabled={isSaving}
-              className="flex items-center gap-2"
-            >
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+          {/* Replacing the manual header with PageHeader component */}
+          <PageHeader
+            title="Manage Availability"
+            icon={<Calendar className="h-5 w-5 text-primary" />}
+            description="Set your weekly working hours and manage special dates when you're unavailable for appointments."
+            actions={
+              <Button
+                onClick={handleSaveAvailability}
+                disabled={isSaving}
+                className="flex items-center gap-2"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            }
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Use our new extracted components */}
+            {/* Existing components remain unchanged */}
             <WeeklyScheduleCard isLoading={isLoading} />
             <SpecialDatesCard isLoading={isLoading} />
           </div>
