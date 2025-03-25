@@ -109,7 +109,7 @@ export default function RecordDetailDialog({
                     {patient.medicalHistory}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                  <div className="flex flex-col items-center justify-center h-full py-16 text-muted-foreground">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                       <PlusSquare className="h-6 w-6 text-primary" />
                     </div>
