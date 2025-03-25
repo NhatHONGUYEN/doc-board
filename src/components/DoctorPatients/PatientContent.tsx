@@ -309,20 +309,20 @@ export function PatientContent({
                       <div className="flex justify-end space-x-2">
                         <Button
                           variant="outline"
-                          size="icon"
-                          className="h-9 w-9 bg-card border-border hover:bg-primary/10 hover:text-primary transition-colors"
+                          size="sm"
+                          className="h-9 border-border hover:bg-primary/10 hover:text-primary transition-colors"
                           onClick={() => viewPatientDetails(patient)}
-                          title="View Patient Details"
                         >
-                          <User className="h-4 w-4" />
+                          <User className="h-4 w-4 mr-1.5" />
+                          <span>Profile</span>
                         </Button>
                         <Button
-                          size="icon"
-                          className="h-9 w-9 bg-primary hover:bg-primary/90 transition-colors"
+                          size="sm"
+                          className="h-9 bg-primary hover:bg-primary/90 transition-colors"
                           onClick={() => scheduleAppointment(patient.id)}
-                          title="Schedule Appointment"
                         >
-                          <Calendar className="h-4 w-4" />
+                          <Calendar className="h-4 w-4 mr-1.5" />
+                          <span>Schedule</span>
                         </Button>
                       </div>
                     </TableCell>
