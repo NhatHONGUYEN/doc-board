@@ -1,12 +1,11 @@
 // app/doctor/medical-records/[id]/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2, ClipboardList, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useMedicalRecordsStore } from "@/lib/store/useMedicalRecordsStore";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
@@ -14,12 +13,16 @@ import { PatientNotFound } from "@/components/PatientRecords/PatientNotFound";
 import { PatientInfoCard } from "@/components/PatientRecords/PatientInfoCard";
 import { MedicalHistoryCard } from "@/components/PatientRecords/MedicalHistoryCard";
 import { PageHeader } from "@/components/PageHeader";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function PatientMedicalRecordsPage() {
   const params = useParams();
   const patientId = params.id as string;
   const router = useRouter();
   const { session } = useSessionStore();
+
+  // State to track if we've completed the initial loading attempt
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Get store state and actions
   const {
@@ -37,14 +40,28 @@ export default function PatientMedicalRecordsPage() {
     resetStore,
   } = useMedicalRecordsStore();
 
+  // Debounce the "no patient" state to avoid flashing PatientNotFound
+  const shouldShowNotFound = useDebounce(!patient && initialLoadComplete, 1500);
+
   // Fetch patient data when component mounts
   useEffect(() => {
+    let isMounted = true;
+
     if (session?.user?.id) {
-      fetchPatientRecord(patientId, session.user.id);
+      fetchPatientRecord(patientId, session.user.id).finally(() => {
+        // Mark initial load as complete after fetch completes (success or error)
+        if (isMounted) {
+          setInitialLoadComplete(true);
+        }
+      });
     }
 
     // Reset store when component unmounts
-    return () => resetStore();
+    return () => {
+      isMounted = false;
+      resetStore();
+      setInitialLoadComplete(false);
+    };
   }, [patientId, session?.user?.id, fetchPatientRecord, resetStore]);
 
   // Display error toast if query fails
@@ -73,23 +90,27 @@ export default function PatientMedicalRecordsPage() {
     }
   };
 
-  // Custom loading component
+  // Custom loading component with more details
   const loadingComponent = (
     <div className="container py-10">
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading patient records...</p>
       </div>
     </div>
   );
 
+  // Determine if we should show loading
+  const showLoading = isLoading || !initialLoadComplete;
+
   return (
     <RoleAuthCheck
       allowedRoles="DOCTOR"
-      loadingComponent={isLoading ? loadingComponent : undefined}
+      loadingComponent={showLoading ? loadingComponent : undefined}
     >
-      {!patient ? (
+      {shouldShowNotFound ? (
         <PatientNotFound />
-      ) : (
+      ) : patient ? (
         <div className="container py-10">
           <PageHeader
             title="Patient Medical Records"
@@ -104,12 +125,12 @@ export default function PatientMedicalRecordsPage() {
           />
 
           <div className="grid md:grid-cols-3 gap-6 auto-rows-fr">
-            {/* Patient Information - will stretch to full height */}
+            {/* Patient Information */}
             <div className="h-full flex flex-col">
               <PatientInfoCard patient={patient} />
             </div>
 
-            {/* Medical History - will stretch to full height */}
+            {/* Medical History */}
             <div className="md:col-span-2 h-full flex flex-col">
               <MedicalHistoryCard
                 patient={patient}
@@ -124,7 +145,7 @@ export default function PatientMedicalRecordsPage() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </RoleAuthCheck>
   );
 }

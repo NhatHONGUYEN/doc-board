@@ -2,6 +2,19 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { PatientRecord } from "@/lib/types/medical-records";
+import { QueryClient } from "@tanstack/react-query";
+
+// Function to create a query client with proper types
+let queryClientInstance: QueryClient | null = null;
+const getQueryClient = (): QueryClient | null => {
+  if (typeof window === "undefined") return null;
+  if (!queryClientInstance) {
+    queryClientInstance = new QueryClient();
+  }
+  return queryClientInstance;
+};
+
+// No need for PatientDataResponse - use PatientRecord instead!
 
 type MedicalRecordsState = {
   // Data
@@ -18,6 +31,7 @@ type MedicalRecordsState = {
   editableNotes: string;
   isSaving: boolean;
   isDetailOpen: boolean;
+  initialLoadAttempted: boolean;
 
   // Actions
   fetchPatients: (userId: string) => Promise<void>;
@@ -47,25 +61,106 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
     editableNotes: "",
     isSaving: false,
     isDetailOpen: false,
+    initialLoadAttempted: false,
 
     // Actions
     fetchPatients: async (userId: string) => {
       if (!userId) return;
 
+      const queryClient = getQueryClient();
+      if (!queryClient) {
+        // Fall back to regular fetch if no query client
+        try {
+          set({ isLoading: true, isError: false, error: null });
+
+          const response = await fetch("/api/patients");
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch patient records");
+          }
+
+          const data = (await response.json()) as PatientRecord[];
+          set({
+            patients: data,
+            filteredPatients: data,
+            isLoading: false,
+            initialLoadAttempted: true,
+          });
+        } catch (error) {
+          console.error(error);
+          set({
+            isLoading: false,
+            isError: true,
+            error: error instanceof Error ? error : new Error(String(error)),
+            initialLoadAttempted: true,
+          });
+          toast.error("Failed to load patient medical records");
+        }
+        return;
+      }
+
+      // Use TanStack Query for caching
+      set({ isLoading: true, isError: false, error: null });
+
       try {
-        set({ isLoading: true, isError: false, error: null });
+        // Check cache first
+        const cachedData = queryClient.getQueryData<PatientRecord[]>([
+          "patients",
+          userId,
+        ]);
 
-        const response = await fetch("/api/patients");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch patient records");
+        if (cachedData) {
+          // Use cached data immediately
+          set({
+            patients: cachedData,
+            filteredPatients: get().searchTerm
+              ? cachedData.filter((p) => {
+                  const searchString = get().searchTerm.toLowerCase();
+                  return (
+                    (p.user?.name ?? "").toLowerCase().includes(searchString) ||
+                    (p.socialSecurityNumber ?? "")
+                      .toLowerCase()
+                      .includes(searchString) ||
+                    (p.medicalHistory ?? "")
+                      .toLowerCase()
+                      .includes(searchString)
+                  );
+                })
+              : cachedData,
+            isLoading: false,
+            initialLoadAttempted: true,
+          });
         }
 
-        const data = await response.json();
+        // Fetch fresh data (will update UI if different from cache)
+        const data = await queryClient.fetchQuery<PatientRecord[]>({
+          queryKey: ["patients", userId],
+          queryFn: async () => {
+            const response = await fetch("/api/patients");
+            if (!response.ok) {
+              throw new Error("Failed to fetch patient records");
+            }
+            return response.json() as Promise<PatientRecord[]>;
+          },
+          staleTime: 5 * 60 * 1000, // 5 minutes
+        });
+
         set({
           patients: data,
-          filteredPatients: data,
+          filteredPatients: get().searchTerm
+            ? data.filter((p) => {
+                const searchString = get().searchTerm.toLowerCase();
+                return (
+                  (p.user?.name ?? "").toLowerCase().includes(searchString) ||
+                  (p.socialSecurityNumber ?? "")
+                    .toLowerCase()
+                    .includes(searchString) ||
+                  (p.medicalHistory ?? "").toLowerCase().includes(searchString)
+                );
+              })
+            : data,
           isLoading: false,
+          initialLoadAttempted: true,
         });
       } catch (error) {
         console.error(error);
@@ -73,6 +168,7 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
           isLoading: false,
           isError: true,
           error: error instanceof Error ? error : new Error(String(error)),
+          initialLoadAttempted: true,
         });
         toast.error("Failed to load patient medical records");
       }
@@ -147,7 +243,8 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
           throw new Error("Failed to fetch patient data");
         }
 
-        const patientData = await patientResponse.json();
+        // Use PatientRecord type instead of custom interface
+        const patientData = (await patientResponse.json()) as PatientRecord;
 
         // Then update with the new medical history
         const response = await fetch(
@@ -197,6 +294,29 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
           isSaving: false,
         });
 
+        // Update the query cache
+        const queryClient = getQueryClient();
+        if (queryClient) {
+          // Update list cache
+          queryClient.setQueryData<PatientRecord[]>(
+            ["patients", selectedPatient.userId],
+            (oldData) => {
+              if (!oldData) return updatedPatients;
+              return oldData.map((p) =>
+                p.id === selectedPatient.id
+                  ? { ...p, medicalHistory: editableNotes }
+                  : p
+              );
+            }
+          );
+
+          // Update individual patient cache if it exists
+          queryClient.setQueryData<PatientRecord>(
+            ["patient", selectedPatient.id],
+            { ...selectedPatient, medicalHistory: editableNotes }
+          );
+        }
+
         toast.success("Medical record updated successfully");
       } catch (error) {
         console.error(error);
@@ -207,9 +327,6 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
 
     resetStore: () =>
       set({
-        patients: [],
-        filteredPatients: [],
-        selectedPatient: null,
         isLoading: false,
         isError: false,
         error: null,
@@ -218,6 +335,7 @@ export const useMedicalRecordsListStore = create<MedicalRecordsState>(
         editableNotes: "",
         isSaving: false,
         isDetailOpen: false,
+        // Don't reset patients data or initialLoadAttempted when navigating away
       }),
   })
 );

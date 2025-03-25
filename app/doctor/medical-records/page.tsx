@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useMedicalRecordsListStore } from "@/hooks/useMedicalRecordsListStore";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 import { PageHeader } from "@/components/PageHeader";
-import { FileText } from "lucide-react";
 
 // Import our components
 import MedicalRecordsCard from "@/components/MedicalRecords/MedicalRecordsCard";
@@ -15,7 +14,7 @@ import RecordDetailDialog from "@/components/MedicalRecords/RecordDetailDialog";
 export default function MedicalRecordsPage() {
   const { session, status } = useSessionStore();
 
-  // Use the Zustand store
+  // Use the enhanced Zustand store
   const {
     patients,
     filteredPatients,
@@ -35,17 +34,19 @@ export default function MedicalRecordsPage() {
     cancelEditing,
     setEditableNotes,
     updateMedicalRecord,
+    resetStore,
+    initialLoadAttempted,
   } = useMedicalRecordsListStore();
 
-  // Fetch patients when component mounts
+  // Fetch patients when component mounts - but now with caching!
   useEffect(() => {
     if (session?.user?.id) {
       fetchPatients(session.user.id);
     }
 
     // Return a cleanup function to reset the store when unmounting
-    return () => useMedicalRecordsListStore.getState().resetStore();
-  }, [session?.user?.id, fetchPatients]);
+    return () => resetStore();
+  }, [session?.user?.id, fetchPatients, resetStore]);
 
   // Custom loading component
   const loadingComponent = (
@@ -56,13 +57,18 @@ export default function MedicalRecordsPage() {
     </div>
   );
 
+  // Only show loading state if:
+  // 1. We haven't attempted to load data yet, OR
+  // 2. We're loading AND there's no existing data to show
+  const showLoading =
+    !initialLoadAttempted || (isLoading && patients.length === 0);
+
   return (
     <RoleAuthCheck
       allowedRoles="DOCTOR"
       loadingComponent={status === "loading" ? loadingComponent : undefined}
     >
       <div className="container py-10">
-        {/* Replace the simple header with PageHeader component */}
         <PageHeader
           title="Patient Medical Records"
           icon={<FileText className="h-5 w-5 text-primary" />}
@@ -73,7 +79,7 @@ export default function MedicalRecordsPage() {
           patients={patients}
           filteredPatients={filteredPatients}
           searchTerm={searchTerm}
-          isLoading={isLoading}
+          isLoading={showLoading} // Use our smart loading logic
           isError={isError}
           setSearchTerm={setSearchTerm}
           onViewRecord={viewPatientRecord}

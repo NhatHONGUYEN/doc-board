@@ -164,18 +164,18 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Calendar Header */
+/* Calendar Header - Neutral Style */
 .fc .fc-toolbar {
-  background: linear-gradient(to right, #f1f5f9, #f8fafc);
+  background: transparent;
   padding: 1rem;
   margin-bottom: 0 !important;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--fc-border-color);
 }
 
 .fc .fc-toolbar-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--fc-button-text-color);
   padding-left: 0.5rem;
 }
 
@@ -213,16 +213,16 @@
   opacity: 0.7;
 }
 
-/* Day Header styling */
+/* Day Header styling - Updated without blue background */
 .fc-theme-standard th {
   padding: 0.75rem 0;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
-  color: #64748b;
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  color: var(--fc-button-text-color);
+  background-color: transparent;
+  border-bottom: 1px solid var(--fc-border-color);
 }
 
 /* Day cells styling */
@@ -332,6 +332,58 @@
   background-color: #7b1fa2 !important;
 }
 
+/* Status-specific styling - FIXED */
+/* Cancelled events */
+.fc-event.cancelled,
+.fc-daygrid-event.cancelled {
+  background-color: rgba(255, 107, 107, 0.9) !important;
+  border-left-color: #f44336 !important;
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.fc-event.cancelled:hover,
+.fc-daygrid-event.cancelled:hover {
+  background-color: #f44336 !important;
+}
+
+/* Completed events */
+.fc-event.completed,
+.fc-daygrid-event.completed {
+  background-color: #4caf50 !important;
+  border-left-color: #2e7d32 !important;
+}
+
+.fc-event.completed:hover,
+.fc-daygrid-event.completed:hover {
+  background-color: #2e7d32 !important;
+}
+
+/* Pending events */
+.fc-event.pending,
+.fc-daygrid-event.pending {
+  background-color: #ff9800 !important;
+  border-left-color: #e65100 !important;
+}
+
+.fc-event.pending:hover,
+.fc-daygrid-event.pending:hover {
+  background-color: #f57c00 !important;
+}
+
+/* No-show events */
+.fc-event.no-show,
+.fc-daygrid-event.no-show {
+  background-color: #9c27b0 !important;
+  border-left-color: #6a1b9a !important;
+  text-decoration: line-through;
+}
+
+.fc-event.no-show:hover,
+.fc-daygrid-event.no-show:hover {
+  background-color: #7b1fa2 !important;
+}
+
 /* Time formatting */
 .fc-event-time {
   font-weight: 500;
@@ -360,6 +412,42 @@
   background-color: rgba(74, 144, 226, 0.2);
   color: #357abd;
   text-decoration: none;
+}
+
+/* Popover for 'more' events - updated with proper background color */
+.fc-theme-standard .fc-popover {
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-color: white; /* Explicitly set background to white in light mode */
+}
+
+.fc-theme-standard .fc-popover-header {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.5rem;
+  font-weight: 500;
+}
+
+.fc-theme-standard .fc-popover-body {
+  padding: 0.5rem;
+  background-color: white; /* Ensure popover body also has white background */
+}
+
+/* Dark mode adjustments for popovers */
+.dark .fc-theme-standard .fc-popover {
+  background-color: #2d3748; /* Dark grey background for dark mode */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .fc-theme-standard .fc-popover-header {
+  background-color: #4a90e2; /* Keep the header blue */
+}
+
+.dark .fc-theme-standard .fc-popover-body {
+  background-color: #2d3748; /* Dark grey for popover body */
+  color: #e2e8f0; /* Light text color for dark mode */
 }
 
 /* Popover for 'more' events */
@@ -394,18 +482,19 @@
 }
 
 .dark .fc .fc-toolbar {
-  background: linear-gradient(to right, #1e293b, #1a202c);
-  border-bottom: 1px solid #2d3748;
+  background: transparent;
+  border-bottom: 1px solid var(--fc-border-color);
 }
 
 .dark .fc .fc-toolbar-title {
   color: #f8fafc;
 }
 
+/* Dark mode adjustments - Updated for day headers */
 .dark .fc-theme-standard th {
-  background-color: #2d3748;
+  background-color: transparent;
   color: #e2e8f0;
-  border-bottom: 2px solid #4a5568;
+  border-bottom: 1px solid #4a5568;
 }
 
 .dark .fc-daygrid-day {
