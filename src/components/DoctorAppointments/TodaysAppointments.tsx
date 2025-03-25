@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Calendar as CalendarIcon,
   Clock,
   PlusCircle,
-  ChevronRight,
+  Eye,
+  RefreshCw,
 } from "lucide-react";
 import { Appointment } from "@/lib/types/core-entities";
 import Link from "next/link";
@@ -32,12 +33,6 @@ export function TodaysAppointments({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-muted/40 py-3 px-4">
-        <CardTitle className="text-base flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4" />
-          Today&apos;s Appointments
-        </CardTitle>
-      </CardHeader>
       <CardContent className="p-0">
         {sortedAppointments && sortedAppointments.length > 0 ? (
           <div className="divide-y">
@@ -99,24 +94,30 @@ export function TodaysAppointments({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => openDetailsDialog(appointment)}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                  <div className="flex items-center gap-2">
+                    {/* View details button with eye icon */}
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 px-2 py-0"
-                      onClick={() => openUpdateStatusDialog(appointment)}
-                      disabled={appointment.status === "cancelled"}
+                      className="h-8 px-3"
+                      onClick={() => openDetailsDialog(appointment)}
                     >
-                      Update
+                      <Eye className="h-3.5 w-3.5 mr-1" />
+                      Details
                     </Button>
+
+                    {/* Update status button (hide for cancelled appointments) */}
+                    {appointment.status !== "cancelled" && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-8 px-3"
+                        onClick={() => openUpdateStatusDialog(appointment)}
+                      >
+                        <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                        Status
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
