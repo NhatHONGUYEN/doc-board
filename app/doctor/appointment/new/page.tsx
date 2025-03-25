@@ -2,10 +2,11 @@
 
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarPlus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 import AppointmentForm from "@/components/AppointmentForm/AppointmentForm";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function NewDoctorAppointmentPage() {
   const router = useRouter();
@@ -13,7 +14,11 @@ export default function NewDoctorAppointmentPage() {
   return (
     <RoleAuthCheck allowedRoles="DOCTOR">
       <div className="container py-10">
-        <h1 className="text-3xl font-bold mb-8">Schedule New Appointment</h1>
+        <PageHeader
+          title="Schedule New Appointment"
+          icon={<CalendarPlus className="h-5 w-5 text-primary" />}
+          description="Create a new appointment for a patient. Select the patient, date, time, and add any relevant notes."
+        />
 
         <Suspense
           fallback={

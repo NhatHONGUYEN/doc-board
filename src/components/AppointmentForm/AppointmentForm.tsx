@@ -5,17 +5,11 @@ import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { InfoNotice } from "@/components/InfoNotice";
 import useSessionStore from "@/lib/store/useSessionStore";
 import useAppointmentFormStore from "@/lib/store/useAppointmentFormStore";
 import { useDoctorData } from "@/hooks/useDoctorData";
@@ -138,15 +132,10 @@ export default function AppointmentForm({
   }
 
   return (
-    <Card className="max-w-2xl  ">
-      <CardHeader>
-        <CardTitle>Patient and Appointment Details</CardTitle>
-        <CardDescription>
-          Schedule a new appointment for one of your patients
-        </CardDescription>
-      </CardHeader>
+    <Card className="max-w-2xl mx-auto">
+      {/* CardHeader removed to avoid redundancy with PageHeader */}
 
-      <CardContent>
+      <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <PatientSelector control={form.control} patients={patients} />
@@ -158,25 +147,35 @@ export default function AppointmentForm({
             />
             <AppointmentNotes control={form.control} />
 
-            <CardFooter className="px-0 pb-0">
-              <div className="flex justify-between w-full">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {isSubmitting ? "Scheduling..." : "Schedule Appointment"}
-                </Button>
-              </div>
-            </CardFooter>
+            <div className="flex justify-between w-full pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isSubmitting ? "Scheduling..." : "Schedule Appointment"}
+              </Button>
+            </div>
           </form>
         </Form>
+
+        {/* InfoNotice added at the end of the form */}
+        <div className="mt-8">
+          <InfoNotice
+            icon={<CalendarClock size={14} />}
+            note="Note: Patients will receive an automatic notification about the new appointment."
+          >
+            Once scheduled, the appointment will appear on your calendar and the
+            patient&apos;s dashboard. You can modify or cancel the appointment
+            from your appointments page.
+          </InfoNotice>
+        </div>
       </CardContent>
     </Card>
   );

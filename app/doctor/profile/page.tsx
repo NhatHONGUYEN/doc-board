@@ -28,6 +28,7 @@ import { Calendar, CalendarClock, Users, LayoutGrid } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Doctor } from "@/lib/types/core-entities";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function DoctorProfilePage() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -120,17 +121,14 @@ export default function DoctorProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left column - Info cards */}
         <div className="md:col-span-2 space-y-6">
-          {/* Page title */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-card-foreground">
-              Doctor Profile
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your professional information and availability
-            </p>
-          </div>
+          {/* Replace manual header with PageHeader component */}
+          <PageHeader
+            title="Doctor Profile"
+            icon={<User className="h-5 w-5 text-primary" />}
+            description="Manage your professional information and availability"
+          />
 
-          {/* Professional Information */}
+          {/* Professional Information Card */}
           <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border">
               <div className="flex justify-between items-center pb-4">
