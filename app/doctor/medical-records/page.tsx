@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useMedicalRecordsListStore } from "@/hooks/useMedicalRecordsListStore";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
+import { PageHeader } from "@/components/PageHeader";
+import { FileText } from "lucide-react";
 
 // Import our components
 import MedicalRecordsCard from "@/components/MedicalRecords/MedicalRecordsCard";
@@ -60,10 +62,12 @@ export default function MedicalRecordsPage() {
       loadingComponent={status === "loading" ? loadingComponent : undefined}
     >
       <div className="container py-10">
-        {/* Keep the page header simple and in the main component */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Patient Medical Records</h1>
-        </div>
+        {/* Replace the simple header with PageHeader component */}
+        <PageHeader
+          title="Patient Medical Records"
+          icon={<FileText className="h-5 w-5 text-primary" />}
+          description="View and manage your patients' medical records, history, and treatment notes."
+        />
 
         <MedicalRecordsCard
           patients={patients}

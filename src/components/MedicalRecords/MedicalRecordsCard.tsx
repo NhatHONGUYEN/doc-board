@@ -1,17 +1,10 @@
 // src/components/MedicalRecords/MedicalRecordsCard.tsx
-import { Loader2, Search, FilterX } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
 import { PatientRecord } from "@/lib/types/medical-records";
 import PatientCard from "./PatientCard";
+import { SearchHeader } from "../Search-header";
 
 type MedicalRecordsCardProps = {
   patients: PatientRecord[];
@@ -34,36 +27,13 @@ export default function MedicalRecordsCard({
 }: MedicalRecordsCardProps) {
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Medical Records</CardTitle>
-            <CardDescription>
-              View and manage patient medical histories
-            </CardDescription>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search records..."
-              className="pl-8 w-[250px]"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-1 top-1"
-                onClick={() => setSearchTerm("")}
-              >
-                <FilterX className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-      </CardHeader>
+      <SearchHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        label="Search Records"
+        placeholder="Search by patient name, condition, or record date..."
+        id="patient-records-search"
+      />
 
       <CardContent>
         {isLoading ? (
