@@ -22,7 +22,7 @@ export function UpcomingAppointmentsColumn({
 }: UpcomingAppointmentsProps) {
   return (
     <Card className="overflow-hidden transition-all duration-300 group border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] flex flex-col h-full">
-      <CardHeader className="bg-card border-b  border-border  py-5 pb-3 ">
+      <CardHeader className="bg-card border-b border-border py-5 pb-3">
         <div className="flex justify-between items-center pb-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
@@ -30,10 +30,10 @@ export function UpcomingAppointmentsColumn({
             </div>
             <div>
               <CardTitle className="text-card-foreground line-clamp-1">
-                Upcoming Appointments
+                Prochains Rendez-vous
               </CardTitle>
               <CardDescription className="text-muted-foreground line-clamp-1">
-                Next scheduled appointments
+                Rendez-vous planifiés à venir
               </CardDescription>
             </div>
           </div>
@@ -44,7 +44,7 @@ export function UpcomingAppointmentsColumn({
           >
             <Link href="/doctor/appointment" className="flex items-center">
               <CalendarIcon className="h-4 w-4 mr-2" />
-              View All
+              Voir tout
             </Link>
           </Button>
         </div>
@@ -119,10 +119,10 @@ export function UpcomingAppointmentsColumn({
               <CalendarIcon size={24} className="text-primary" />
             </div>
             <p className="text-card-foreground font-medium mb-1">
-              No upcoming appointments
+              Aucun rendez-vous à venir
             </p>
             <p className="text-sm text-muted-foreground mb-6">
-              Your future schedule is clear
+              Votre agenda futur est libre
             </p>
             <Button
               className="h-10 bg-primary hover:bg-primary/90 transition-all"
@@ -130,7 +130,7 @@ export function UpcomingAppointmentsColumn({
             >
               <Link href="/doctor/availability" className="flex items-center">
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                Update Availability
+                Mettre à jour disponibilités
               </Link>
             </Button>
           </div>
