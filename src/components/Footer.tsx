@@ -1,5 +1,6 @@
 import { Logo } from "@/components/logo";
 import Link from "next/link";
+import { HeroBackground } from "./HeroBackground";
 
 const links = [
   {
@@ -30,7 +31,8 @@ const links = [
 
 export default function Footer() {
   return (
-    <footer className="py-16 md:py-32">
+    <footer className="relative py-16 md:py-32">
+      <HeroBackground />
       <div className="mx-auto max-w-5xl px-6">
         <Link href="/" aria-label="go home" className="mx-auto block size-fit">
           <Logo />
@@ -47,6 +49,7 @@ export default function Footer() {
             </Link>
           ))}
         </div>
+        {/* Social links */}
         <div className="my-8 flex flex-wrap justify-center gap-6 text-sm">
           <Link
             href="#"

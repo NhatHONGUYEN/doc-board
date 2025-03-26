@@ -7,6 +7,7 @@ import Image from "next/image";
 import { AnimatedGroup } from "./ui/animated-group";
 import { TextEffect } from "./ui/text-effect";
 import HeroHeader from "./hero5-header";
+import { HeroBackground } from "./HeroBackground";
 
 const transitionVariants = {
   item: {
@@ -78,7 +79,7 @@ export default function HeroSection() {
                 height="4095"
               />
             </AnimatedGroup>
-            <div className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"></div>
+            <HeroBackground />
             <div className="mx-auto max-w-7xl px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
