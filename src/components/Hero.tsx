@@ -7,7 +7,6 @@ import { AnimatedGroup } from "./ui/animated-group";
 import { TextEffect } from "./ui/text-effect";
 
 import HeroHeader from "./HeroHeader";
-import { HeroBackground } from "./HeroBackground";
 
 const transitionVariants = {
   item: {
@@ -36,7 +35,6 @@ export default function HeroSection() {
       <main className="overflow-hidden">
         <section>
           <div className="relative pt-24 md:pt-36">
-            <HeroBackground />
             <div className="mx-auto max-w-7xl px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
