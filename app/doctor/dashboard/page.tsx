@@ -42,17 +42,21 @@ export default function DoctorDashboard() {
 
   // Handle loading state - from TanStack Query
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Loading your dashboard...</div>;
+    return <div className="p-8">Chargement de votre tableau de bord...</div>;
   }
 
   // Handle error state - from TanStack Query
   if (isError) {
-    return <div className="p-8 text-red-500">Error: {error.message}</div>;
+    return <div className="p-8 text-red-500">Erreur : {error.message}</div>;
   }
 
   // Handle no session
   if (!session) {
-    return <div className="p-8">Please sign in to view your dashboard</div>;
+    return (
+      <div className="p-8">
+        Veuillez vous connecter pour voir votre tableau de bord
+      </div>
+    );
   }
 
   return (
@@ -60,20 +64,21 @@ export default function DoctorDashboard() {
       <div className="mb-8">
         {/* Top section with heading and action button */}
         <PageHeader
-          title="Dashboard"
+          title="Tableau de Bord"
           icon={<LayoutDashboard className="h-5 w-5 text-primary" />}
           actions={
             <Button asChild>
               <Link href="/doctor/availability" className="flex items-center">
                 <Clock className="mr-2 h-4 w-4" />
-                Manage Availability
+                Gérer les Disponibilités
               </Link>
             </Button>
           }
           highlightedText={{
-            prefix: "Welcome back,",
+            prefix: "Bienvenue,",
             text: `Dr. ${doctor?.user?.name?.split(" ")[0]}`,
-            suffix: ". View your appointments and patient statistics.",
+            suffix:
+              ". Consultez vos rendez-vous et les statistiques des patients.",
           }}
         />
       </div>

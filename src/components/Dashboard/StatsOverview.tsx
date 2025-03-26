@@ -82,14 +82,14 @@ export function StatsOverview({ stats }: { stats: Stats }) {
           <div className="mr-2 bg-primary/10 p-1.5 rounded">
             <ArrowUpRight className="h-4 w-4 text-primary" />
           </div>
-          Performance Metrics
+          Indicateurs de Performance
         </h2>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* Total Patients */}
         <StatCard
-          title="Total Patients"
+          title="Toues les patients"
           value={stats.totalPatients}
           icon={<Users size={24} className="text-primary" />}
           bgClass="bg-primary/10"
@@ -102,7 +102,7 @@ export function StatsOverview({ stats }: { stats: Stats }) {
 
         {/* All Appointments */}
         <StatCard
-          title="All Appointments"
+          title="Tous les rendez-vous"
           value={stats.totalAppointments}
           icon={<Calendar size={24} className="text-primary" />}
           bgClass="bg-primary/15"
@@ -115,7 +115,7 @@ export function StatsOverview({ stats }: { stats: Stats }) {
 
         {/* Completed Appointments */}
         <StatCard
-          title="Completed"
+          title="Rendez-vous terminés"
           value={stats.completedAppointments}
           icon={
             <CheckCircle
@@ -133,7 +133,7 @@ export function StatsOverview({ stats }: { stats: Stats }) {
 
         {/* Cancelled Appointments */}
         <StatCard
-          title="Cancelled"
+          title="Rencontres annulées"
           value={stats.cancelledAppointments}
           icon={<XCircle size={24} className="text-destructive" />}
           bgClass="bg-destructive/10"
@@ -148,10 +148,10 @@ export function StatsOverview({ stats }: { stats: Stats }) {
       {/* Using InfoNotice component instead of hardcoded notice */}
       <InfoNotice
         icon={<Calendar size={14} />}
-        note="Note: Trend percentages are calculated based on the last 30 days compared to the previous period."
+        note="Remarque : Les pourcentages de tendance sont calculés sur les 30 derniers jours par rapport à la période précédente."
       >
-        These statistics represent your all-time activity. Percentage indicators
-        show month-over-month changes.
+        Ces statistiques représentent votre activité globale. Les indicateurs de
+        pourcentage montrent les variations d&apos;un mois à l&apos;autre.
       </InfoNotice>
     </div>
   );
