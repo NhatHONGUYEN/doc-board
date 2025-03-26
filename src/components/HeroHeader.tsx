@@ -7,10 +7,10 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { name: " Fonctionnalités", href: "#fonctionnalites" },
-  { name: " Pour les médecins", href: "#pour-medecins" },
-  { name: " Avis & Témoignages", href: "#temoignages" },
-  { name: " Tarifs", href: "#tarifs" },
+  { name: " Fonctionnalités", href: "#features" },
+  { name: "FAQs", href: "#faq" },
+  { name: " Avis & Témoignages", href: "#testimonials" },
+  { name: " Tarifs", href: "#pricing" },
 ];
 
 export default function HeroHeader() {
@@ -24,6 +24,7 @@ export default function HeroHeader() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <header>
       <nav
@@ -49,7 +50,7 @@ export default function HeroHeader() {
 
               <button
                 onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? "Close Menu" : "Open Menu"}
+                aria-label={menuState ? "Close Menu" : "Open Menu"}
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
               >
                 <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
@@ -88,23 +89,27 @@ export default function HeroHeader() {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                {/* Button order and styling that matches the Hero section */}
+                <div
+                  className={cn(
+                    "bg-foreground/10 rounded-full border p-0.5",
+                    isScrolled && "lg:hidden"
+                  )}
+                >
+                  <Button asChild size="sm">
+                    <Link href="/sign-up">
+                      <span>Créer un Compte</span>
+                    </Link>
+                  </Button>
+                </div>
                 <Button
                   asChild
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   className={cn(isScrolled && "lg:hidden")}
                 >
                   <Link href="/sign-in">
                     <span>Se Connecter</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/sign-up">
-                    <span>S&apos;inscrire</span>
                   </Link>
                 </Button>
                 <Button

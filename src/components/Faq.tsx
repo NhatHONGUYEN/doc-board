@@ -2,7 +2,10 @@ import { HeroBackground } from "./HeroBackground";
 
 export default function Faq() {
   return (
-    <section className="relative scroll-py-16 py-16 md:scroll-py-32 md:py-32">
+    <section
+      className="relative scroll-py-16 py-16 md:scroll-py-32 md:py-32"
+      id="faq"
+    >
       <HeroBackground />
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid gap-y-12 px-2 lg:[grid-template-columns:1fr_auto]">

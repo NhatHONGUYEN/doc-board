@@ -5,7 +5,7 @@ import { HeroBackground } from "./HeroBackground";
 
 export default function Features() {
   return (
-    <section className="relative py-16 md:py-32">
+    <section className="relative py-16 md:py-32" id="features">
       <HeroBackground />
       <div className="@container mx-auto max-w-5xl px-6">
         <div className="text-center">
