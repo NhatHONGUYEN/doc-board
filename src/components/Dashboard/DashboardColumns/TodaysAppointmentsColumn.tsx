@@ -86,7 +86,7 @@ export function TodaysAppointmentsColumn({
               </div>
               <div>
                 <CardTitle className="text-card-foreground">
-                  Today&apos;s Appointments
+                  Rendez-vous d&apos;aujourd&apos;hui
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
                   {new Date().toLocaleDateString(undefined, {
@@ -104,7 +104,7 @@ export function TodaysAppointmentsColumn({
             >
               <Link href="/doctor/appointment" className="flex items-center">
                 <CalendarIcon className="h-4 w-4 mr-2" />
-                View All
+                Voir tout
               </Link>
             </Button>
           </div>
@@ -178,7 +178,7 @@ export function TodaysAppointmentsColumn({
                             ) : (
                               <MoreHorizontal size={16} />
                             )}
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Ouvrir menu</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -189,7 +189,7 @@ export function TodaysAppointmentsColumn({
                             onClick={() => handleViewDetails(appointment)}
                             className="cursor-pointer hover:bg-primary/10 hover:text-primary"
                           >
-                            View Details
+                            Voir détails
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             asChild
@@ -198,7 +198,7 @@ export function TodaysAppointmentsColumn({
                             <Link
                               href={`/doctor/medical-records/${appointment.patientId}`}
                             >
-                              View Patient Records
+                              Voir dossier médical
                             </Link>
                           </DropdownMenuItem>
                           {appointment.status !== "completed" && (
@@ -211,7 +211,7 @@ export function TodaysAppointmentsColumn({
                               }
                               className="cursor-pointer hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
                             >
-                              Mark as Completed
+                              Marquer comme terminé
                             </DropdownMenuItem>
                           )}
                           {appointment.status !== "cancelled" && (
@@ -224,7 +224,7 @@ export function TodaysAppointmentsColumn({
                               }
                               className="cursor-pointer hover:bg-destructive/10 hover:text-destructive"
                             >
-                              Cancel Appointment
+                              Annuler rendez-vous
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -240,10 +240,10 @@ export function TodaysAppointmentsColumn({
                 <CalendarIcon size={24} className="text-primary" />
               </div>
               <p className="text-card-foreground font-medium mb-1">
-                No appointments for today
+                Pas de rendez-vous aujourd&apos;hui
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                Your schedule is clear for the day
+                Votre emploi du temps est libre pour la journée
               </p>
               <Button
                 className="h-10 bg-primary hover:bg-primary/90 transition-all"
@@ -251,7 +251,7 @@ export function TodaysAppointmentsColumn({
               >
                 <Link href="/doctor/availability" className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
-                  Update Availability
+                  Mettre à jour disponibilités
                 </Link>
               </Button>
             </div>
@@ -264,7 +264,7 @@ export function TodaysAppointmentsColumn({
         <DialogContent className="max-w-md border-border bg-card">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-card-foreground">
-              Appointment Details
+              Détails du rendez-vous
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {selectedAppointment &&
@@ -310,7 +310,7 @@ export function TodaysAppointmentsColumn({
                 <div className="flex items-center">
                   <Clock size={18} className="text-primary/70 mr-2" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Time</p>
+                    <p className="text-sm text-muted-foreground">Heure</p>
                     <p className="text-card-foreground">
                       {new Date(selectedAppointment.date).toLocaleTimeString(
                         [],
@@ -334,7 +334,7 @@ export function TodaysAppointmentsColumn({
                 <div className="flex items-center">
                   <Calendar size={18} className="text-primary/70 mr-2" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Duration</p>
+                    <p className="text-sm text-muted-foreground">Durée</p>
                     <p className="text-card-foreground">
                       {selectedAppointment.duration} minutes
                     </p>
@@ -345,10 +345,10 @@ export function TodaysAppointmentsColumn({
                   <FileText size={18} className="text-primary/70 mr-2 mt-1" />
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Reason for Visit
+                      Motif de la visite
                     </p>
                     <p className="text-card-foreground">
-                      {selectedAppointment.reason || "Not specified"}
+                      {selectedAppointment.reason || "Non spécifié"}
                     </p>
                   </div>
                 </div>
@@ -358,7 +358,7 @@ export function TodaysAppointmentsColumn({
                     <FileText size={18} className="text-primary/70 mr-2 mt-0" />
                     <div>
                       <p className="text-sm font-medium text-card-foreground mb-1">
-                        Doctor Notes
+                        Notes du médecin
                       </p>
                       <p className="whitespace-pre-wrap text-muted-foreground text-sm">
                         {selectedAppointment.notes}
@@ -370,7 +370,7 @@ export function TodaysAppointmentsColumn({
                 <div className="flex items-center">
                   <User size={18} className="text-primary/70 mr-2" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Status</p>
+                    <p className="text-sm text-muted-foreground">Statut</p>
                     <Badge
                       variant="outline"
                       className={cn(
@@ -378,7 +378,13 @@ export function TodaysAppointmentsColumn({
                         getStatusBadgeClass(selectedAppointment.status)
                       )}
                     >
-                      {selectedAppointment.status}
+                      {selectedAppointment.status === "confirmed"
+                        ? "Confirmé"
+                        : selectedAppointment.status === "completed"
+                        ? "Terminé"
+                        : selectedAppointment.status === "cancelled"
+                        ? "Annulé"
+                        : selectedAppointment.status}
                     </Badge>
                   </div>
                 </div>
@@ -391,7 +397,7 @@ export function TodaysAppointmentsColumn({
                   onClick={() => setIsDetailsOpen(false)}
                   className="h-10 bg-card hover:bg-primary/10 hover:text-primary transition-all"
                 >
-                  Close
+                  Fermer
                 </Button>
                 <Button
                   className="h-10 bg-primary hover:bg-primary/90 transition-all"
@@ -402,7 +408,7 @@ export function TodaysAppointmentsColumn({
                     className="flex items-center"
                   >
                     <FileText className="h-4 w-4 mr-2" />
-                    View Medical Records
+                    Voir dossier médical
                   </Link>
                 </Button>
               </DialogFooter>
