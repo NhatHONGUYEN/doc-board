@@ -1,5 +1,5 @@
-import { HeroBackground } from "./HeroBackground";
 import Image from "next/image";
+import { HeroBackground } from "./HeroBackground";
 
 export default function Testimonials() {
   return (
