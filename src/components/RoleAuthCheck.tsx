@@ -43,11 +43,13 @@ export function RoleAuthCheck({
     return unauthenticatedComponent ? (
       <>{unauthenticatedComponent}</>
     ) : (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Sign in required</h1>
-        <p>Please sign in to access this page.</p>
-        <Button className="mt-4" onClick={() => router.push("/auth/login")}>
-          Sign In
+      <div className="p-8 flex flex-col items-center text-center">
+        <h1 className="text-2xl font-bold mb-4">Connexion requise</h1>
+        <p className="text-muted-foreground">
+          Veuillez vous connecter pour accéder à cette page.
+        </p>
+        <Button className="mt-6" onClick={() => router.push("/sign-in")}>
+          Se connecter
         </Button>
       </div>
     );
@@ -60,15 +62,15 @@ export function RoleAuthCheck({
     return unauthorizedComponent ? (
       <>{unauthorizedComponent}</>
     ) : (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Not authorized</h1>
-        <p>
+      <div className="p-8 flex flex-col items-center text-center">
+        <h1 className="text-2xl font-bold mb-4">Accès non autorisé</h1>
+        <p className="text-muted-foreground">
           {roles.length > 1
-            ? `Only ${roleNames} can access this page.`
-            : `Only ${roleNames} can access this page.`}
+            ? `Seuls les utilisateurs avec les rôles ${roleNames} peuvent accéder à cette page.`
+            : `Seuls les utilisateurs avec le rôle ${roleNames} peuvent accéder à cette page.`}
         </p>
-        <Button className="mt-4" onClick={() => router.back()}>
-          Go Back
+        <Button className="mt-6" onClick={() => router.back()}>
+          Retour
         </Button>
       </div>
     );

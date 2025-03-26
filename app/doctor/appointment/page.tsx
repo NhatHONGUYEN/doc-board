@@ -111,22 +111,22 @@ export default function DoctorAppointmentPage() {
         {activeTab === "calendar" && (
           <InfoNotice
             icon={<CalendarDays size={14} />}
-            note="Note: Click on any date to view appointments or drag to create new appointment slots."
+            note="Remarque : Cliquez sur une date pour voir les rendez-vous ou faites glisser pour créer de nouveaux créneaux."
           >
-            The calendar provides a comprehensive view of all your scheduled
-            appointments. Different colors indicate different appointment
-            statuses.
+            Le calendrier offre une vue complète de tous vos rendez-vous
+            programmés. Les différentes couleurs indiquent les différents
+            statuts des rendez-vous.
           </InfoNotice>
         )}
 
         {activeTab === "today" && (
           <InfoNotice
             icon={<Clock size={14} />}
-            note="Note: You can update appointment status or add notes by clicking on an appointment."
+            note="Remarque : Vous pouvez mettre à jour le statut des rendez-vous ou ajouter des notes en cliquant sur un rendez-vous."
           >
-            Here are all your appointments scheduled for today. Manage them
-            efficiently by updating their status as you complete each
-            consultation.
+            Voici tous vos rendez-vous programmés pour aujourd&apos;hui.
+            Gérez-les efficacement en mettant à jour leur statut au fur et à
+            mesure que vous terminez chaque consultation.
           </InfoNotice>
         )}
       </div>
