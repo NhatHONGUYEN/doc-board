@@ -52,7 +52,7 @@ export default function DoctorPatientsPage() {
   useEffect(() => {
     if (isError && error instanceof Error) {
       console.error(error);
-      toast.error(`Failed to load patients: ${error.message}`);
+      toast.error(`Échec du chargement des patients : ${error.message}`);
     }
   }, [isError, error]);
 
@@ -88,14 +88,14 @@ export default function DoctorPatientsPage() {
       <div className="container py-10">
         {/* Replace simple heading with PageHeader */}
         <PageHeader
-          title="My Patients"
+          title="Mes Patients"
           icon={<Users className="h-5 w-5 text-primary" />}
-          description="View and manage all patients under your care. Search, filter, or select a patient to see their complete medical history."
+          description="Consultez et gérez tous les patients sous votre responsabilité. Recherchez, filtrez ou sélectionnez un patient pour voir son historique médical complet."
           actions={
             <Button asChild>
               <Link href="/doctor/patients/add" className="flex items-center">
                 <UserPlus className="mr-2 h-4 w-4" />
-                Add New Patient
+                Ajouter un Patient
               </Link>
             </Button>
           }
@@ -119,13 +119,15 @@ export default function DoctorPatientsPage() {
         {/* InfoNotice with note removed */}
         <div className="mt-6">
           <InfoNotice icon={<FileText size={14} />}>
-            This table displays all patients under your care. You can sort the
-            list by clicking on column headers and filter patients using the
-            search box. Use the action buttons to view details or schedule
-            appointments. Click on the{" "}
-            <span className="text-blue-200">user icon</span> to view patient
-            details or the <span className="text-blue-200">calendar icon</span>{" "}
-            to schedule an appointment directly.
+            Ce tableau affiche tous les patients sous votre responsabilité. Vous
+            pouvez trier la liste en cliquant sur les en-têtes de colonnes et
+            filtrer les patients à l&apos;aide de la barre de recherche.
+            Utilisez les boutons d&apos;action pour consulter les détails ou
+            planifier des rendez-vous. Cliquez sur l&apos;
+            <span className="text-blue-200">icône utilisateur</span> pour voir
+            les détails du patient ou sur l&apos;
+            <span className="text-blue-200">icône calendrier</span> pour
+            planifier directement un rendez-vous.
           </InfoNotice>
         </div>
 

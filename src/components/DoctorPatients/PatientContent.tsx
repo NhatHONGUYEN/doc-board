@@ -24,7 +24,7 @@ import { CardContent, CardFooter } from "@/components/ui/card";
 import { SortConfig } from "@/lib/types/sorting";
 import { cn } from "@/lib/utils";
 
-// Helper function to get appointment badge color
+// Fonction d'aide pour obtenir la couleur du badge de rendez-vous
 function getAppointmentBadgeClass(count: number) {
   if (count === 0) return "bg-muted text-muted-foreground";
   if (count < 3) return "bg-primary/10 text-primary";
@@ -60,7 +60,9 @@ export function PatientContent({
       <div className="flex justify-center py-12">
         <div className="flex flex-col items-center">
           <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-          <p className="text-muted-foreground text-sm">Loading patients...</p>
+          <p className="text-muted-foreground text-sm">
+            Chargement des patients...
+          </p>
         </div>
       </div>
     );
@@ -86,11 +88,11 @@ export function PatientContent({
             </svg>
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Error Loading Patients
+            Erreur de chargement des patients
           </h3>
           <p className="text-muted-foreground text-sm">
-            There was a problem loading your patients. Please try again or
-            contact support.
+            Un problème est survenu lors du chargement de vos patients. Veuillez
+            réessayer ou contacter le support.
           </p>
         </div>
       </div>
@@ -105,12 +107,12 @@ export function PatientContent({
             <User className="h-6 w-6 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            No Patients Found
+            Aucun patient trouvé
           </h3>
           <p className="text-muted-foreground text-sm">
             {searchTerm
-              ? `No patients match "${searchTerm}". Try a different search term.`
-              : "You don't have any patients yet."}
+              ? `Aucun patient ne correspond à "${searchTerm}". Essayez un autre terme de recherche.`
+              : "Vous n'avez pas encore de patients."}
           </p>
         </div>
       </div>
@@ -129,7 +131,7 @@ export function PatientContent({
                   onClick={() => handleSort("name")}
                 >
                   <div className="flex items-center">
-                    <span className="font-medium text-primary">Name</span>
+                    <span className="font-medium text-primary">Nom</span>
                     {sortConfig.key === "name" && (
                       <span className="text-primary ml-1">
                         {sortConfig.direction === "ascending" ? (
@@ -149,7 +151,7 @@ export function PatientContent({
                   onClick={() => handleSort("birthDate")}
                 >
                   <div className="flex items-center">
-                    <span className="font-medium text-primary">Age</span>
+                    <span className="font-medium text-primary">Âge</span>
                     {sortConfig.key === "birthDate" && (
                       <span className="text-primary ml-1">
                         {sortConfig.direction === "ascending" ? (
@@ -167,7 +169,7 @@ export function PatientContent({
                 >
                   <div className="flex items-center">
                     <span className="font-medium text-primary">
-                      Appointments
+                      Rendez-vous
                     </span>
                     {sortConfig.key === "appointments" && (
                       <span className="text-primary ml-1">
@@ -181,7 +183,7 @@ export function PatientContent({
                   </div>
                 </TableHead>
                 <TableHead className="h-11 font-medium text-primary">
-                  Last Visit
+                  Dernière visite
                 </TableHead>
                 <TableHead className="text-right h-11 font-medium text-primary">
                   Actions
@@ -190,14 +192,14 @@ export function PatientContent({
             </TableHeader>
             <TableBody>
               {filteredPatients.map((patient, index) => {
-                // Calculate age if birthDate is available
+                // Calculer l'âge si la date de naissance est disponible
                 let age = null;
                 if (patient.birthDate) {
                   const birthDate = new Date(patient.birthDate);
                   const today = new Date();
                   age = today.getFullYear() - birthDate.getFullYear();
 
-                  // Check if birthday has occurred this year
+                  // Vérifier si l'anniversaire a eu lieu cette année
                   if (
                     today.getMonth() < birthDate.getMonth() ||
                     (today.getMonth() === birthDate.getMonth() &&
@@ -207,10 +209,10 @@ export function PatientContent({
                   }
                 }
 
-                // Find last appointment
+                // Trouver le dernier rendez-vous
                 const lastAppointment = patient.appointments[0];
 
-                // Alternating row colors
+                // Couleurs de ligne alternées
                 const rowClass =
                   index % 2 === 0 ? "bg-background" : "bg-muted/10";
 
@@ -227,7 +229,7 @@ export function PatientContent({
                         <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
                           <AvatarImage src={patient.user.image || undefined} />
                           <AvatarFallback className="bg-primary/5 text-primary font-semibold">
-                            {(patient.user.name || "User")
+                            {(patient.user.name || "Utilisateur")
                               .split(" ")
                               .map((n) => n[0])
                               .join("")
@@ -254,7 +256,7 @@ export function PatientContent({
                         </div>
                       ) : (
                         <span className="text-muted-foreground italic text-sm">
-                          Not provided
+                          Non renseigné
                         </span>
                       )}
                     </TableCell>
@@ -263,12 +265,12 @@ export function PatientContent({
                         <div className="flex items-center">
                           <Calendar className="mr-2 h-4 w-4 text-primary/70" />
                           <span className="text-card-foreground">
-                            {age} years
+                            {age} ans
                           </span>
                         </div>
                       ) : (
                         <span className="text-muted-foreground italic text-sm">
-                          Not provided
+                          Non renseigné
                         </span>
                       )}
                     </TableCell>
@@ -291,17 +293,17 @@ export function PatientContent({
                             <p className="text-card-foreground">
                               {format(
                                 new Date(lastAppointment.date),
-                                "MMM d, yyyy"
+                                "d MMM yyyy"
                               )}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {format(new Date(lastAppointment.date), "h:mm a")}
+                              {format(new Date(lastAppointment.date), "HH:mm")}
                             </p>
                           </div>
                         </div>
                       ) : (
                         <span className="text-muted-foreground italic text-sm">
-                          Never
+                          Jamais
                         </span>
                       )}
                     </TableCell>
@@ -314,7 +316,7 @@ export function PatientContent({
                           onClick={() => viewPatientDetails(patient)}
                         >
                           <User className="h-4 w-4 mr-1.5" />
-                          <span>Profile</span>
+                          <span>Profil</span>
                         </Button>
                         <Button
                           size="sm"
@@ -322,7 +324,7 @@ export function PatientContent({
                           onClick={() => scheduleAppointment(patient.id)}
                         >
                           <Calendar className="h-4 w-4 mr-1.5" />
-                          <span>Schedule</span>
+                          <span>Planifier</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -335,7 +337,7 @@ export function PatientContent({
       </CardContent>
       <CardFooter className="flex justify-between py-4 px-6 border-t border-border">
         <p className="text-sm text-muted-foreground">
-          Showing {filteredPatients.length} of {patients.length} patients
+          Affichage de {filteredPatients.length} sur {patients.length} patients
         </p>
       </CardFooter>
     </>

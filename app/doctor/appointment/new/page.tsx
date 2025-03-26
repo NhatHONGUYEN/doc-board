@@ -15,9 +15,9 @@ export default function NewDoctorAppointmentPage() {
     <RoleAuthCheck allowedRoles="DOCTOR">
       <div className="container py-10">
         <PageHeader
-          title="Schedule New Appointment"
+          title="Planifier un Nouveau Rendez-vous"
           icon={<CalendarPlus className="h-5 w-5 text-primary" />}
-          description="Create a new appointment for a patient. Select the patient, date, time, and add any relevant notes."
+          description="Créez un nouveau rendez-vous pour un patient. Sélectionnez le patient, la date, l'heure et ajoutez des notes pertinentes."
         />
 
         <Suspense
