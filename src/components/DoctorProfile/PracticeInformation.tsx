@@ -28,10 +28,10 @@ export function PracticeInformation({
             <div className="space-y-1">
               <CardTitle className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2 text-primary/70" />
-                Practice Information
+                Informations de Pratique
               </CardTitle>
               <CardDescription>
-                Your practice details and patient statistics
+                Détails de votre activité et statistiques des patients
               </CardDescription>
             </div>
           </div>
@@ -45,13 +45,13 @@ export function PracticeInformation({
               bgClass="bg-primary/5"
             />
             <StatsCard
-              label="Total Appointments"
+              label="Total Rendez-vous"
               value={totalAppointments}
               icon={<Calendar className="h-5 w-5 text-primary" />}
               bgClass="bg-primary/10"
             />
             <StatsCard
-              label="Upcoming Appointments"
+              label="Rendez-vous à venir"
               value={upcomingAppointments}
               icon={<CalendarClock className="h-5 w-5 text-primary" />}
               bgClass="bg-primary/15"
@@ -60,20 +60,20 @@ export function PracticeInformation({
         </CardContent>
       </Card>
 
-      {/* InfoNotice for Practice Information */}
+      {/* InfoNotice pour les Informations de Pratique */}
       <InfoNotice icon={<Users size={14} />}>
-        These statistics reflect your practice activity and patient engagement
-        over time.
+        Ces statistiques reflètent l&apos;activité de votre cabinet et
+        l&apos;engagement des patients au fil du temps.
         <span className="font-medium block mt-1 text-blue-200">
-          Data is updated in real-time as appointments are scheduled and
-          completed.
+          Les données sont mises à jour en temps réel à mesure que les
+          rendez-vous sont planifiés et effectués.
         </span>
       </InfoNotice>
     </div>
   );
 }
 
-// Helper component - stats card
+// Composant d'aide - carte de statistiques
 type StatsCardProps = {
   label: string;
   value: number;

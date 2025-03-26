@@ -38,7 +38,7 @@ export function DoctorProfileCard({
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
-                    alt="Profile picture"
+                    alt="Photo de profil"
                     fill
                     className="rounded-full object-cover"
                   />
@@ -52,10 +52,10 @@ export function DoctorProfileCard({
               <div className="space-y-2">
                 <div className="flex flex-col items-center">
                   <h2 className="text-xl font-bold text-card-foreground">
-                    Dr. {doctor?.user?.name || "Doctor"}
+                    Dr. {doctor?.user?.name || "Médecin"}
                   </h2>
                   <Badge className="mt-1 bg-primary hover:bg-primary/90">
-                    Doctor
+                    Médecin
                   </Badge>
                 </div>
 
@@ -68,7 +68,7 @@ export function DoctorProfileCard({
                   {doctor?.user?.email}
                 </p>
 
-                {/* Quick Stats - Enhanced with consistent design */}
+                {/* Statistiques rapides - Design cohérent */}
                 <div className="grid grid-cols-2 gap-3 w-full mt-4">
                   <div className="p-3 bg-primary/5 border border-primary/10 rounded-md text-center">
                     <div className="flex items-center justify-center mb-1">
@@ -77,7 +77,7 @@ export function DoctorProfileCard({
                         {totalAppointments}
                       </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">Total Appts</p>
+                    <p className="text-xs text-muted-foreground">Total RDV</p>
                   </div>
                   <div className="p-3 bg-primary/5 border border-primary/10 rounded-md text-center">
                     <div className="flex items-center justify-center mb-1">
@@ -86,7 +86,7 @@ export function DoctorProfileCard({
                         {upcomingAppointments}
                       </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">Upcoming</p>
+                    <p className="text-xs text-muted-foreground">À venir</p>
                   </div>
                 </div>
 
@@ -100,7 +100,7 @@ export function DoctorProfileCard({
                       className="flex items-center justify-center gap-2"
                     >
                       <FileText className="w-4 h-4" />
-                      Edit Profile
+                      Modifier le Profil
                     </Link>
                   </Button>
                 </div>
@@ -116,7 +116,7 @@ export function DoctorProfileCard({
                       className="flex items-center justify-center gap-2"
                     >
                       <LayoutGrid className="w-4 h-4" />
-                      View Dashboard
+                      Voir le Tableau de Bord
                     </Link>
                   </Button>
                 </div>
@@ -125,13 +125,13 @@ export function DoctorProfileCard({
           </CardContent>
         </Card>
 
-        {/* InfoNotice for Profile Card */}
+        {/* InfoNotice pour la Carte de Profil */}
         <InfoNotice
           icon={<User size={14} />}
-          note="A complete profile improves patient trust and engagement."
+          note="Un profil complet améliore la confiance et l'engagement des patients."
         >
-          This profile card shows how patients will see your information when
-          booking appointments.
+          Cette carte de profil montre comment les patients verront vos
+          informations lors de la prise de rendez-vous.
         </InfoNotice>
       </div>
     </div>

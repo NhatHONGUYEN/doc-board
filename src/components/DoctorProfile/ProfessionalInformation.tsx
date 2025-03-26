@@ -36,10 +36,10 @@ export function ProfessionalInformation({
             <div className="space-y-1">
               <CardTitle className="flex items-center">
                 <Stethoscope className="h-5 w-5 mr-2 text-primary/70" />
-                Professional Information
+                Informations Professionnelles
               </CardTitle>
               <CardDescription>
-                Your credentials and professional details
+                Vos qualifications et détails professionnels
               </CardDescription>
             </div>
             <Button
@@ -49,7 +49,7 @@ export function ProfessionalInformation({
             >
               <Link href="/doctor/settings" className="flex items-center">
                 <FileText className="h-4 w-4 mr-2" />
-                Edit
+                Modifier
               </Link>
             </Button>
           </div>
@@ -59,10 +59,10 @@ export function ProfessionalInformation({
             <div className="space-y-1.5">
               <p className="text-sm text-muted-foreground flex items-center">
                 <User className="h-4 w-4 mr-2 text-primary/70" />
-                Full Name
+                Nom Complet
               </p>
               <p className="font-medium text-card-foreground pl-6">
-                Dr. {doctor?.user?.name || "Not provided"}
+                Dr. {doctor?.user?.name || "Non renseigné"}
               </p>
             </div>
 
@@ -79,12 +79,12 @@ export function ProfessionalInformation({
             <div className="space-y-1.5">
               <p className="text-sm text-muted-foreground flex items-center">
                 <Award className="h-4 w-4 mr-2 text-primary/70" />
-                Specialty
+                Spécialité
               </p>
               <p className="font-medium text-card-foreground pl-6">
                 {doctor?.specialty || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -93,12 +93,12 @@ export function ProfessionalInformation({
             <div className="space-y-1.5">
               <p className="text-sm text-muted-foreground flex items-center">
                 <FileText className="h-4 w-4 mr-2 text-primary/70" />
-                License Number
+                Numéro de Licence
               </p>
               <p className="font-medium text-card-foreground pl-6">
                 {doctor?.licenseNumber || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -107,12 +107,12 @@ export function ProfessionalInformation({
             <div className="space-y-1.5">
               <p className="text-sm text-muted-foreground flex items-center">
                 <Phone className="h-4 w-4 mr-2 text-primary/70" />
-                Phone Number
+                Numéro de Téléphone
               </p>
               <p className="font-medium text-card-foreground pl-6">
                 {doctor?.phone || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -121,12 +121,12 @@ export function ProfessionalInformation({
             <div className="space-y-1.5">
               <p className="text-sm text-muted-foreground flex items-center">
                 <MapPin className="h-4 w-4 mr-2 text-primary/70" />
-                Office Address
+                Adresse du Cabinet
               </p>
               <p className="font-medium text-card-foreground pl-6">
                 {doctor?.officeAddress || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -134,7 +134,7 @@ export function ProfessionalInformation({
 
             <div className="md:col-span-2 space-y-1.5 mt-2 pt-4 border-t border-border">
               <p className="text-sm text-muted-foreground mb-2">
-                Professional Description
+                Description Professionnelle
               </p>
               <div className="px-4 py-3 bg-muted/20 rounded-md">
                 {doctor?.description ? (
@@ -143,8 +143,9 @@ export function ProfessionalInformation({
                   </p>
                 ) : (
                   <p className="text-muted-foreground italic">
-                    No professional description provided. Add details about your
-                    practice, experience, and specializations.
+                    Aucune description professionnelle fournie. Ajoutez des
+                    détails sur votre pratique, votre expérience et vos
+                    spécialisations.
                   </p>
                 )}
               </div>
@@ -153,7 +154,7 @@ export function ProfessionalInformation({
         </CardContent>
         <CardFooter className="bg-card border-t border-border py-4 px-6">
           <div className="flex items-center text-sm text-primary/70">
-            <span className="font-medium mr-2">Profile Completeness:</span>
+            <span className="font-medium mr-2">Complétude du Profil :</span>
             <div className="h-2 w-40 bg-muted rounded-full overflow-hidden mr-2">
               <div
                 className="h-full bg-primary rounded-full"
@@ -171,11 +172,11 @@ export function ProfessionalInformation({
 
       {/* InfoNotice for Professional Information */}
       <InfoNotice icon={<FileText size={14} />}>
-        Keeping your professional information accurate and up-to-date ensures
-        patients can make informed decisions.
+        Maintenir vos informations professionnelles précises et à jour permet
+        aux patients de prendre des décisions éclairées.
         <span className="font-medium block mt-1 text-blue-200">
-          Your credentials are displayed on your public profile and appointment
-          bookings.
+          Vos qualifications sont affichées sur votre profil public et lors des
+          prises de rendez-vous.
         </span>
       </InfoNotice>
     </div>

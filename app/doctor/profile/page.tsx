@@ -19,7 +19,7 @@ export default function DoctorProfilePage() {
     error,
   } = useDoctorData(session?.user?.id);
 
-  // Calculate some stats
+  // Calculer quelques statistiques
   const totalAppointments = doctor?.appointments?.length || 0;
   const upcomingAppointments =
     doctor?.appointments?.filter(
@@ -48,14 +48,14 @@ export default function DoctorProfilePage() {
 
   return (
     <div className="container py-12">
-      {/* Two column layout */}
+      {/* Mise en page à deux colonnes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left column - Info cards */}
+        {/* Colonne gauche - Cartes d'information */}
         <div className="md:col-span-2 space-y-6">
           <PageHeader
-            title="Doctor Profile"
+            title="Profil Médecin"
             icon={<User className="h-5 w-5 text-primary" />}
-            description="Manage your professional information and availability"
+            description="Gérez vos informations professionnelles et votre disponibilité"
           />
 
           <ProfessionalInformation doctor={doctor} />
@@ -67,7 +67,7 @@ export default function DoctorProfilePage() {
           />
         </div>
 
-        {/* Right column - Profile card */}
+        {/* Colonne droite - Carte de profil */}
         <DoctorProfileCard
           doctor={doctor}
           session={session}
@@ -79,14 +79,14 @@ export default function DoctorProfilePage() {
   );
 }
 
-// State components
+// Composants d'état
 function LoadingState() {
   return (
     <div className="flex justify-center py-12">
       <div className="flex flex-col items-center">
         <div className="h-12 w-12 rounded-full border-4 border-primary/10 border-t-primary animate-spin"></div>
         <p className="mt-4 text-muted-foreground text-sm">
-          Loading your profile...
+          Chargement de votre profil...
         </p>
       </div>
     </div>
@@ -113,11 +113,11 @@ function ErrorState({ errorMessage }: { errorMessage?: string }) {
           </svg>
         </div>
         <h3 className="text-lg font-medium text-card-foreground mb-1">
-          Error Loading Profile
+          Erreur lors du chargement du profil
         </h3>
         <p className="text-muted-foreground text-sm">
           {errorMessage ||
-            "There was a problem loading your profile. Please try again."}
+            "Un problème est survenu lors du chargement de votre profil. Veuillez réessayer."}
         </p>
       </div>
     </div>
@@ -132,13 +132,13 @@ function NotAuthenticatedState() {
           <User className="h-6 w-6 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-medium text-card-foreground mb-1">
-          Authentication Required
+          Authentification requise
         </h3>
         <p className="text-muted-foreground text-sm mb-4">
-          Please sign in to view your doctor profile.
+          Veuillez vous connecter pour voir votre profil médecin.
         </p>
         <Button asChild>
-          <Link href="/api/auth/signin">Sign In</Link>
+          <Link href="/api/auth/signin">Se connecter</Link>
         </Button>
       </div>
     </div>
