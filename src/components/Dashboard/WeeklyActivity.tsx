@@ -34,10 +34,10 @@ export function WeeklyActivity({
               </div>
               <div>
                 <CardTitle className="text-card-foreground">
-                  Weekly Activity
+                  Activité Hebdomadaire
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Your appointments and completion metrics
+                  Vos rendez-vous et indicateurs de performance
                 </CardDescription>
               </div>
             </div>
@@ -50,7 +50,7 @@ export function WeeklyActivity({
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">
-                    Completion Rate
+                    Taux de réalisation
                   </p>
                   <div className="flex items-center">
                     <span className="text-2xl font-bold text-card-foreground mr-1">
@@ -76,9 +76,11 @@ export function WeeklyActivity({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Today</span>
+                    <span className="text-muted-foreground">
+                      Aujourd&apos;hui
+                    </span>
                     <span className="font-medium text-card-foreground">
-                      {todaysAppointments?.length || 0} appointments
+                      {todaysAppointments?.length || 0} rendez-vous
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -97,9 +99,9 @@ export function WeeklyActivity({
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">This Week</span>
+                    <span className="text-muted-foreground">Cette semaine</span>
                     <span className="font-medium text-card-foreground">
-                      {upcomingAppointments?.length || 0} upcoming
+                      {upcomingAppointments?.length || 0} à venir
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -121,10 +123,10 @@ export function WeeklyActivity({
             {/* Middle column - Days of Week Activity */}
             <div className="flex flex-col">
               <h3 className="text-sm font-medium text-card-foreground mb-2">
-                Daily Activity
+                Activité Quotidienne
               </h3>
               <div className="flex-grow flex items-end justify-between">
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map(
                   (day, i) => {
                     const isToday = i === new Date().getDay() - 1;
                     return (
@@ -165,20 +167,20 @@ export function WeeklyActivity({
             {/* Right column - Activity Distribution */}
             <div>
               <h3 className="text-sm font-medium text-card-foreground mb-2">
-                Distribution by Status
+                Distribution par Statut
               </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="flex items-center text-card-foreground">
                       <span className="w-2 h-2 bg-primary/80 rounded-full mr-1"></span>
-                      Confirmed
+                      Confirmés
                     </span>
                     <span className="font-medium text-card-foreground">
                       {stats.totalAppointments -
                         stats.completedAppointments -
                         stats.cancelledAppointments}{" "}
-                      appointments
+                      rendez-vous
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -206,10 +208,10 @@ export function WeeklyActivity({
                   <div className="flex justify-between text-xs">
                     <span className="flex items-center text-card-foreground">
                       <span className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full mr-1"></span>
-                      Completed
+                      Terminés
                     </span>
                     <span className="font-medium text-card-foreground">
-                      {stats.completedAppointments} appointments
+                      {stats.completedAppointments} rendez-vous
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -235,10 +237,10 @@ export function WeeklyActivity({
                   <div className="flex justify-between text-xs">
                     <span className="flex items-center text-card-foreground">
                       <span className="w-2 h-2 bg-destructive rounded-full mr-1"></span>
-                      Cancelled
+                      Annulés
                     </span>
                     <span className="font-medium text-card-foreground">
-                      {stats.cancelledAppointments} appointments
+                      {stats.cancelledAppointments} rendez-vous
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -268,11 +270,11 @@ export function WeeklyActivity({
       {/* Using InfoNotice component instead of hardcoded notice */}
       <InfoNotice
         icon={<BarChart3 size={14} />}
-        note="Note: Daily activity bars represent the relative distribution of appointments across the week."
+        note="Remarque : Les barres d'activité quotidienne représentent la distribution relative des rendez-vous au cours de la semaine."
       >
-        This chart visualizes your weekly appointment activity and status
-        distribution. The completion rate shows the percentage of appointments
-        that were successfully completed.
+        Ce graphique visualise votre activité hebdomadaire de rendez-vous et la
+        répartition par statut. Le taux de réalisation indique le pourcentage de
+        rendez-vous qui ont été terminés avec succès.
       </InfoNotice>
     </>
   );
