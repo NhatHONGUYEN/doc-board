@@ -22,7 +22,7 @@ export function TodaysAppointments({
 }: TodaysAppointmentsProps) {
   const { openDetailsDialog, openUpdateStatusDialog } = useAppointmentStore();
 
-  // Group appointments by time slot
+  // Regrouper les rendez-vous par plage horaire
   const sortAppointments = (appts: Appointment[]) => {
     return [...appts].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -54,7 +54,13 @@ export function TodaysAppointments({
                     }
                     className="w-[80px] justify-center"
                   >
-                    {appointment.status}
+                    {appointment.status === "confirmed"
+                      ? "Confirmé"
+                      : appointment.status === "cancelled"
+                      ? "Annulé"
+                      : appointment.status === "completed"
+                      ? "Terminé"
+                      : appointment.status}
                   </Badge>
 
                   <div className="flex-shrink-0">
@@ -95,7 +101,7 @@ export function TodaysAppointments({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {/* View details button with eye icon */}
+                    {/* Bouton de détails avec icône œil */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -103,10 +109,10 @@ export function TodaysAppointments({
                       onClick={() => openDetailsDialog(appointment)}
                     >
                       <Eye className="h-3.5 w-3.5 mr-1" />
-                      Details
+                      Détails
                     </Button>
 
-                    {/* Update status button (hide for cancelled appointments) */}
+                    {/* Bouton de mise à jour du statut (masqué pour les rendez-vous annulés) */}
                     {appointment.status !== "cancelled" && (
                       <Button
                         variant="secondary"
@@ -115,7 +121,7 @@ export function TodaysAppointments({
                         onClick={() => openUpdateStatusDialog(appointment)}
                       >
                         <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                        Status
+                        Statut
                       </Button>
                     )}
                   </div>
@@ -127,15 +133,16 @@ export function TodaysAppointments({
           <div className="py-8 px-4 text-center">
             <CalendarIcon className="mx-auto h-10 w-10 text-muted-foreground opacity-30 mb-3" />
             <h3 className="text-base font-medium mb-1">
-              No appointments today
+              Aucun rendez-vous aujourd&apos;hui
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
-              You have no scheduled appointments for today.
+              Vous n&apos;avez pas de rendez-vous programmés pour
+              aujourd&apos;hui.
             </p>
             <Button asChild size="sm">
               <Link href="/doctor/appointment/new">
                 <PlusCircle className="mr-1 h-3.5 w-3.5" />
-                Schedule New Appointment
+                Planifier un rendez-vous
               </Link>
             </Button>
           </div>

@@ -43,10 +43,10 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
             <div className="w-7 h-7 bg-primary/90 rounded-md flex items-center justify-center">
               <FileText className="h-4 w-4 text-white" />
             </div>
-            <span className="text-card-foreground">Clinical Notes</span>
+            <span className="text-card-foreground">Notes Cliniques</span>
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Add or edit clinical notes for this appointment.
+            Ajoutez ou modifiez les notes cliniques pour ce rendez-vous.
           </DialogDescription>
         </DialogHeader>
 
@@ -61,7 +61,7 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
                   <p className="text-xs text-muted-foreground">Patient</p>
                   <p className="text-sm font-medium text-card-foreground">
                     {selectedAppointment.patient?.user?.name ||
-                      "Unknown Patient"}
+                      "Patient inconnu"}
                   </p>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
                   <Clock className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Time</p>
+                  <p className="text-xs text-muted-foreground">Heure</p>
                   <p className="text-sm font-medium text-card-foreground">
                     {new Date(selectedAppointment.date).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -116,7 +116,7 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Enter clinical notes, observations, diagnoses, and treatment plans here..."
+                placeholder="Entrez ici les observations cliniques, diagnostics et plans de traitement..."
                 className="min-h-[200px] font-mono text-sm border-border bg-card"
               />
             </div>
@@ -129,7 +129,7 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
             onClick={closeAddNotesDialog}
             className="border-border bg-card hover:bg-muted-foreground/10"
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             onClick={handleAddNotes}
@@ -139,10 +139,10 @@ export function AddNotesDialog({ onSuccessfulSave }: AddNotesDialogProps) {
             {isSavingNotes ? (
               <>
                 <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Saving
+                Enregistrement...
               </>
             ) : (
-              "Save Notes"
+              "Enregistrer"
             )}
           </Button>
         </DialogFooter>

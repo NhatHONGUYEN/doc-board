@@ -13,7 +13,7 @@ import useAppointmentStore from "@/lib/store/useAppointmentStore";
 import { toast } from "sonner";
 import { useAvailabilityData } from "@/hooks/useAvailabilityData";
 
-// Default schedule for fallback
+// Emploi du temps par défaut
 const DEFAULT_SCHEDULE = {
   1: { enabled: true, slots: [{ startTime: "09:00", endTime: "17:00" }] },
   2: { enabled: true, slots: [{ startTime: "09:00", endTime: "17:00" }] },
@@ -26,25 +26,25 @@ const DEFAULT_SCHEDULE = {
 
 type AppointmentCalendarProps = {
   appointments: Appointment[];
-  doctorId?: string; // Add doctorId prop
+  doctorId?: string; // Ajouter le prop doctorId
 };
 
 export function AppointmentCalendar({
   appointments = [],
-  doctorId, // Accept doctorId from props
+  doctorId, // Recevoir doctorId depuis les props
 }: AppointmentCalendarProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
   const router = useRouter();
   const { openDetailsDialog } = useAppointmentStore();
 
-  // No longer need to get doctorId from session
+  // Plus besoin de récupérer doctorId depuis la session
   // const { session } = useSessionStore();
   // const doctorId = session?.user?.id;
 
-  // Fetch availability data with the passed doctorId
+  // Récupérer les données de disponibilité avec le doctorId fourni
   const { data: availabilityData } = useAvailabilityData(doctorId);
 
-  // Get weekly schedule, fallback to default if not available
+  // Obtenir l'emploi du temps hebdomadaire, utiliser la valeur par défaut si non disponible
   const weeklySchedule = availabilityData?.weeklySchedule || DEFAULT_SCHEDULE;
 
   const calendarEvents = appointments.map((apt) => {
@@ -60,7 +60,7 @@ export function AppointmentCalendar({
     };
   });
 
-  // Generate business hours for FullCalendar
+  // Générer les heures de travail pour FullCalendar
   const businessHours = Object.entries(weeklySchedule)
     .filter(([, dayData]) => dayData.enabled && dayData.slots.length > 0)
     .flatMap(([day, dayData]) => {
@@ -78,24 +78,24 @@ export function AppointmentCalendar({
   };
 
   const handleDateClick = (info: DateClickArg) => {
-    // Get day of week from clicked date
+    // Obtenir le jour de la semaine à partir de la date cliquée
     const clickedDate = new Date(info.dateStr);
-    let dayOfWeek = clickedDate.getDay(); // 0-6 where 0 is Sunday
+    let dayOfWeek = clickedDate.getDay(); // 0-6 où 0 est Dimanche
 
-    // Convert to ISO day format (1-7, Monday-Sunday)
+    // Convertir au format ISO (1-7, Lundi-Dimanche)
     dayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-    // Check if this day is enabled in the doctor's schedule
+    // Vérifier si ce jour est activé dans l'emploi du temps du médecin
     const dayAvailability =
       weeklySchedule[dayOfWeek as keyof typeof weeklySchedule];
 
     if (dayAvailability?.enabled && dayAvailability.slots.length > 0) {
-      // Day is available, proceed to appointment creation
+      // Le jour est disponible, procéder à la création du rendez-vous
       router.push(`/doctor/appointment/new?date=${info.dateStr}`);
     } else {
-      // Day is not available, show error message
+      // Le jour n'est pas disponible, afficher un message d'erreur
       toast.error(
-        "You don't have availability set for this day. Please choose another day or update your availability."
+        "Vous n'avez pas de disponibilité définie pour ce jour. Veuillez choisir un autre jour ou mettre à jour vos disponibilités."
       );
     }
   };
@@ -137,6 +137,10 @@ export function AppointmentCalendar({
               info.el.classList.add("cancelled");
             }
           }}
+          buttonText={{
+            today: "Aujourd'hui",
+          }}
+          locale="fr"
         />
       </CardContent>
     </Card>

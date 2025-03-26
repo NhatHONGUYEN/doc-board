@@ -62,11 +62,11 @@ export function UpdateStatusDialog({
               <ClipboardCheck className="h-4 w-4 text-white" />
             </div>
             <span className="text-card-foreground">
-              Update Appointment Status
+              Modifier le statut du rendez-vous
             </span>
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Change the status of this appointment.
+            Changez le statut de ce rendez-vous.
           </DialogDescription>
         </DialogHeader>
 
@@ -81,7 +81,7 @@ export function UpdateStatusDialog({
                   <p className="text-xs text-muted-foreground">Patient</p>
                   <p className="text-sm font-medium text-card-foreground">
                     {selectedAppointment.patient?.user?.name ||
-                      "Unknown Patient"}
+                      "Patient inconnu"}
                   </p>
                 </div>
               </div>
@@ -111,13 +111,13 @@ export function UpdateStatusDialog({
                   <Clock className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Time</p>
+                  <p className="text-xs text-muted-foreground">Heure</p>
                   <p className="text-sm font-medium text-card-foreground">
                     {new Date(selectedAppointment.date).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                    {" to "}
+                    {" à "}
                     {new Date(
                       new Date(selectedAppointment.date).getTime() +
                         selectedAppointment.duration * 60000
@@ -138,18 +138,18 @@ export function UpdateStatusDialog({
                 <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                   <CheckCircle className="h-3 w-3 text-primary" />
                 </div>
-                <span className="text-card-foreground">New Status</span>
+                <span className="text-card-foreground">Nouveau statut</span>
               </Label>
               <Select value={newStatus} onValueChange={setNewStatus}>
                 <SelectTrigger id="status" className="border-border bg-card">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Sélectionner un statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="no-show">No Show</SelectItem>
+                  <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="confirmed">Confirmé</SelectItem>
+                  <SelectItem value="completed">Terminé</SelectItem>
+                  <SelectItem value="cancelled">Annulé</SelectItem>
+                  <SelectItem value="no-show">Absence</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -162,7 +162,7 @@ export function UpdateStatusDialog({
             onClick={closeUpdateStatusDialog}
             className="border-border bg-card hover:bg-muted-foreground/10"
           >
-            Cancel
+            Annuler
           </Button>
           <Button
             onClick={handleUpdateStatus}
@@ -172,10 +172,10 @@ export function UpdateStatusDialog({
             {isUpdatingStatus ? (
               <>
                 <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Updating
+                Mise à jour...
               </>
             ) : (
-              "Update Status"
+              "Mettre à jour"
             )}
           </Button>
         </DialogFooter>

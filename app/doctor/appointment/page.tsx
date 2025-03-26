@@ -29,15 +29,19 @@ export default function DoctorAppointmentPage() {
   const [activeTab, setActiveTab] = useState("calendar");
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Loading appointments...</div>;
+    return <div className="p-8">Chargement des rendez-vous...</div>;
   }
 
   if (isError) {
-    return <div className="p-8 text-red-500">Error: {error.message}</div>;
+    return <div className="p-8 text-red-500">Erreur : {error.message}</div>;
   }
 
   if (!session) {
-    return <div className="p-8">Please sign in to view appointments</div>;
+    return (
+      <div className="p-8">
+        Veuillez vous connecter pour voir vos rendez-vous
+      </div>
+    );
   }
 
   // Get today's appointments
@@ -61,18 +65,18 @@ export default function DoctorAppointmentPage() {
     <div className="container py-10">
       {/* PageHeader component */}
       <PageHeader
-        title="Appointments"
+        title="Rendez-vous"
         icon={<Calendar className="h-5 w-5 text-primary" />}
-        description="Manage your patient appointments, view your schedule, and update appointment statuses."
+        description="Gérez les rendez-vous de vos patients, consultez votre emploi du temps et mettez à jour les statuts des rendez-vous."
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" asChild>
-              <Link href="/doctor/availability">Manage Availability</Link>
+              <Link href="/doctor/availability">Gérer la disponibilité</Link>
             </Button>
             <Button asChild>
               <Link href="/doctor/appointment/new">
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Schedule Appointment
+                Planifier un rendez-vous
               </Link>
             </Button>
           </div>
@@ -85,8 +89,8 @@ export default function DoctorAppointmentPage() {
         onValueChange={setActiveTab}
       >
         <TabsList>
-          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-          <TabsTrigger value="today">Today&apos;s Appointments</TabsTrigger>
+          <TabsTrigger value="calendar">Calendrier</TabsTrigger>
+          <TabsTrigger value="today">Rendez-vous du jour</TabsTrigger>
         </TabsList>
 
         <TabsContent value="calendar">
