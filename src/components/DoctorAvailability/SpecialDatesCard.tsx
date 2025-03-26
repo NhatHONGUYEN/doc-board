@@ -74,7 +74,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
               <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                 <CalendarDays className="h-4 w-4 text-white" />
               </div>
-              <span className="text-card-foreground">Special Dates</span>
+              <span className="text-card-foreground">Dates Spéciales</span>
             </CardTitle>
 
             <Dialog
@@ -90,7 +90,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
                   onClick={openSpecialDateDialog}
                 >
                   <Plus className="h-4 w-4" />
-                  Add Special Date
+                  Ajouter une Date Spéciale
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
@@ -99,10 +99,11 @@ export default function SpecialDatesCard({ isLoading = false }) {
                     <div className="w-6 h-6 bg-primary/90 rounded-md flex items-center justify-center">
                       <Calendar className="h-3.5 w-3.5 text-white" />
                     </div>
-                    <span>Add Special Date</span>
+                    <span>Ajouter une Date Spéciale</span>
                   </DialogTitle>
                   <DialogDescription>
-                    Set days off or custom working hours for specific dates.
+                    Définissez des jours de congé ou des horaires de travail
+                    personnalisés pour des dates spécifiques.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -124,7 +125,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
                           <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                           {newSpecialDate
                             ? format(newSpecialDate, "PPP")
-                            : "Select a date"}
+                            : "Sélectionner une date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -160,9 +161,11 @@ export default function SpecialDatesCard({ isLoading = false }) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="dayoff">
-                          Day Off (Not Available)
+                          Jour de Congé (Non Disponible)
                         </SelectItem>
-                        <SelectItem value="custom">Custom Hours</SelectItem>
+                        <SelectItem value="custom">
+                          Horaires Personnalisés
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -170,7 +173,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
                   {newSpecialDateType === "custom" && (
                     <div className="grid gap-3">
                       <Label className="text-xs text-muted-foreground">
-                        Custom Hours
+                        Horaires Personnalisés
                       </Label>
                       {newSpecialDateSlots.map((slot, i) => (
                         <div key={i} className="flex items-center gap-2">
@@ -189,7 +192,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
                             />
                             <div className="flex items-center">
                               <span className="mx-2 text-xs text-muted-foreground">
-                                to
+                                à
                               </span>
                               <Input
                                 type="time"
@@ -224,7 +227,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
                         className="flex items-center justify-center gap-1 mt-1 border-border bg-card hover:bg-primary/10 hover:text-primary transition-all"
                       >
                         <Plus className="h-4 w-4" />
-                        Add Time Slot
+                        Ajouter un Créneau
                       </Button>
                     </div>
                   )}
@@ -236,21 +239,22 @@ export default function SpecialDatesCard({ isLoading = false }) {
                     onClick={closeSpecialDateDialog}
                     className="border-border bg-card hover:bg-muted-foreground/10"
                   >
-                    Cancel
+                    Annuler
                   </Button>
                   <Button
                     onClick={addSpecialDate}
                     disabled={!newSpecialDate}
                     className="bg-primary hover:bg-primary/90 transition-all"
                   >
-                    Add
+                    Ajouter
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Set exceptions like days off, holidays or special working hours
+            Définissez des exceptions comme les jours de congé, les vacances ou
+            des horaires de travail spéciaux
           </CardDescription>
         </CardHeader>
 
@@ -265,11 +269,11 @@ export default function SpecialDatesCard({ isLoading = false }) {
                 <Calendar className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">
-                No special dates set
+                Aucune date spéciale définie
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Click &quot;Add Special Date&quot; to set days off or custom
-                hours
+                Cliquez sur &quot;Ajouter une Date Spéciale&quot; pour définir
+                des jours de congé ou des horaires personnalisés
               </p>
             </div>
           ) : (
@@ -308,8 +312,8 @@ export default function SpecialDatesCard({ isLoading = false }) {
                           }
                         >
                           {specialDate.type === "dayoff"
-                            ? "Day Off"
-                            : "Custom Hours"}
+                            ? "Jour de Congé"
+                            : "Horaires Personnalisés"}
                         </Badge>
                       </div>
 
@@ -329,7 +333,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
 
                       {specialDate.type === "dayoff" && (
                         <div className="text-xs text-muted-foreground ml-7">
-                          Not available on this date
+                          Non disponible à cette date
                         </div>
                       )}
                     </div>
@@ -351,10 +355,10 @@ export default function SpecialDatesCard({ isLoading = false }) {
 
       <InfoNotice
         icon={<Info size={14} />}
-        note="Special dates override your regular weekly schedule. Remember to save your changes."
+        note="Les dates spéciales remplacent votre emploi du temps hebdomadaire habituel. N'oubliez pas d'enregistrer vos modifications."
       >
-        Important: These exceptions will take priority over your normal
-        availability when patients book appointments.
+        Important : Ces exceptions auront la priorité sur votre disponibilité
+        normale lorsque les patients prendront rendez-vous.
       </InfoNotice>
     </div>
   );

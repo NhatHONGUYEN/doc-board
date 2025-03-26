@@ -15,13 +15,13 @@ import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
 import { InfoNotice } from "@/components/InfoNotice";
 
 const dayNames = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche",
 ];
 
 export default function WeeklyScheduleCard({ isLoading = false }) {
@@ -42,11 +42,14 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
               <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                 <CalendarDays className="h-4 w-4 text-white" />
               </div>
-              <span className="text-card-foreground">Weekly Schedule</span>
+              <span className="text-card-foreground">
+                Emploi du temps hebdomadaire
+              </span>
             </CardTitle>
           </div>
           <CardDescription className="text-xs text-muted-foreground">
-            Set your regular working hours for each day of the week
+            Définissez vos heures de travail habituelles pour chaque jour de la
+            semaine
           </CardDescription>
         </CardHeader>
 
@@ -58,7 +61,7 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
           ) : (
             <>
               {dayNames.map((dayName, index) => {
-                const day = index + 1; // 1 = Monday, 7 = Sunday
+                const day = index + 1; // 1 = Lundi, 7 = Dimanche
                 const dayData = weeklySchedule[day];
 
                 return (
@@ -83,7 +86,7 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
                           className="flex items-center gap-1 border-border bg-card hover:bg-primary/10 hover:text-primary transition-all"
                         >
                           <Plus className="h-3.5 w-3.5" />
-                          Add Time Slot
+                          Ajouter un créneau
                         </Button>
                       )}
                     </div>
@@ -92,7 +95,7 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
                       <div className="space-y-2 pl-9">
                         {dayData.slots.length === 0 ? (
                           <p className="text-xs italic text-muted-foreground">
-                            No hours set for this day
+                            Aucun horaire défini pour ce jour
                           </p>
                         ) : (
                           dayData.slots.map((slot, i) => (
@@ -116,7 +119,7 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
                                 </div>
                                 <div className="flex items-center">
                                   <span className="mx-1 text-xs text-muted-foreground">
-                                    to
+                                    à
                                   </span>
                                   <Input
                                     type="time"
@@ -133,7 +136,7 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
                                   />
                                 </div>
                               </div>
-                              {/* Only show delete button when there are multiple slots */}
+                              {/* N'afficher le bouton de suppression que lorsqu'il y a plusieurs créneaux */}
                               {dayData.slots.length > 1 && (
                                 <Button
                                   variant="ghost"
@@ -162,8 +165,8 @@ export default function WeeklyScheduleCard({ isLoading = false }) {
       </Card>
 
       <InfoNotice icon={<Clock size={14} />}>
-        These hours will be used for scheduling appointments unless overridden
-        by special dates.
+        Ces horaires seront utilisés pour la planification des rendez-vous, sauf
+        s&apos;ils sont remplacés par des dates spéciales.
       </InfoNotice>
     </div>
   );
