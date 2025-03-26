@@ -17,7 +17,7 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
         <Avatar className="h-16 w-16 border-2 border-background shadow-md">
           <AvatarImage src={patient.user.image || undefined} />
           <AvatarFallback className="text-lg bg-primary/10 text-primary font-semibold">
-            {(patient.user.name || "User")
+            {(patient.user.name || "Utilisateur")
               .split(" ")
               .map((n) => n[0])
               .join("")
@@ -29,10 +29,10 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
             {patient.user.name}
           </h3>
           <p className="text-xs text-muted-foreground">
-            Member since{" "}
+            Membre depuis{" "}
             {patient.createdAt
               ? format(new Date(patient.createdAt), "MMMM yyyy")
-              : "Unknown date"}
+              : "Date inconnue"}
           </p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
             <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
               <User className="h-3 w-3 text-primary" />
             </div>
-            Contact Information
+            Informations de contact
           </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7">
@@ -59,12 +59,12 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
               </div>
 
               <div>
-                <p className="text-xs text-muted-foreground">Phone</p>
+                <p className="text-xs text-muted-foreground">Téléphone</p>
                 <p className="text-sm font-medium text-card-foreground flex items-center">
                   <Phone className="h-3.5 w-3.5 mr-2 text-primary" />
                   {patient.phone || (
                     <span className="text-muted-foreground italic text-xs">
-                      Not provided
+                      Non renseigné
                     </span>
                   )}
                 </p>
@@ -73,26 +73,30 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
 
             <div className="space-y-2">
               <div>
-                <p className="text-xs text-muted-foreground">Birth Date</p>
+                <p className="text-xs text-muted-foreground">
+                  Date de naissance
+                </p>
                 <p className="text-sm font-medium text-card-foreground flex items-center">
                   <Calendar className="h-3.5 w-3.5 mr-2 text-primary" />
                   {patient.birthDate ? (
-                    format(new Date(patient.birthDate), "MMMM d, yyyy")
+                    format(new Date(patient.birthDate), "d MMMM yyyy")
                   ) : (
                     <span className="text-muted-foreground italic text-xs">
-                      Not provided
+                      Non renseignée
                     </span>
                   )}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs text-muted-foreground">Social Security</p>
+                <p className="text-xs text-muted-foreground">
+                  Numéro de sécurité sociale
+                </p>
                 <p className="text-sm font-medium text-card-foreground flex items-center">
                   <CreditCard className="h-3.5 w-3.5 mr-2 text-primary" />
                   {patient.socialSecurityNumber || (
                     <span className="text-muted-foreground italic text-xs">
-                      Not provided
+                      Non renseigné
                     </span>
                   )}
                 </p>
@@ -106,14 +110,14 @@ export function PersonalInfoTab({ patient }: PersonalInfoTabProps) {
             <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
               <MapPin className="h-3 w-3 text-primary" />
             </div>
-            Address
+            Adresse
           </h4>
 
           <div className="pl-7">
             <p className="text-sm text-card-foreground">
               {patient.address || (
                 <span className="text-muted-foreground italic text-xs">
-                  No address provided
+                  Aucune adresse renseignée
                 </span>
               )}
             </p>

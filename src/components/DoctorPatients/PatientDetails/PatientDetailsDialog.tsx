@@ -38,11 +38,11 @@ export function PatientDetailsDialog({
               <User className="h-4 w-4 text-white" />
             </div>
             <span className="text-card-foreground">
-              Patient Details: {patient.user.name}
+              Détails du patient : {patient.user.name}
             </span>
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Complete patient information and medical history
+            Informations complètes et historique médical du patient
           </DialogDescription>
         </DialogHeader>
 
@@ -50,22 +50,22 @@ export function PatientDetailsDialog({
           <TabsList className="grid grid-cols-3 mb-4">
             <TabsTrigger value="info" className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5" />
-              Personal Info
+              Infos personnelles
             </TabsTrigger>
             <TabsTrigger
               value="appointments"
               className="flex items-center gap-1.5"
             >
               <Calendar className="h-3.5 w-3.5" />
-              Appointments
+              Rendez-vous
             </TabsTrigger>
             <TabsTrigger value="medical" className="flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" />
-              Medical History
+              Historique médical
             </TabsTrigger>
           </TabsList>
 
-          {/* Tabs content */}
+          {/* Contenu des onglets */}
           <PersonalInfoTab patient={patient} />
           <AppointmentsTab
             patient={patient}
@@ -80,14 +80,14 @@ export function PatientDetailsDialog({
             onClick={() => onOpenChange(false)}
             className="border-border bg-card hover:bg-muted-foreground/10"
           >
-            Close
+            Fermer
           </Button>
           <Button
             onClick={() => onScheduleAppointment(patient.id)}
             className="bg-primary hover:bg-primary/90 transition-all flex items-center gap-1.5"
           >
             <Calendar className="h-4 w-4" />
-            Schedule Appointment
+            Planifier un rendez-vous
           </Button>
         </DialogFooter>
       </DialogContent>

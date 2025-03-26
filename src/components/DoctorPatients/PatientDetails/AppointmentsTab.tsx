@@ -49,6 +49,20 @@ export function AppointmentsTab({
     }
   };
 
+  // Fonction pour traduire le statut du rendez-vous
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmé";
+      case "cancelled":
+        return "Annulé";
+      case "completed":
+        return "Terminé";
+      default:
+        return "En attente";
+    }
+  };
+
   return (
     <TabsContent value="appointments">
       {patient.appointments.length === 0 ? (
@@ -57,17 +71,17 @@ export function AppointmentsTab({
             <Calendar className="h-6 w-6 text-primary" />
           </div>
           <p className="text-sm font-medium text-card-foreground mb-1">
-            No appointment history
+            Aucun historique de rendez-vous
           </p>
           <p className="text-xs text-muted-foreground mb-4">
-            This patient hasn&apos;t had any appointments yet
+            Ce patient n&apos;a pas encore eu de rendez-vous
           </p>
           <Button
             onClick={() => onScheduleAppointment(patient.id)}
             className="bg-primary hover:bg-primary/90 transition-all flex items-center gap-1.5"
           >
             <Calendar className="h-4 w-4" />
-            Schedule First Appointment
+            Planifier le premier rendez-vous
           </Button>
         </div>
       ) : (
@@ -89,7 +103,7 @@ export function AppointmentsTab({
                         <p className="text-sm font-medium text-card-foreground">
                           {format(
                             new Date(appointment.date),
-                            "EEEE, MMMM d, yyyy"
+                            "EEEE d MMMM yyyy"
                           )}
                         </p>
                       </div>
@@ -100,16 +114,16 @@ export function AppointmentsTab({
                         <Clock className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Time</p>
+                        <p className="text-xs text-muted-foreground">Heure</p>
                         <p className="text-sm font-medium text-card-foreground">
-                          {format(new Date(appointment.date), "h:mm a")}
-                          {" to "}
+                          {format(new Date(appointment.date), "HH:mm")}
+                          {" à "}
                           {format(
                             new Date(
                               new Date(appointment.date).getTime() +
                                 appointment.duration * 60000
                             ),
-                            "h:mm a"
+                            "HH:mm"
                           )}
                           <span className="text-xs text-muted-foreground ml-1.5">
                             ({appointment.duration} min)
@@ -139,8 +153,7 @@ export function AppointmentsTab({
                     )}
                   >
                     {getStatusIcon(appointment.status)}
-                    {appointment.status.charAt(0).toUpperCase() +
-                      appointment.status.slice(1)}
+                    {translateStatus(appointment.status)}
                   </Badge>
                 </div>
 
@@ -150,7 +163,7 @@ export function AppointmentsTab({
                       <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                         <FileText className="h-3 w-3 text-primary" />
                       </div>
-                      Reason for Visit
+                      Motif de la visite
                     </h4>
                     <div className="bg-card/50 border rounded-md p-3 ml-7">
                       <p className="text-sm text-card-foreground">
@@ -166,7 +179,7 @@ export function AppointmentsTab({
                       <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                         <FileText className="h-3 w-3 text-primary" />
                       </div>
-                      Clinical Notes
+                      Notes cliniques
                     </h4>
                     <div className="bg-card/50 border rounded-md p-3 ml-7">
                       <p

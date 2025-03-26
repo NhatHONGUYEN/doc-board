@@ -45,10 +45,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { InfoNotice } from "@/components/InfoNotice";
 
-// Form schema with validation
+// Schéma du formulaire avec validation
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Veuillez saisir un email valide"),
   specialty: z.string().optional(),
   licenseNumber: z.string().optional(),
   phone: z.string().optional(),
@@ -68,7 +68,7 @@ export default function DoctorSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
 
-  // Initialize the form
+  // Initialiser le formulaire
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,7 +82,7 @@ export default function DoctorSettingsPage() {
     },
   });
 
-  // Update form values when doctor data is loaded
+  // Mettre à jour les valeurs du formulaire lorsque les données du médecin sont chargées
   useEffect(() => {
     if (doctor) {
       form.reset({
@@ -97,7 +97,7 @@ export default function DoctorSettingsPage() {
     }
   }, [doctor, form]);
 
-  // Form submission handler
+  // Gestionnaire de soumission du formulaire
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!session?.user?.id) return;
 
@@ -115,21 +115,22 @@ export default function DoctorSettingsPage() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update profile");
+        throw new Error("Échec de la mise à jour du profil");
       }
 
-      // Invalidate and refetch doctor data
+      // Invalider et récupérer à nouveau les données du médecin
       queryClient.invalidateQueries({ queryKey: ["doctor", session.user.id] });
 
-      // Use Sonner toast
-      toast.success("Profile updated", {
-        description: "Your profile information has been updated successfully.",
+      // Utiliser le toast Sonner
+      toast.success("Profil mis à jour", {
+        description:
+          "Vos informations de profil ont été mises à jour avec succès.",
       });
     } catch (error) {
-      console.error("Error updating profile:", error);
-      // Use Sonner toast for errors
-      toast.error("Error", {
-        description: "Failed to update profile. Please try again.",
+      console.error("Erreur lors de la mise à jour du profil:", error);
+      // Utiliser le toast Sonner pour les erreurs
+      toast.error("Erreur", {
+        description: "Échec de la mise à jour du profil. Veuillez réessayer.",
       });
     } finally {
       setIsSaving(false);
@@ -142,7 +143,7 @@ export default function DoctorSettingsPage() {
         <div className="flex flex-col items-center">
           <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
           <p className="text-muted-foreground text-sm">
-            Loading your profile settings...
+            Chargement de vos paramètres de profil...
           </p>
         </div>
       </div>
@@ -157,14 +158,14 @@ export default function DoctorSettingsPage() {
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Error Loading Profile
+            Erreur de chargement du profil
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
             {error.message ||
-              "There was a problem loading your profile. Please try again."}
+              "Un problème est survenu lors du chargement de votre profil. Veuillez réessayer."}
           </p>
           <Button asChild>
-            <Link href="/doctor/dashboard">Return to Dashboard</Link>
+            <Link href="/doctor/dashboard">Retour au tableau de bord</Link>
           </Button>
         </div>
       </div>
@@ -179,20 +180,20 @@ export default function DoctorSettingsPage() {
             <User className="h-6 w-6 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Authentication Required
+            Authentification requise
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
-            Please sign in to edit your profile settings.
+            Veuillez vous connecter pour modifier vos paramètres de profil.
           </p>
           <Button asChild>
-            <Link href="/api/auth/signin">Sign In</Link>
+            <Link href="/api/auth/signin">Se connecter</Link>
           </Button>
         </div>
       </div>
     );
   }
 
-  // Calculate profile completeness
+  // Calculer la complétude du profil
   const calculateProfileCompleteness = () => {
     const values = form.getValues();
     const fields = [
@@ -214,14 +215,14 @@ export default function DoctorSettingsPage() {
   return (
     <div className="container max-w-3xl py-10">
       <div className="mb-10">
-        {/* Top section with heading and back button */}
+        {/* Section supérieure avec titre et bouton de retour */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <div className="mr-3 p-2.5 bg-primary/10 rounded-full">
               <User className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-card-foreground">
-              Doctor Profile Settings
+              Paramètres du profil médecin
             </h1>
           </div>
           <Button
@@ -232,35 +233,36 @@ export default function DoctorSettingsPage() {
           >
             <Link href="/doctor/profile" className="flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" />
-              Back to Profile
+              Retour au profil
             </Link>
           </Button>
         </div>
 
-        {/* Description with visual separator */}
+        {/* Description avec séparateur visuel */}
         <div className="flex items-center gap-2 mt-2 mb-6">
           <div className="h-0.5 w-8 bg-primary/30 rounded-full"></div>
           <p className="text-muted-foreground">
-            Update your profile information and practice details
+            Mettez à jour vos informations de profil et les détails de votre
+            pratique
           </p>
         </div>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Personal Information Card */}
+          {/* Carte d'informations personnelles */}
           <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border pb-4">
               <CardTitle className="flex items-center gap-2 ">
                 <User className="h-5 w-5 text-primary/70" />
-                Personal Information
+                Informations personnelles
               </CardTitle>
               <CardDescription>
-                Update your personal and contact details
+                Mettre à jour vos informations personnelles et de contact
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6 bg-card">
-              {/* Name */}
+              {/* Nom */}
               <FormField
                 control={form.control}
                 name="name"
@@ -268,7 +270,7 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <User className="h-4 w-4 mr-2 text-primary/70" />
-                      Full Name
+                      Nom complet
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -295,7 +297,7 @@ export default function DoctorSettingsPage() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder="votre@email.com"
                         className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
@@ -305,7 +307,7 @@ export default function DoctorSettingsPage() {
                 )}
               />
 
-              {/* Phone */}
+              {/* Téléphone */}
               <FormField
                 control={form.control}
                 name="phone"
@@ -313,24 +315,24 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <Phone className="h-4 w-4 mr-2 text-primary/70" />
-                      Phone Number
+                      Numéro de téléphone
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="+33 6 12 34 56 78"
                         className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground pl-6">
-                      Contact number for patients and staff
+                      Numéro de contact pour les patients et le personnel
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Office Address */}
+              {/* Adresse du cabinet */}
               <FormField
                 control={form.control}
                 name="officeAddress"
@@ -338,17 +340,18 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <MapPin className="h-4 w-4 mr-2 text-primary/70" />
-                      Office Address
+                      Adresse du cabinet
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="123 Medical Plaza, Suite 100, City, State, ZIP"
+                        placeholder="123 Avenue Médicale, Bureau 100, Ville, Code Postal"
                         className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground pl-6">
-                      Where patients can visit you for appointments
+                      Où les patients peuvent vous consulter pour leurs
+                      rendez-vous
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -357,28 +360,28 @@ export default function DoctorSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Personal Information Notice */}
+          {/* Information personnelle - Notice */}
           <InfoNotice
             icon={<User size={14} />}
-            note="Note: Providing clear contact details improves patient communication and reduces missed appointments."
+            note="Remarque : Fournir des coordonnées claires améliore la communication avec les patients et réduit les rendez-vous manqués."
           >
-            Your contact information helps patients reach you for appointments
-            and inquiries.
+            Vos coordonnées aident les patients à vous contacter pour les
+            rendez-vous et les demandes de renseignements.
           </InfoNotice>
 
-          {/* Professional Information Card */}
+          {/* Carte d'informations professionnelles */}
           <Card className="border-border overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
             <CardHeader className="bg-card border-b border-border pb-4">
               <CardTitle className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-primary/70" />
-                Professional Information
+                Informations professionnelles
               </CardTitle>
               <CardDescription>
-                Update your professional and practice details
+                Mettre à jour vos informations professionnelles et de pratique
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6 bg-card">
-              {/* Specialty */}
+              {/* Spécialité */}
               <FormField
                 control={form.control}
                 name="specialty"
@@ -386,24 +389,24 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <Award className="h-4 w-4 mr-2 text-primary/70" />
-                      Medical Specialty
+                      Spécialité médicale
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Cardiology, Family Medicine, etc."
+                        placeholder="Cardiologie, Médecine générale, etc."
                         className="border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground pl-6">
-                      Your area of medical expertise
+                      Votre domaine d&apos;expertise médicale
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* License Number */}
+              {/* Numéro de licence */}
               <FormField
                 control={form.control}
                 name="licenseNumber"
@@ -411,7 +414,7 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <FileText className="h-4 w-4 mr-2 text-primary/70" />
-                      Medical License Number
+                      Numéro de licence médicale
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -421,14 +424,14 @@ export default function DoctorSettingsPage() {
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground pl-6">
-                      Your official medical license identification
+                      Votre identifiant officiel de licence médicale
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Professional Bio */}
+              {/* Biographie professionnelle */}
               <FormField
                 control={form.control}
                 name="description"
@@ -436,18 +439,18 @@ export default function DoctorSettingsPage() {
                   <FormItem>
                     <FormLabel className="flex items-center text-card-foreground">
                       <FileText className="h-4 w-4 mr-2 text-primary/70" />
-                      Professional Bio
+                      Biographie professionnelle
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter your professional background, expertise, and approach to patient care"
+                        placeholder="Saisissez votre parcours professionnel, votre expertise et votre approche des soins aux patients"
                         className="min-h-32 border-border/30 hover:border-border/50 focus-visible:border-primary/30 focus-visible:ring-primary/20"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground pl-6">
-                      This description will be visible to patients when booking
-                      appointments
+                      Cette description sera visible pour les patients lors de
+                      la prise de rendez-vous
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -456,7 +459,7 @@ export default function DoctorSettingsPage() {
             </CardContent>
             <CardFooter className="bg-card border-t border-border py-4 px-6">
               <div className="flex items-center text-sm text-primary/70">
-                <span className="font-medium mr-2">Profile Completeness:</span>
+                <span className="font-medium mr-2">Complétude du profil :</span>
                 <div className="h-2 w-40 bg-muted rounded-full overflow-hidden mr-2">
                   <div
                     className="h-full bg-primary rounded-full"
@@ -472,16 +475,16 @@ export default function DoctorSettingsPage() {
             </CardFooter>
           </Card>
 
-          {/* Professional Information Notice */}
+          {/* Informations professionnelles - Notice */}
           <InfoNotice
             icon={<Stethoscope size={14} />}
-            note="Note: A detailed professional bio significantly increases patient confidence when selecting a doctor."
+            note="Remarque : Une biographie professionnelle détaillée augmente considérablement la confiance des patients lors du choix d'un médecin."
           >
-            Your professional information establishes credibility and helps
-            patients understand your expertise.
+            Vos informations professionnelles établissent votre crédibilité et
+            aident les patients à comprendre votre expertise.
           </InfoNotice>
 
-          {/* Submit Button */}
+          {/* Bouton de soumission */}
           <div className="flex justify-end">
             <Button
               type="submit"
@@ -494,12 +497,12 @@ export default function DoctorSettingsPage() {
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving Changes...
+                  Enregistrement en cours...
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+                  Enregistrer les modifications
                 </>
               )}
             </Button>

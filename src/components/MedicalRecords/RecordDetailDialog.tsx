@@ -55,41 +55,43 @@ export default function RecordDetailDialog({
               <User className="h-4 w-4 text-white" />
             </div>
             <span className="text-card-foreground">
-              Medical Record: {patient.user.name}
+              Dossier médical : {patient.user.name}
             </span>
           </DialogTitle>
           <DialogDescription>
-            View and update patient medical history
+            Consulter et mettre à jour l&apos;historique médical du patient
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="record">
           <TabsList className="grid grid-cols-2 mb-4">
-            <TabsTrigger value="record">Medical History</TabsTrigger>
-            <TabsTrigger value="info">Patient Info</TabsTrigger>
+            <TabsTrigger value="record">Historique médical</TabsTrigger>
+            <TabsTrigger value="info">Infos patient</TabsTrigger>
           </TabsList>
 
-          {/* Medical Record Tab */}
+          {/* Onglet Historique médical */}
           <TabsContent value="record" className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold flex items-center">
                 <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                   <FileText className="h-3.5 w-3.5 text-primary" />
                 </div>
-                <span className="text-card-foreground">Medical History</span>
+                <span className="text-card-foreground">
+                  Antécédents médicaux
+                </span>
               </h3>
               {!isEditing ? (
-                <Button onClick={onEdit}>Edit Record</Button>
+                <Button onClick={onEdit}>Modifier le dossier</Button>
               ) : (
                 <div className="flex space-x-2">
                   <Button variant="outline" onClick={onCancel}>
-                    Cancel
+                    Annuler
                   </Button>
                   <Button onClick={onSave} disabled={isSaving}>
                     {isSaving && (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     )}
-                    Save Changes
+                    Enregistrer
                   </Button>
                 </div>
               )}
@@ -100,7 +102,7 @@ export default function RecordDetailDialog({
                 value={editableNotes}
                 onChange={(e) => onNotesChange(e.target.value)}
                 className="min-h-[300px] font-mono text-sm"
-                placeholder="Enter medical history, conditions, allergies, medications, etc."
+                placeholder="Saisissez l'historique médical, les pathologies, allergies, médicaments, etc."
               />
             ) : (
               <ScrollArea className="h-[300px] rounded-md border p-4">
@@ -114,10 +116,10 @@ export default function RecordDetailDialog({
                       <PlusSquare className="h-6 w-6 text-primary" />
                     </div>
                     <p className="text-sm font-medium">
-                      No medical history recorded for this patient
+                      Aucun antécédent médical enregistré pour ce patient
                     </p>
                     <Button variant="outline" className="mt-4" onClick={onEdit}>
-                      Add Medical Record
+                      Ajouter un dossier médical
                     </Button>
                   </div>
                 )}
@@ -125,14 +127,14 @@ export default function RecordDetailDialog({
             )}
           </TabsContent>
 
-          {/* Patient Info Tab */}
+          {/* Onglet Infos patient */}
           <TabsContent value="info">
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-16 w-16 border-2 border-background shadow-md">
                   <AvatarImage src={patient.user.image || undefined} />
                   <AvatarFallback className="text-lg bg-primary/10 text-primary font-semibold">
-                    {(patient.user?.name ?? "Unknown User")
+                    {(patient.user?.name ?? "Utilisateur inconnu")
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
@@ -150,59 +152,59 @@ export default function RecordDetailDialog({
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Patient info section */}
+                {/* Section infos patient */}
                 <div>
                   <h4 className="font-medium mb-3 flex items-center">
                     <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                       <User className="h-3 w-3 text-primary" />
                     </div>
                     <span className="text-card-foreground">
-                      Personal Information
+                      Informations personnelles
                     </span>
                   </h4>
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs text-muted-foreground">
-                        Birth Date
+                        Date de naissance
                       </p>
                       <p className="text-sm font-medium text-card-foreground">
                         {patient.birthDate ? (
-                          format(new Date(patient.birthDate), "MMMM d, yyyy")
+                          format(new Date(patient.birthDate), "d MMMM yyyy")
                         ) : (
                           <span className="text-muted-foreground italic text-xs">
-                            Not provided
+                            Non renseignée
                           </span>
                         )}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">Phone</p>
+                      <p className="text-xs text-muted-foreground">Téléphone</p>
                       <p className="text-sm font-medium text-card-foreground">
                         {patient.phone || (
                           <span className="text-muted-foreground italic text-xs">
-                            Not provided
+                            Non renseigné
                           </span>
                         )}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">
-                        Social Security
+                        Numéro de sécurité sociale
                       </p>
                       <p className="text-sm font-medium text-card-foreground">
                         {patient.socialSecurityNumber || (
                           <span className="text-muted-foreground italic text-xs">
-                            Not provided
+                            Non renseigné
                           </span>
                         )}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">Address</p>
+                      <p className="text-xs text-muted-foreground">Adresse</p>
                       <p className="text-sm font-medium text-card-foreground">
                         {patient.address || (
                           <span className="text-muted-foreground italic text-xs">
-                            Not provided
+                            Non renseignée
                           </span>
                         )}
                       </p>
@@ -210,14 +212,14 @@ export default function RecordDetailDialog({
                   </div>
                 </div>
 
-                {/* Appointments section */}
+                {/* Section rendez-vous */}
                 <div>
                   <h4 className="font-medium mb-3 flex items-center">
                     <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                       <Calendar className="h-3 w-3 text-primary" />
                     </div>
                     <span className="text-card-foreground">
-                      Recent Appointments
+                      Rendez-vous récents
                     </span>
                   </h4>
                   {patient.appointments.length > 0 ? (
@@ -231,21 +233,21 @@ export default function RecordDetailDialog({
                             <Calendar className="h-3 w-3 text-primary" />
                           </div>
                           <span className="text-card-foreground">
-                            {format(new Date(appointment.date), "MMMM d, yyyy")}{" "}
-                            at {format(new Date(appointment.date), "h:mm a")}
+                            {format(new Date(appointment.date), "d MMMM yyyy")}{" "}
+                            à {format(new Date(appointment.date), "HH:mm")}
                           </span>
                         </div>
                       ))}
                       {patient.appointments.length > 3 && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          and {patient.appointments.length - 3} more
-                          appointments
+                          et {patient.appointments.length - 3} autres
+                          rendez-vous
                         </p>
                       )}
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground italic">
-                      No appointments found
+                      Aucun rendez-vous trouvé
                     </p>
                   )}
 
@@ -259,7 +261,7 @@ export default function RecordDetailDialog({
                     }
                   >
                     <Calendar className="h-4 w-4 mr-2" />
-                    Schedule Appointment
+                    Planifier un rendez-vous
                   </Button>
                 </div>
               </div>
@@ -269,7 +271,7 @@ export default function RecordDetailDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Close
+            Fermer
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -18,7 +18,7 @@ export function MedicalHistoryTab({ patient }: MedicalHistoryTabProps) {
             <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
               <Clipboard className="h-3 w-3 text-primary" />
             </div>
-            Medical History
+            Antécédents médicaux
           </h4>
 
           {patient.medicalHistory ? (
@@ -36,14 +36,14 @@ export function MedicalHistoryTab({ patient }: MedicalHistoryTabProps) {
                 <PlusSquare className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm font-medium">
-                No medical history recorded for this patient
+                Aucun antécédent médical enregistré pour ce patient
               </p>
               <Button
                 variant="outline"
                 className="mt-4 border-border bg-card hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-1.5"
               >
                 <FileText className="h-4 w-4" />
-                Add Medical History
+                Ajouter des antécédents médicaux
               </Button>
             </div>
           )}
