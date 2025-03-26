@@ -3,10 +3,12 @@ import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "./ui/badge";
+import { HeroBackground } from "./HeroBackground";
 
 export default function Pricing() {
   return (
     <div className="relative py-16 md:py-32" id="pricing">
+      <HeroBackground />
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <Badge variant="default" className="mb-4">
