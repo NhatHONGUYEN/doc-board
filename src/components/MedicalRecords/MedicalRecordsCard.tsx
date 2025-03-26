@@ -31,8 +31,8 @@ export default function MedicalRecordsCard({
         <SearchHeader
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          label="Search Records"
-          placeholder="Search by patient name, condition, or record date..."
+          label="Rechercher des dossiers"
+          placeholder="Rechercher par nom de patient, condition, ou date du dossier..."
           id="patient-records-search"
         />
 
@@ -43,13 +43,13 @@ export default function MedicalRecordsCard({
             </div>
           ) : isError ? (
             <div className="text-center py-8 text-destructive">
-              Failed to load patient records
+              Échec du chargement des dossiers médicaux
             </div>
           ) : filteredPatients.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {searchTerm
-                ? "No records match your search."
-                : "No patient medical records found."}
+                ? "Aucun dossier ne correspond à votre recherche."
+                : "Aucun dossier médical de patient trouvé."}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -66,7 +66,8 @@ export default function MedicalRecordsCard({
 
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredPatients.length} of {patients.length} patients
+            Affichage de {filteredPatients.length} sur {patients.length}{" "}
+            patients
           </p>
         </CardFooter>
       </Card>
@@ -74,11 +75,12 @@ export default function MedicalRecordsCard({
       {/* InfoNotice added outside the Card */}
       <InfoNotice
         icon={<FileText size={14} />}
-        note="Patient data is confidential and protected by HIPAA regulations."
+        note="Les données des patients sont confidentielles et protégées par la réglementation sur la protection des données de santé."
       >
-        Medical records should only be accessed for legitimate clinical
-        purposes. All access to patient records is logged and monitored for
-        compliance purposes.
+        Les dossiers médicaux ne doivent être consultés qu&apos;à des fins
+        cliniques légitimes. Tous les accès aux dossiers des patients sont
+        enregistrés et surveillés à des fins de conformité aux réglementations
+        en vigueur.
       </InfoNotice>
     </div>
   );

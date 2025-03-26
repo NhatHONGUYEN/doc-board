@@ -14,7 +14,7 @@ import RecordDetailDialog from "@/components/MedicalRecords/RecordDetailDialog";
 export default function MedicalRecordsPage() {
   const { session, status } = useSessionStore();
 
-  // Use the enhanced Zustand store
+  // Utiliser le store Zustand amélioré
   const {
     patients,
     filteredPatients,
@@ -38,17 +38,17 @@ export default function MedicalRecordsPage() {
     initialLoadAttempted,
   } = useMedicalRecordsListStore();
 
-  // Fetch patients when component mounts - but now with caching!
+  // Récupérer les patients au montage du composant - maintenant avec mise en cache !
   useEffect(() => {
     if (session?.user?.id) {
       fetchPatients(session.user.id);
     }
 
-    // Return a cleanup function to reset the store when unmounting
+    // Retourner une fonction de nettoyage pour réinitialiser le store lors du démontage
     return () => resetStore();
   }, [session?.user?.id, fetchPatients, resetStore]);
 
-  // Custom loading component
+  // Composant de chargement personnalisé
   const loadingComponent = (
     <div className="container py-10">
       <div className="flex justify-center items-center min-h-[400px]">
@@ -57,9 +57,9 @@ export default function MedicalRecordsPage() {
     </div>
   );
 
-  // Only show loading state if:
-  // 1. We haven't attempted to load data yet, OR
-  // 2. We're loading AND there's no existing data to show
+  // Afficher l'état de chargement uniquement si :
+  // 1. Nous n'avons pas encore tenté de charger les données, OU
+  // 2. Nous chargeons ET il n'y a pas de données existantes à afficher
   const showLoading =
     !initialLoadAttempted || (isLoading && patients.length === 0);
 
@@ -70,16 +70,16 @@ export default function MedicalRecordsPage() {
     >
       <div className="container py-10">
         <PageHeader
-          title="Patient Medical Records"
+          title="Dossiers Médicaux des Patients"
           icon={<FileText className="h-5 w-5 text-primary" />}
-          description="View and manage your patients' medical records, history, and treatment notes."
+          description="Consultez et gérez les dossiers médicaux, l'historique et les notes de traitement de vos patients."
         />
 
         <MedicalRecordsCard
           patients={patients}
           filteredPatients={filteredPatients}
           searchTerm={searchTerm}
-          isLoading={showLoading} // Use our smart loading logic
+          isLoading={showLoading} // Utiliser notre logique de chargement intelligente
           isError={isError}
           setSearchTerm={setSearchTerm}
           onViewRecord={viewPatientRecord}

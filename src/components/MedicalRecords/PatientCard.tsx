@@ -21,20 +21,20 @@ export default function PatientCard({
   patient,
   onViewRecord,
 }: PatientCardProps) {
-  // Get most recent appointment if available
+  // Obtenir le rendez-vous le plus récent si disponible
   const lastAppointment = patient.appointments?.[0];
 
-  // Determine the badge styling based on whether records exist
+  // Déterminer le style du badge selon que des dossiers existent ou non
   const hasMedicalHistory = !!patient.medicalHistory?.trim();
 
-  // Calculate age if birthDate is available
+  // Calculer l'âge si la date de naissance est disponible
   let age = null;
   if (patient.birthDate) {
     const birthDate = new Date(patient.birthDate);
     const today = new Date();
     age = today.getFullYear() - birthDate.getFullYear();
 
-    // Adjust age if birthday hasn't occurred yet this year
+    // Ajuster l'âge si l'anniversaire n'a pas encore eu lieu cette année
     if (
       today.getMonth() < birthDate.getMonth() ||
       (today.getMonth() === birthDate.getMonth() &&
@@ -52,7 +52,7 @@ export default function PatientCard({
             <Avatar className="h-12 w-12 border-2 border-background shadow-md">
               <AvatarImage src={patient.user.image || undefined} />
               <AvatarFallback className="bg-primary/5 text-primary font-semibold">
-                {(patient.user?.name || "User")
+                {(patient.user?.name || "Utilisateur")
                   .split(" ")
                   .map((n) => n[0])
                   .join("")
@@ -63,20 +63,7 @@ export default function PatientCard({
               <h3 className="font-semibold text-lg text-card-foreground">
                 {patient.user.name}
               </h3>
-              <div className="flex items-center mt-0.5 space-x-2">
-                {age !== null && (
-                  <span className="inline-flex items-center text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3 mr-1 text-primary" />
-                    {age} years
-                  </span>
-                )}
-                {patient.birthDate && (
-                  <span className="text-xs text-muted-foreground">
-                    <span className="text-border">•</span> DOB:{" "}
-                    {format(new Date(patient.birthDate), "MMM d, yyyy")}
-                  </span>
-                )}
-              </div>
+              {/* Supprimer l'affichage de l'âge et de la date de naissance ici */}
             </div>
           </div>
 
@@ -89,33 +76,47 @@ export default function PatientCard({
                 : "border-primary/20 bg-background text-muted-foreground"
             )}
           >
-            {hasMedicalHistory ? "Has Records" : "No Records"}
+            {hasMedicalHistory ? "Dossier existant" : "Aucun dossier"}
           </Badge>
         </div>
 
-        {(patient.phone || patient.user.email) && (
-          <div className="mt-4 pt-3 border-t border-border grid grid-cols-1 gap-2">
-            {patient.phone && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Phone className="h-3 w-3 mr-2 text-primary" />
-                {patient.phone}
-              </div>
-            )}
-            {patient.user.email && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Mail className="h-3 w-3 mr-2 text-primary" />
-                {patient.user.email}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Section des informations de contact modifiée avec date de naissance séparée */}
+        <div className="mt-4 pt-3 border-t border-border grid grid-cols-1 gap-2">
+          {age !== null && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Clock className="h-3 w-3 mr-2 text-primary" />
+              {age} ans
+            </div>
+          )}
+
+          {patient.birthDate && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3 mr-2 text-primary" />
+              Naissance: {format(new Date(patient.birthDate), "d MMM yyyy")}
+            </div>
+          )}
+
+          {patient.phone && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Phone className="h-3 w-3 mr-2 text-primary" />
+              {patient.phone}
+            </div>
+          )}
+
+          {patient.user.email && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Mail className="h-3 w-3 mr-2 text-primary" />
+              {patient.user.email}
+            </div>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="p-5 pt-4 bg-card flex-1 overflow-y-auto">
         <div className="mb-2 flex items-center">
           <div className="h-4 w-1 rounded-r-full bg-primary/70 mr-2"></div>
           <h4 className="font-medium text-sm text-card-foreground">
-            Medical History
+            Antécédents médicaux
           </h4>
         </div>
 
@@ -126,7 +127,7 @@ export default function PatientCard({
                 .split("\n")
                 .slice(0, 4)
                 .map((line, i) => {
-                  // Make headers bold
+                  // Mettre les en-têtes en gras
                   if (
                     line.toUpperCase() === line &&
                     line.endsWith(":") &&
@@ -138,7 +139,7 @@ export default function PatientCard({
                       </p>
                     );
                   }
-                  // Format bullet points
+                  // Formater les puces
                   else if (line.trim().startsWith("•")) {
                     return (
                       <p key={i} className="ml-3 mb-1">
@@ -147,7 +148,7 @@ export default function PatientCard({
                       </p>
                     );
                   }
-                  // Regular lines
+                  // Lignes normales
                   return (
                     <p key={i} className="mb-1">
                       {line}
@@ -161,10 +162,10 @@ export default function PatientCard({
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <p className="text-sm font-medium text-card-foreground mb-0.5">
-                No medical history recorded
+                Aucun antécédent médical enregistré
               </p>
               <p className="text-xs text-muted-foreground">
-                View full record to add details
+                Consultez le dossier complet pour ajouter des informations
               </p>
             </div>
           )}
@@ -175,11 +176,11 @@ export default function PatientCard({
             <Clock className="h-3.5 w-3.5 mt-0.5 mr-2 text-primary" />
             <div>
               <p className="text-xs font-medium text-card-foreground">
-                Last Visit:{" "}
-                {format(new Date(lastAppointment.date), "MMM d, yyyy")}
+                Dernière visite:{" "}
+                {format(new Date(lastAppointment.date), "d MMM yyyy")}
               </p>
               <p className="text-xs text-muted-foreground">
-                {lastAppointment.reason?.substring(0, 40) || "General checkup"}
+                {lastAppointment.reason?.substring(0, 40) || "Contrôle général"}
               </p>
             </div>
           </div>
@@ -193,7 +194,7 @@ export default function PatientCard({
           onClick={() => onViewRecord(patient)}
         >
           <FileText className="h-4 w-4 mr-2" />
-          View Full Medical Record
+          Voir le dossier médical complet
         </Button>
       </CardFooter>
     </Card>
