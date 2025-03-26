@@ -35,7 +35,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
               <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
                 <Stethoscope className="h-4 w-4 text-white" />
               </div>
-              <span className="text-card-foreground">Doctor Info</span>
+              <span className="text-card-foreground">Informations Médecin</span>
             </CardTitle>
           </div>
         </CardHeader>
@@ -46,11 +46,11 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
               <Award className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Specialty</p>
+              <p className="text-xs text-muted-foreground">Spécialité</p>
               <p className="text-sm font-medium text-card-foreground">
                 {doctor?.specialty || (
                   <span className="text-muted-foreground italic text-xs">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -62,11 +62,11 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
               <FileText className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">License Number</p>
+              <p className="text-xs text-muted-foreground">Numéro de licence</p>
               <p className="text-sm font-medium text-card-foreground">
                 {doctor?.licenseNumber || (
                   <span className="text-muted-foreground italic text-xs">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -78,11 +78,11 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
               <MapPin className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Office</p>
+              <p className="text-xs text-muted-foreground">Cabinet</p>
               <p className="text-sm font-medium text-card-foreground">
                 {doctor?.officeAddress || (
                   <span className="text-muted-foreground italic text-xs">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -100,7 +100,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
               className="flex items-center justify-center"
             >
               <FileText className="h-4 w-4 mr-2" />
-              Edit Profile
+              Modifier Profil
             </Link>
           </Button>
         </CardFooter>
@@ -113,7 +113,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
             <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
               <ClipboardList className="h-4 w-4 text-white" />
             </div>
-            <span className="text-card-foreground">Quick Actions</span>
+            <span className="text-card-foreground">Actions Rapides</span>
           </CardTitle>
         </CardHeader>
 
@@ -125,7 +125,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
           >
             <Link href="/doctor/patients">
               <Users size={16} className="mr-2" />
-              View All Patients
+              Voir tous les patients
             </Link>
           </Button>
 
@@ -136,7 +136,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
           >
             <Link href="/doctor/appointment/new">
               <UserPlus size={16} className="mr-2" />
-              Schedule Appointment
+              Planifier un rendez-vous
             </Link>
           </Button>
 
@@ -147,7 +147,7 @@ export function DoctorInfoColumn({ doctor }: DoctorInfoColumnProps) {
           >
             <Link href="/doctor/availability">
               <Calendar size={16} className="mr-2" />
-              Update Schedule
+              Mettre à jour l&apos;agenda
             </Link>
           </Button>
         </CardContent>
