@@ -1,117 +1,148 @@
-"use client";
-
-import { Loader2, AlertTriangle, User } from "lucide-react";
+// src/components/PatientDashboard/PersonalInfoCard.tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar as CalendarIcon,
+  FileText,
+  LockKeyhole,
+} from "lucide-react";
 import Link from "next/link";
-import { usePatientData } from "@/hooks/usePatientData";
-import useSessionStore from "@/lib/store/useSessionStore";
-import { RoleAuthCheck } from "@/components/RoleAuthCheck";
-import { PatientPageHeader } from "@/components/PatientProfile/PatientPageHeader";
-import { ProfileOverview } from "@/components/PatientProfile/ProfileOverview";
-import { PatientPersonalInformation } from "@/components/PatientProfile/PatientPersonalInformation";
+import { Patient } from "@/lib/types/core-entities";
+import { InfoNotice } from "@/components/InfoNotice";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-export default function PatientProfilePage() {
-  const { session } = useSessionStore();
-  const {
-    data: patient,
-    isLoading,
-    isError,
-    error,
-  } = usePatientData(session?.user?.id);
+type PersonalInfoCardProps = {
+  patient?: Patient;
+};
 
-  // Loading component to use with RoleAuthCheck
-  const loadingComponent = (
-    <div className="flex justify-center py-12">
-      <div className="flex flex-col items-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground text-sm">Loading your profile...</p>
-      </div>
-    </div>
-  );
-
-  // Error handling component
-  const ErrorDisplay = () => {
-    if (!isError) return null;
-
-    return (
-      <div className="flex justify-center py-12">
-        <div className="text-center max-w-md">
-          <div className="bg-destructive/10 rounded-full p-3 mx-auto mb-4 w-fit">
-            <AlertTriangle className="h-6 w-6 text-destructive" />
-          </div>
-          <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Error Loading Profile
-          </h3>
-          <p className="text-muted-foreground text-sm mb-4">
-            {error.message ||
-              "There was a problem loading your profile. Please try again."}
-          </p>
-          <Button
-            onClick={() => window.location.reload()}
-            className="bg-primary hover:bg-primary/90"
-          >
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  // Unauthenticated component
-  const unauthenticatedComponent = (
-    <div className="flex justify-center py-12">
-      <div className="text-center max-w-md">
-        <div className="bg-primary/10 rounded-full p-3 mx-auto mb-4 w-fit">
-          <User className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-lg font-medium text-card-foreground mb-1">
-          Authentication Required
-        </h3>
-        <p className="text-muted-foreground text-sm mb-4">
-          Please sign in to view your profile.
-        </p>
-        <Button asChild className="bg-primary hover:bg-primary/90">
-          <Link href="/api/auth/signin">Sign In</Link>
-        </Button>
-      </div>
-    </div>
-  );
-
-  // Calculate profile completeness
-  const requiredFields = [
-    "phone",
-    "address",
-    "birthDate",
-    "socialSecurityNumber",
-  ];
-  const completedFields = requiredFields.filter(
-    (field) => !!patient?.[field as keyof typeof patient]
-  ).length;
-  const completionPercentage = Math.round(
-    (completedFields / requiredFields.length) * 100
-  );
-
+export function PersonalInfoCard({ patient }: PersonalInfoCardProps) {
   return (
-    <RoleAuthCheck
-      allowedRoles="PATIENT"
-      loadingComponent={isLoading ? loadingComponent : undefined}
-      unauthenticatedComponent={unauthenticatedComponent}
-    >
-      {isError ? (
-        <ErrorDisplay />
-      ) : (
-        <div className="container max-w-3xl py-10">
-          <PatientPageHeader />
+    <div className="space-y-3">
+      <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
+        <CardHeader className="bg-card border-b border-border">
+          <div className="flex justify-between items-center pb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
+                <User className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-card-foreground">
+                  Informations personnelles
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Détails de votre profil
+                </CardDescription>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="flex justify-center mb-6">
+            <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
+              <AvatarImage src={patient?.user?.image || ""} alt="Patient" />
+              <AvatarFallback className="bg-primary/5 text-primary text-xl font-semibold">
+                {patient?.user?.name
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase() || "P"}
+              </AvatarFallback>
+            </Avatar>
+          </div>
 
-          <ProfileOverview
-            patient={patient}
-            session={session}
-            completionPercentage={completionPercentage}
-          />
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <User className="h-4 w-4 text-primary/70 mr-2" />
+              <div>
+                <p className="text-sm text-muted-foreground">Nom complet</p>
+                <p className="font-medium text-card-foreground">
+                  {patient?.user?.name}
+                </p>
+              </div>
+            </div>
 
-          <PatientPersonalInformation patient={patient} />
-        </div>
-      )}
-    </RoleAuthCheck>
+            <div className="flex items-center">
+              <Mail className="h-4 w-4 text-primary/70 mr-2" />
+              <div>
+                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="font-medium text-card-foreground">
+                  {patient?.user?.email}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <Phone className="h-4 w-4 text-primary/70 mr-2" />
+              <div>
+                <p className="text-sm text-muted-foreground">Téléphone</p>
+                <p className="font-medium text-card-foreground">
+                  {patient?.phone || (
+                    <span className="text-muted-foreground italic text-sm">
+                      Non renseigné
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <CalendarIcon className="h-4 w-4 text-primary/70 mr-2" />
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Date de naissance
+                </p>
+                <p className="font-medium text-card-foreground">
+                  {patient?.birthDate ? (
+                    format(new Date(patient.birthDate), "d MMMM yyyy", {
+                      locale: fr,
+                    })
+                  ) : (
+                    <span className="text-muted-foreground italic text-sm">
+                      Non renseignée
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="bg-card border-t border-border py-4 px-5">
+          <Button
+            asChild
+            variant="outline"
+            className="w-full h-10 bg-card hover:bg-primary/10 hover:text-primary transition-all"
+          >
+            <Link
+              href="/patient/profile"
+              className="flex items-center justify-center"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Modifier le profil
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Note d'information sous la carte */}
+      <InfoNotice
+        icon={<LockKeyhole size={14} />}
+        note="Vos informations sont uniquement partagées avec vos professionnels de santé."
+      >
+        Maintenir votre profil à jour permet à vos médecins de disposer
+        d&apos;informations précises pour le diagnostic et le traitement.
+      </InfoNotice>
+    </div>
   );
 }

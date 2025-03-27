@@ -21,32 +21,32 @@ export default function PatientDashboard() {
     error,
   } = usePatientData(session?.user?.id);
 
-  // Calculate upcoming appointments
+  // Calculer les rendez-vous à venir
   const now = new Date();
   const upcomingAppointments = patient?.appointments
     ?.filter((apt) => new Date(apt.date) > now && apt.status !== "cancelled")
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 3);
 
-  // Get the next appointment
+  // Obtenir le prochain rendez-vous
   const nextAppointment =
     upcomingAppointments && upcomingAppointments.length > 0
       ? upcomingAppointments[0]
       : null;
 
-  // Loading component to use with RoleAuthCheck
+  // Composant de chargement à utiliser avec RoleAuthCheck
   const loadingComponent = (
     <div className="flex justify-center py-12">
       <div className="flex flex-col items-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
         <p className="text-muted-foreground text-sm">
-          Loading your dashboard...
+          Chargement de votre tableau de bord...
         </p>
       </div>
     </div>
   );
 
-  // Error handling component
+  // Composant de gestion d'erreur
   const ErrorDisplay = () => {
     if (!isError) return null;
 
@@ -57,24 +57,24 @@ export default function PatientDashboard() {
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Error Loading Dashboard
+            Erreur de chargement du tableau de bord
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
             {error.message ||
-              "There was a problem loading your dashboard. Please try again."}
+              "Un problème est survenu lors du chargement de votre tableau de bord. Veuillez réessayer."}
           </p>
           <Button
             onClick={() => window.location.reload()}
             className="bg-primary hover:bg-primary/90"
           >
-            Try Again
+            Réessayer
           </Button>
         </div>
       </div>
     );
   };
 
-  // Unauthenticated component
+  // Composant pour utilisateur non authentifié
   const unauthenticatedComponent = (
     <div className="flex justify-center py-12">
       <div className="text-center max-w-md">
@@ -82,13 +82,14 @@ export default function PatientDashboard() {
           <User className="h-6 w-6 text-primary" />
         </div>
         <h3 className="text-lg font-medium text-card-foreground mb-1">
-          Authentication Required
+          Authentification requise
         </h3>
         <p className="text-muted-foreground text-sm mb-4">
-          Please sign in to view your personal dashboard.
+          Veuillez vous connecter pour accéder à votre tableau de bord
+          personnel.
         </p>
         <Button asChild className="bg-primary hover:bg-primary/90">
-          <Link href="/api/auth/signin">Sign In</Link>
+          <Link href="/api/auth/signin">Se connecter</Link>
         </Button>
       </div>
     </div>
@@ -104,29 +105,29 @@ export default function PatientDashboard() {
         <ErrorDisplay />
       ) : (
         <div className="container py-8">
-          {/* Dashboard Header */}
+          {/* En-tête du tableau de bord */}
           <DashboardHeader patientName={patient?.user?.name} />
 
-          {/* Next Appointment Card (if exists) */}
+          {/* Carte du prochain rendez-vous (si existant) */}
           {nextAppointment && (
             <NextAppointmentCard appointment={nextAppointment} />
           )}
 
-          {/* Stats Overview */}
+          {/* Aperçu des statistiques */}
           <StatsOverview
             upcomingAppointmentsCount={upcomingAppointments?.length || 0}
             hasMedicalHistory={!!patient?.medicalHistory}
             isProfileComplete={!!(patient?.phone && patient?.address)}
           />
 
-          {/* Appointments and Personal Info */}
+          {/* Rendez-vous et informations personnelles */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
-            {/* Upcoming Appointments - Left Column (2/3 width) */}
+            {/* Rendez-vous à venir - Colonne de gauche (2/3 de la largeur) */}
             <div className="lg:col-span-2">
               <UpcomingAppointments appointments={upcomingAppointments || []} />
             </div>
 
-            {/* Personal Information - Right Column (1/3 width) */}
+            {/* Informations personnelles - Colonne de droite (1/3 de la largeur) */}
             <div className="lg:col-span-1">
               <PersonalInfoCard patient={patient} />
             </div>

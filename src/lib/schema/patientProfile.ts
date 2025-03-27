@@ -2,10 +2,10 @@
 import * as z from "zod";
 import { Patient } from "@/lib/types/core-entities";
 
-// Patient profile schema with validation
+// Schéma de profil patient avec validation
 export const patientProfileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Veuillez saisir un email valide"),
   birthDate: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
@@ -13,10 +13,10 @@ export const patientProfileSchema = z.object({
   medicalHistory: z.string().optional(),
 });
 
-// Infer the type from the schema for use in components
+// Inférer le type à partir du schéma pour utilisation dans les composants
 export type PatientProfileFormValues = z.infer<typeof patientProfileSchema>;
 
-// Helper function to prepare initial values for the form
+// Fonction utilitaire pour préparer les valeurs initiales du formulaire
 export function getDefaultPatientProfileValues(): PatientProfileFormValues {
   return {
     name: "",
@@ -29,7 +29,7 @@ export function getDefaultPatientProfileValues(): PatientProfileFormValues {
   };
 }
 
-// Helper function to populate form values from patient data
+// Fonction utilitaire pour remplir les valeurs du formulaire à partir des données patient
 export function mapPatientDataToFormValues(
   patient: Patient | undefined | null
 ): PatientProfileFormValues {

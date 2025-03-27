@@ -18,10 +18,10 @@ import { SettingsPageHeader } from "@/components/PatientSettings/SettingsPageHea
 import { SettingsPersonalInformation } from "@/components/PatientSettings/SettingsPersonalInformation";
 import { SettingsMedicalInformation } from "@/components/PatientSettings/SettingsMedicalInformation";
 
-// Form schema with validation
+// Schéma de formulaire avec validation
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Veuillez saisir un email valide"),
   birthDate: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
@@ -29,7 +29,7 @@ const formSchema = z.object({
   medicalHistory: z.string().optional(),
 });
 
-// Infer the FormValues type from the schema
+// Inférer le type FormValues à partir du schéma
 export type FormValues = z.infer<typeof formSchema>;
 
 export default function SettingsPage() {
@@ -41,11 +41,11 @@ export default function SettingsPage() {
     error,
   } = usePatientData(session?.user?.id);
 
-  // Use the profile store
+  // Utiliser le store de profil
   const { isUpdating, updateProfile } = usePatientProfileStore();
   const queryClient = useQueryClient();
 
-  // Initialize the form
+  // Initialiser le formulaire
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,7 +59,7 @@ export default function SettingsPage() {
     },
   });
 
-  // Update form values when patient data is loaded
+  // Mettre à jour les valeurs du formulaire lorsque les données du patient sont chargées
   useEffect(() => {
     if (patient) {
       form.reset({
@@ -76,31 +76,31 @@ export default function SettingsPage() {
     }
   }, [patient, form]);
 
-  // Form submission handler using the store
+  // Gestionnaire de soumission de formulaire utilisant le store
   async function onSubmit(values: FormValues) {
     if (!session?.user?.id) return;
 
     const success = await updateProfile(session.user.id, values);
 
     if (success) {
-      // Invalidate and refetch patient data
+      // Invalider et récupérer les données du patient
       queryClient.invalidateQueries({ queryKey: ["patient", session.user.id] });
     }
   }
 
-  // Loading component
+  // Composant de chargement
   const loadingComponent = (
     <div className="flex justify-center py-12">
       <div className="flex flex-col items-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
         <p className="text-muted-foreground text-sm">
-          Loading your profile settings...
+          Chargement de vos paramètres de profil...
         </p>
       </div>
     </div>
   );
 
-  // Error component
+  // Composant d'erreur
   const ErrorDisplay = () => {
     return (
       <div className="flex justify-center py-12">
@@ -109,24 +109,24 @@ export default function SettingsPage() {
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
           <h3 className="text-lg font-medium text-card-foreground mb-1">
-            Error Loading Settings
+            Erreur de chargement des paramètres
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
             {error?.message ||
-              "There was a problem loading your profile settings. Please try again."}
+              "Un problème est survenu lors du chargement de vos paramètres de profil. Veuillez réessayer."}
           </p>
           <Button
             onClick={() => window.location.reload()}
             className="bg-primary hover:bg-primary/90"
           >
-            Try Again
+            Réessayer
           </Button>
         </div>
       </div>
     );
   };
 
-  // Unauthenticated component
+  // Composant pour utilisateur non authentifié
   const unauthenticatedComponent = (
     <div className="flex justify-center py-12">
       <div className="text-center max-w-md">
@@ -134,13 +134,13 @@ export default function SettingsPage() {
           <User className="h-6 w-6 text-primary" />
         </div>
         <h3 className="text-lg font-medium text-card-foreground mb-1">
-          Authentication Required
+          Authentification requise
         </h3>
         <p className="text-muted-foreground text-sm mb-4">
-          Please sign in to edit your profile settings.
+          Veuillez vous connecter pour modifier vos paramètres de profil.
         </p>
         <Button asChild className="bg-primary hover:bg-primary/90">
-          <Link href="/api/auth/signin">Sign In</Link>
+          <Link href="/api/auth/signin">Se connecter</Link>
         </Button>
       </div>
     </div>
@@ -165,7 +165,7 @@ export default function SettingsPage() {
               <SettingsPersonalInformation form={form} />
               <SettingsMedicalInformation form={form} />
 
-              {/* Form Actions */}
+              {/* Actions du formulaire */}
               <div className="flex gap-4 justify-end">
                 <Button
                   type="button"
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                   onClick={() => form.reset()}
                   disabled={isUpdating}
                 >
-                  Reset
+                  Réinitialiser
                 </Button>
                 <Button
                   type="submit"
@@ -189,12 +189,12 @@ export default function SettingsPage() {
                   {isUpdating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving Changes...
+                      Enregistrement en cours...
                     </>
                   ) : (
                     <>
                       <Save className="mr-2 h-4 w-4" />
-                      Save Changes
+                      Enregistrer les modifications
                     </>
                   )}
                 </Button>

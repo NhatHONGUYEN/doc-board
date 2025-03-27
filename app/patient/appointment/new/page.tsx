@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-// Main page component - doesn't use useSearchParams
+// Composant principal de la page - n'utilise pas useSearchParams
 export default function NewAppointmentPage() {
   const router = useRouter();
 
   return (
     <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-8">Book New Appointment</h1>
+      <h1 className="text-3xl font-bold mb-8">Prendre un rendez-vous</h1>
 
       <Suspense
         fallback={
@@ -28,13 +28,14 @@ export default function NewAppointmentPage() {
   );
 }
 
-// Separated component that uses useSearchParams
+// Composant séparé qui utilise useSearchParams
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -72,19 +73,19 @@ import useSessionStore from "@/lib/store/useSessionStore";
 import { cn } from "@/lib/utils";
 import { Doctor } from "@/lib/types/core-entities";
 
-// Form validation schema
+// Schéma de validation du formulaire
 const appointmentFormSchema = z.object({
   doctorId: z.string({
-    required_error: "Please select a doctor",
+    required_error: "Veuillez sélectionner un médecin",
   }),
   date: z.date({
-    required_error: "Please select a date",
+    required_error: "Veuillez sélectionner une date",
   }),
   time: z.string({
-    required_error: "Please select a time",
+    required_error: "Veuillez sélectionner une heure",
   }),
   duration: z.string({
-    required_error: "Please select an appointment duration",
+    required_error: "Veuillez sélectionner une durée de rendez-vous",
   }),
   reason: z.string().optional(),
 });
@@ -97,7 +98,7 @@ type TimeSlot = {
   available: boolean;
 };
 
-// Form component that uses useSearchParams
+// Composant de formulaire qui utilise useSearchParams
 function AppointmentFormContent({
   router,
 }: {
@@ -107,7 +108,7 @@ function AppointmentFormContent({
   const selectedDateParam = searchParams.get("date");
   const { session, status } = useSessionStore();
 
-  // All your existing state and form logic
+  // État et logique de formulaire existants
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
@@ -117,37 +118,39 @@ function AppointmentFormContent({
     selectedDateParam ? new Date(selectedDateParam) : null
   );
 
-  // Initialize form with default values
+  // Initialisation du formulaire avec valeurs par défaut
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentFormSchema),
     defaultValues: {
       doctorId: "",
       date: selectedDateParam ? new Date(selectedDateParam) : undefined,
       time: "",
-      duration: "30", // Default to 30 min
+      duration: "30", // Par défaut 30 min
       reason: "",
     },
   });
 
-  // Fetch doctors on component mount
+  // Récupérer la liste des médecins au chargement du composant
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const response = await fetch("/api/allDoctor");
-        if (!response.ok) throw new Error("Failed to fetch doctors");
+        if (!response.ok) throw new Error("Échec de récupération des médecins");
         const data = await response.json();
 
-        // Debug what's coming from the API
-        console.log("Doctors data:", data);
+        // Déboguer ce qui vient de l'API
+        console.log("Données des médecins:", data);
 
         if (data && Array.isArray(data)) {
           setDoctors(data);
           if (data.length === 0) {
-            toast.info("No doctors available in the system yet");
+            toast.info(
+              "Aucun médecin disponible dans le système pour l'instant"
+            );
           }
         }
       } catch (error) {
-        toast.error("Failed to load doctors");
+        toast.error("Échec du chargement des médecins");
         console.error(error);
       }
     };
@@ -155,7 +158,7 @@ function AppointmentFormContent({
     fetchDoctors();
   }, []);
 
-  // Watch for changes to doctor and date to fetch available time slots
+  // Surveillance des changements de médecin et de date pour récupérer les créneaux disponibles
   const watchDoctorId = form.watch("doctorId");
   const watchDate = form.watch("date");
 
@@ -170,45 +173,42 @@ function AppointmentFormContent({
           `/api/doctor/availability?doctorId=${watchDoctorId}&date=${formattedDate}`
         );
 
-        if (!response.ok) throw new Error("Failed to fetch availability");
+        if (!response.ok)
+          throw new Error("Échec de vérification des disponibilités");
 
         const data = await response.json();
 
-        // Only create slots for the available times returned from API
+        // Créer uniquement des créneaux pour les heures disponibles renvoyées par l'API
         const slots: TimeSlot[] = [];
 
         if (data.availableSlots && data.availableSlots.length > 0) {
-          // Sort time slots for proper display order
+          // Trier les créneaux horaires pour un affichage correct
           const sortedSlots = [...data.availableSlots].sort();
 
-          // Create UI-friendly time slots only for available times
+          // Créer des créneaux adaptés à l'interface uniquement pour les heures disponibles
           sortedSlots.forEach((timeString) => {
             const [hour, minute] = timeString.split(":").map(Number);
 
-            // Format for display (12-hour format)
-            const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-            const period = hour < 12 ? "AM" : "PM";
-            const displayTime = `${displayHour}:${minute
-              .toString()
-              .padStart(2, "0")} ${period}`;
+            // Format d'affichage (format 24h pour la France)
+            const displayTime = `${hour}h${minute.toString().padStart(2, "0")}`;
 
             slots.push({
               value: timeString,
               label: displayTime,
-              available: true, // All slots we show are available
+              available: true, // Tous les créneaux affichés sont disponibles
             });
           });
         }
 
         setTimeSlots(slots);
 
-        // Clear any previously selected time if it's no longer available
+        // Effacer le créneau précédemment sélectionné s'il n'est plus disponible
         const currentTime = form.getValues("time");
         if (currentTime && !data.availableSlots.includes(currentTime)) {
           form.setValue("time", "");
         }
       } catch (error) {
-        toast.error("Failed to check availability");
+        toast.error("Échec de vérification des disponibilités");
         console.error(error);
       } finally {
         setIsCheckingAvailability(false);
@@ -222,14 +222,14 @@ function AppointmentFormContent({
     }
   }, [watchDoctorId, watchDate, form]);
 
-  // After your form initialization:
+  // Après l'initialisation du formulaire :
   useEffect(() => {
-    // If we have a date from URL but no doctor selected yet, just set the form date
+    // Si nous avons une date depuis l'URL mais pas de médecin sélectionné, définir uniquement la date du formulaire
     if (selectedDateParam && !form.getValues("doctorId")) {
       form.setValue("date", new Date(selectedDateParam));
     }
 
-    // If we have both date from URL and a doctor already selected, check availability
+    // Si nous avons à la fois une date depuis l'URL et un médecin déjà sélectionné, vérifier la disponibilité
     if (selectedDateParam && form.getValues("doctorId")) {
       fetchAvailableTimeSlots(
         form.getValues("doctorId"),
@@ -238,13 +238,13 @@ function AppointmentFormContent({
     }
   }, [selectedDateParam, form]);
 
-  // Extract fetchAvailableTimeSlots to a separate function to reuse it
+  // Extraire fetchAvailableTimeSlots dans une fonction séparée pour la réutiliser
   const fetchAvailableTimeSlots = async (doctorId: string, date: Date) => {
     if (!doctorId || !date) return;
 
     setIsCheckingAvailability(true);
     try {
-      // Rest of your existing code for handling the response
+      // Reste de votre code existant pour gérer la réponse
       // ...
     } catch {
       // ...
@@ -255,13 +255,13 @@ function AppointmentFormContent({
 
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!session) {
-      toast.error("You must be logged in to book an appointment");
+      toast.error("Vous devez être connecté pour prendre un rendez-vous");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // Convert date and time to ISO string
+      // Convertir la date et l'heure en chaîne ISO
       const [hours, minutes] = data.time.split(":");
       const appointmentDate = new Date(data.date);
       appointmentDate.setHours(parseInt(hours, 10));
@@ -284,16 +284,18 @@ function AppointmentFormContent({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to book appointment");
+        throw new Error(
+          errorData.error || "Échec de réservation du rendez-vous"
+        );
       }
 
-      toast.success("Appointment booked successfully");
+      toast.success("Rendez-vous pris avec succès");
       router.push("/patient/appointment");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to book appointment");
+        toast.error("Échec de réservation du rendez-vous");
       }
       console.error(error);
     } finally {
@@ -302,49 +304,49 @@ function AppointmentFormContent({
   };
 
   if (status === "loading") {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-8">Chargement...</div>;
   }
 
   if (!session) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Sign in required</h1>
-        <p>Please sign in to book an appointment.</p>
+        <h1 className="text-2xl font-bold mb-4">Connexion requise</h1>
+        <p>Veuillez vous connecter pour prendre un rendez-vous.</p>
         <Button className="mt-4" onClick={() => router.push("/auth/login")}>
-          Sign In
+          Se connecter
         </Button>
       </div>
     );
   }
 
-  // Return your existing Card element with all its contents
+  // Retourner votre élément Card existant avec tout son contenu
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Select Doctor and Time</CardTitle>
+        <CardTitle>Sélectionner un médecin et un horaire</CardTitle>
         <CardDescription>
-          Choose your preferred doctor and appointment time
+          Choisissez votre médecin et l&apos;horaire de rendez-vous préférés
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        {/* Your existing form goes here */}
+        {/* Votre formulaire existant */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Doctor Selection */}
+            {/* Sélection du médecin */}
             <FormField
               control={form.control}
               name="doctorId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Doctor</FormLabel>
+                  <FormLabel>Médecin</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a doctor" />
+                        <SelectValue placeholder="Sélectionner un médecin" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -357,7 +359,7 @@ function AppointmentFormContent({
                         ))
                       ) : (
                         <div className="p-2 text-center text-muted-foreground">
-                          No doctors available at this time
+                          Aucun médecin disponible actuellement
                         </div>
                       )}
                     </SelectContent>
@@ -367,7 +369,7 @@ function AppointmentFormContent({
               )}
             />
 
-            {/* Date Picker */}
+            {/* Sélecteur de date */}
             <FormField
               control={form.control}
               name="date"
@@ -385,9 +387,9 @@ function AppointmentFormContent({
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "d MMMM yyyy", { locale: fr })
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Choisir une date</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -398,33 +400,34 @@ function AppointmentFormContent({
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
+                        locale={fr}
                         disabled={
                           (date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0)) || // No past dates
+                            date < new Date(new Date().setHours(0, 0, 0, 0)) || // Pas de dates passées
                             date >
                               new Date(
                                 new Date().setMonth(new Date().getMonth() + 3)
-                              ) // Max 3 months in advance
+                              ) // Max 3 mois à l'avance
                         }
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                   <FormDescription>
-                    Select a date for your appointment.
+                    Sélectionnez une date pour votre rendez-vous.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Time Slots */}
+            {/* Créneaux horaires */}
             <FormField
               control={form.control}
               name="time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Time</FormLabel>
+                  <FormLabel>Heure</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -435,14 +438,14 @@ function AppointmentFormContent({
                         <SelectValue
                           placeholder={
                             isCheckingAvailability
-                              ? "Checking availability..."
+                              ? "Vérification des disponibilités..."
                               : timeSlots.length === 0 &&
                                 watchDoctorId &&
                                 watchDate
-                              ? "No available times for this day"
+                              ? "Aucun créneau disponible pour ce jour"
                               : timeSlots.length === 0
-                              ? "Select doctor and date first"
-                              : "Select a time"
+                              ? "Sélectionnez d'abord un médecin et une date"
+                              : "Sélectionner une heure"
                           }
                         />
                       </SelectTrigger>
@@ -451,14 +454,14 @@ function AppointmentFormContent({
                       {isCheckingAvailability ? (
                         <div className="flex items-center justify-center p-2">
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                          Checking availability...
+                          Vérification des disponibilités...
                         </div>
                       ) : timeSlots.length === 0 &&
                         watchDoctorId &&
                         watchDate ? (
                         <div className="p-2 text-center text-muted-foreground">
-                          No available slots on this day. Please select another
-                          date.
+                          Aucun créneau disponible ce jour. Veuillez
+                          sélectionner une autre date.
                         </div>
                       ) : (
                         timeSlots.map((slot) => (
@@ -474,20 +477,20 @@ function AppointmentFormContent({
               )}
             />
 
-            {/* Duration */}
+            {/* Durée */}
             <FormField
               control={form.control}
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration</FormLabel>
+                  <FormLabel>Durée</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select duration" />
+                        <SelectValue placeholder="Sélectionner la durée" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -502,22 +505,22 @@ function AppointmentFormContent({
               )}
             />
 
-            {/* Reason for Visit */}
+            {/* Motif de la visite */}
             <FormField
               control={form.control}
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason for Visit (Optional)</FormLabel>
+                  <FormLabel>Motif de la consultation (Facultatif)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Brief description of your symptoms or reason for the appointment"
+                      placeholder="Brève description de vos symptômes ou du motif de la consultation"
                       className="resize-none"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    This helps the doctor prepare for your appointment.
+                    Cela aide le médecin à se préparer pour votre rendez-vous.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -531,13 +534,15 @@ function AppointmentFormContent({
                   variant="outline"
                   onClick={() => router.back()}
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isSubmitting ? "Booking..." : "Book Appointment"}
+                  {isSubmitting
+                    ? "Réservation en cours..."
+                    : "Prendre rendez-vous"}
                 </Button>
               </div>
             </CardFooter>
