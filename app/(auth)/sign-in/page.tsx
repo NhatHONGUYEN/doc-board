@@ -19,11 +19,15 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { signInSchema } from "@/lib/schema/auth";
 import { Logo } from "@/components/logo";
-import { ArrowRight, LogIn, Mail, Lock } from "lucide-react";
+import { ArrowRight, LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner"; // Ajoutez cet import en haut du fichier
+import { useState } from "react"; // Ajoutez cet import en haut du fichier
 
 export default function SignInPage() {
   const router = useRouter();
+
+  // Ajoutez un state pour suivre l'état de chargement
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialisation de useForm avec Zod
   const form = useForm({
@@ -36,6 +40,9 @@ export default function SignInPage() {
 
   const onSubmit = async (values: z.infer<typeof signInSchema>) => {
     try {
+      // Activer l'état de chargement
+      setIsSubmitting(true);
+
       // D'abord, vérifiez si l'utilisateur existe et récupérez son rôle
       const userCheck = await fetch("/api/auth/check-user", {
         method: "POST",
@@ -48,6 +55,7 @@ export default function SignInPage() {
         form.setError("email", {
           message: "Cet email ne correspond à aucun compte.",
         });
+        setIsSubmitting(false); // Désactiver l'état de chargement
         return;
       }
 
@@ -71,6 +79,9 @@ export default function SignInPage() {
               "Échec de la connexion. Veuillez vérifier vos identifiants.",
           });
         }
+
+        // Désactiver l'état de chargement en cas d'erreur
+        setIsSubmitting(false);
       } else {
         // Connexion réussie, rediriger en fonction du rôle récupéré préalablement
         if (userCheck.role === "PATIENT") {
@@ -102,6 +113,9 @@ export default function SignInPage() {
       form.setError("root", {
         message: "Une erreur est survenue. Veuillez réessayer.",
       });
+
+      // Désactiver l'état de chargement en cas d'erreur
+      setIsSubmitting(false);
     }
   };
 
@@ -187,8 +201,21 @@ export default function SignInPage() {
                 )}
 
                 {/* Bouton de soumission */}
-                <Button type="submit" className="w-full h-11 font-medium">
-                  <LogIn className="mr-2 h-4 w-4" /> Se connecter
+                <Button
+                  type="submit"
+                  className="w-full h-11 font-medium hover:cursor-pointer"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Connexion en cours...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" /> Se connecter
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>

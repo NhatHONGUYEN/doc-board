@@ -25,10 +25,21 @@ import {
 } from "@/components/ui/select";
 import { Role, signUpSchema } from "@/lib/schema/auth";
 import { Logo } from "@/components/logo";
-import { ArrowLeft, User, Mail, Lock, UserPlus, UserCog } from "lucide-react";
+import {
+  ArrowLeft,
+  User,
+  Mail,
+  Lock,
+  UserPlus,
+  UserCog,
+  Loader2,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialisation de useForm avec Zod
   const form = useForm({
@@ -42,6 +53,8 @@ export default function SignUpPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    setIsSubmitting(true);
+
     try {
       const response = await fetch("/api/auth/signUp", {
         method: "POST",
@@ -58,8 +71,17 @@ export default function SignUpPage() {
         );
       }
 
+      toast.success(
+        "Compte créé avec succès ! Vous pouvez maintenant vous connecter.",
+        {
+          duration: 3000,
+        }
+      );
+
       router.push("/sign-in");
     } catch (err) {
+      setIsSubmitting(false);
+
       if (err instanceof Error) {
         form.setError("root", { message: err.message });
       } else {
@@ -178,7 +200,7 @@ export default function SignUpPage() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-11 pl-10 relative">
+                          <SelectTrigger className="h-11 pl-10 relative hover:cursor-pointer">
                             <div className="absolute left-3 top-1/2 -translate-y-1/2">
                               {field.value === "PATIENT" ? (
                                 <User className="h-4 w-4 text-muted-foreground" />
@@ -209,8 +231,21 @@ export default function SignUpPage() {
                 )}
 
                 {/* Bouton de soumission */}
-                <Button type="submit" className="w-full h-11 font-medium">
-                  <UserPlus className="mr-2 h-4 w-4" /> Créer mon compte
+                <Button
+                  type="submit"
+                  className="w-full h-11 font-medium hover:cursor-pointer"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Création en cours...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="mr-2 h-4 w-4" /> Créer mon compte
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
