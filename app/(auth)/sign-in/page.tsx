@@ -20,6 +20,7 @@ import { Card } from "@/components/ui/card";
 import { signInSchema } from "@/lib/schema/auth";
 import { Logo } from "@/components/logo";
 import { ArrowRight, LogIn, Mail, Lock } from "lucide-react";
+import { toast } from "sonner"; // Ajoutez cet import en haut du fichier
 
 export default function SignInPage() {
   const router = useRouter();
@@ -73,10 +74,26 @@ export default function SignInPage() {
       } else {
         // Connexion réussie, rediriger en fonction du rôle récupéré préalablement
         if (userCheck.role === "PATIENT") {
+          toast.success(
+            "Connexion réussie ! Bienvenue dans votre espace patient.",
+            {
+              duration: 3000,
+            }
+          );
           router.push("/patient/dashboard");
         } else if (userCheck.role === "DOCTOR") {
+          toast.success(
+            "Connexion réussie ! Bienvenue dans votre espace médecin.",
+            {
+              duration: 3000,
+            }
+          );
           router.push("/doctor/dashboard");
         } else {
+          // Cas par défaut pour tout autre rôle non géré
+          toast.success("Connexion réussie !", {
+            duration: 3000,
+          });
           router.push("/");
         }
       }
