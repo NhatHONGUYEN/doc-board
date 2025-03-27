@@ -17,44 +17,44 @@ interface AppointmentNotesProps {
 export default function AppointmentNotes({ control }: AppointmentNotesProps) {
   return (
     <>
-      {/* Reason for Visit */}
+      {/* Motif de la visite */}
       <FormField
         control={control}
         name="reason"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Reason for Visit (Optional)</FormLabel>
+            <FormLabel>Motif de la visite (Optionnel)</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Brief description of the reason for the appointment"
+                placeholder="Brève description du motif du rendez-vous"
                 className="resize-none"
                 {...field}
               />
             </FormControl>
             <FormDescription>
-              This will be visible to the patient.
+              Cette information sera visible par le patient.
             </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Doctor Notes */}
+      {/* Notes du médecin */}
       <FormField
         control={control}
         name="notes"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Doctor&apos;s Notes (Optional)</FormLabel>
+            <FormLabel>Notes du médecin (Optionnel)</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Private notes for your reference only"
+                placeholder="Notes privées pour votre référence uniquement"
                 className="resize-none"
                 {...field}
               />
             </FormControl>
             <FormDescription>
-              These notes are not shared with the patient.
+              Ces notes ne sont pas partagées avec le patient.
             </FormDescription>
             <FormMessage />
           </FormItem>

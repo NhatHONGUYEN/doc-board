@@ -39,7 +39,7 @@ export default function AppointmentTiming({
 }: AppointmentTimingProps) {
   return (
     <>
-      {/* Date Picker */}
+      {/* Sélecteur de date */}
       <FormField
         control={control}
         name="date"
@@ -59,7 +59,7 @@ export default function AppointmentTiming({
                     {field.value ? (
                       format(field.value, "PPP")
                     ) : (
-                      <span>Pick a date</span>
+                      <span>Choisir une date</span>
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
@@ -78,20 +78,20 @@ export default function AppointmentTiming({
               </PopoverContent>
             </Popover>
             <FormDescription>
-              Select a date for the appointment.
+              Sélectionnez une date pour le rendez-vous.
             </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Time Slots */}
+      {/* Créneaux horaires */}
       <FormField
         control={control}
         name="time"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Time</FormLabel>
+            <FormLabel>Heure</FormLabel>
             <Select
               onValueChange={field.onChange}
               defaultValue={field.value}
@@ -102,10 +102,10 @@ export default function AppointmentTiming({
                   <SelectValue
                     placeholder={
                       isCheckingAvailability
-                        ? "Checking availability..."
+                        ? "Vérification des disponibilités..."
                         : timeSlots.length === 0
-                        ? "Select date first"
-                        : "Select a time"
+                        ? "Sélectionnez d'abord une date"
+                        : "Sélectionner une heure"
                     }
                   />
                 </SelectTrigger>
@@ -114,7 +114,7 @@ export default function AppointmentTiming({
                 {isCheckingAvailability ? (
                   <div className="flex items-center justify-center p-2">
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Checking availability...
+                    Vérification des disponibilités...
                   </div>
                 ) : (
                   timeSlots.map((slot) => (
@@ -124,7 +124,7 @@ export default function AppointmentTiming({
                       disabled={!slot.available}
                     >
                       {slot.label}
-                      {!slot.available && " (Already booked)"}
+                      {!slot.available && " (Déjà réservé)"}
                     </SelectItem>
                   ))
                 )}
@@ -135,17 +135,17 @@ export default function AppointmentTiming({
         )}
       />
 
-      {/* Duration */}
+      {/* Durée */}
       <FormField
         control={control}
         name="duration"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Duration</FormLabel>
+            <FormLabel>Durée</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select duration" />
+                  <SelectValue placeholder="Sélectionner une durée" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

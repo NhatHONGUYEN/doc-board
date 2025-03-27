@@ -33,12 +33,12 @@ export default function AppointmentForm({
   const selectedPatientParam = searchParams.get("patientId");
   const { session, status } = useSessionStore();
 
-  // Get doctor data
+  // Récupérer les données du médecin
   const { data: doctor, isLoading: isLoadingDoctor } = useDoctorData(
     session?.user?.id
   );
 
-  // Use the store for appointment form state
+  // Utiliser le store pour l'état du formulaire de rendez-vous
   const {
     patients,
     timeSlots,
@@ -49,28 +49,28 @@ export default function AppointmentForm({
     submitAppointment,
   } = useAppointmentFormStore();
 
-  // Initialize form with default values
+  // Initialiser le formulaire avec des valeurs par défaut
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentFormSchema),
     defaultValues: {
       patientId: selectedPatientParam || "",
       date: selectedDateParam ? new Date(selectedDateParam) : undefined,
       time: "",
-      duration: "30", // Default to 30 min
+      duration: "30", // Par défaut 30 min
       appointmentType: "regular",
       reason: "",
       notes: "",
     },
   });
 
-  // Fetch patients data on initial load
+  // Récupérer les données des patients au chargement initial
   useEffect(() => {
     if (session?.user?.id) {
       fetchPatients();
     }
   }, [session?.user?.id, fetchPatients]);
 
-  // Watch for changes to date to fetch available time slots
+  // Observer les changements de date pour récupérer les créneaux disponibles
   const watchDate = form.watch("date");
 
   useEffect(() => {
@@ -79,19 +79,19 @@ export default function AppointmentForm({
     }
   }, [watchDate, doctor?.id, checkAvailability]);
 
-  // Handle form submission
+  // Gérer la soumission du formulaire
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!session) {
-      toast.error("You must be logged in to schedule an appointment");
+      toast.error("Vous devez être connecté pour planifier un rendez-vous");
       return;
     }
 
     if (!doctor?.id) {
-      toast.error("Doctor information not available");
+      toast.error("Informations du médecin non disponibles");
       return;
     }
 
-    // Convert date and time to ISO string
+    // Convertir la date et l'heure en chaîne ISO
     const [hours, minutes] = data.time.split(":");
     const appointmentDate = new Date(data.date);
     appointmentDate.setHours(parseInt(hours, 10));
@@ -116,16 +116,16 @@ export default function AppointmentForm({
   };
 
   if (status === "loading" || isLoadingDoctor) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-8">Chargement...</div>;
   }
 
   if (!doctor) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Doctor profile not found</h1>
-        <p>Please complete your doctor profile first.</p>
+        <h1 className="text-2xl font-bold mb-4">Profil médecin non trouvé</h1>
+        <p>Veuillez d&apos;abord compléter votre profil médecin.</p>
         <Button className="mt-4" onClick={() => router.push("/doctor/profile")}>
-          Complete Profile
+          Compléter le profil
         </Button>
       </div>
     );
@@ -133,7 +133,7 @@ export default function AppointmentForm({
 
   return (
     <Card className="max-w-2xl mx-auto">
-      {/* CardHeader removed to avoid redundancy with PageHeader */}
+      {/* En-tête de carte supprimé pour éviter la redondance avec PageHeader */}
 
       <CardContent className="pt-6">
         <Form {...form}>
@@ -153,27 +153,29 @@ export default function AppointmentForm({
                 variant="outline"
                 onClick={() => router.back()}
               >
-                Cancel
+                Annuler
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {isSubmitting ? "Scheduling..." : "Schedule Appointment"}
+                {isSubmitting
+                  ? "Planification en cours..."
+                  : "Planifier le rendez-vous"}
               </Button>
             </div>
           </form>
         </Form>
 
-        {/* InfoNotice added at the end of the form */}
+        {/* InfoNotice ajouté à la fin du formulaire */}
         <div className="mt-8">
           <InfoNotice
             icon={<CalendarClock size={14} />}
-            note="Note: Patients will receive an automatic notification about the new appointment."
+            note="Remarque : Les patients recevront une notification automatique concernant le nouveau rendez-vous."
           >
-            Once scheduled, the appointment will appear on your calendar and the
-            patient&apos;s dashboard. You can modify or cancel the appointment
-            from your appointments page.
+            Une fois planifié, le rendez-vous apparaîtra sur votre calendrier et
+            sur le tableau de bord du patient. Vous pourrez modifier ou annuler
+            le rendez-vous depuis votre page de rendez-vous.
           </InfoNotice>
         </div>
       </CardContent>

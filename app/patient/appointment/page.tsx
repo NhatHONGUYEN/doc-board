@@ -51,15 +51,19 @@ export default function AppointmentPage() {
   const router = useRouter();
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Loading your appointments...</div>;
+    return <div className="p-8">Chargement de vos rendez-vous...</div>;
   }
 
   if (isError) {
-    return <div className="p-8 text-red-500">Error: {error.message}</div>;
+    return <div className="p-8 text-red-500">Erreur : {error.message}</div>;
   }
 
   if (!session) {
-    return <div className="p-8">Please sign in to view your appointments</div>;
+    return (
+      <div className="p-8">
+        Veuillez vous connecter pour voir vos rendez-vous
+      </div>
+    );
   }
 
   const handleCancelAppointment = async () => {
@@ -75,14 +79,14 @@ export default function AppointmentPage() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to cancel appointment");
+        throw new Error("Échec de l'annulation du rendez-vous");
       }
 
-      toast.success("Appointment cancelled successfully");
+      toast.success("Rendez-vous annulé avec succès");
       setCancelDialogOpen(false);
       refetch();
     } catch (error) {
-      toast.error("Failed to cancel appointment");
+      toast.error("Échec de l'annulation du rendez-vous");
       console.error(error);
     } finally {
       setIsCancelling(false);
@@ -99,13 +103,13 @@ export default function AppointmentPage() {
     setDetailsDialogOpen(true);
   };
 
-  // Format appointments for FullCalendar
+  // Formater les rendez-vous pour FullCalendar
   const calendarEvents =
     patient?.appointments?.map((apt) => {
       const startDate = new Date(apt.date);
       const endDate = new Date(startDate.getTime() + apt.duration * 60000);
 
-      // Define color based on status
+      // Définir la couleur en fonction du statut
       let backgroundColor;
       let borderColor;
 
@@ -135,27 +139,41 @@ export default function AppointmentPage() {
       };
     }) || [];
 
-  // Handle event click
+  // Gérer le clic sur un événement
   const handleEventClick = (clickInfo: EventClickArg) => {
     const appointment = clickInfo.event.extendedProps
       .appointment as Appointment;
     openDetailsDialog(appointment);
   };
 
-  // Handle date click (for booking)
+  // Gérer le clic sur une date (pour la réservation)
   const handleDateClick = (info: DateClickArg) => {
-    // Navigate to booking page with selected date
+    // Naviguer vers la page de réservation avec la date sélectionnée
     router.push(`/patient/appointment/new?date=${info.dateStr}`);
+  };
+
+  // Traduire le statut du rendez-vous
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmé";
+      case "cancelled":
+        return "Annulé";
+      case "completed":
+        return "Terminé";
+      default:
+        return "En attente";
+    }
   };
 
   return (
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Appointments</h1>
+        <h1 className="text-3xl font-bold">Mes Rendez-vous</h1>
         <Button asChild>
           <Link href="/patient/appointment/new">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Book New Appointment
+            Prendre un nouveau rendez-vous
           </Link>
         </Button>
       </div>
@@ -183,30 +201,31 @@ export default function AppointmentPage() {
             slotMinTime="08:00:00"
             slotMaxTime="20:00:00"
             businessHours={{
-              daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+              daysOfWeek: [1, 2, 3, 4, 5], // Lundi - Vendredi
               startTime: "09:00",
               endTime: "17:00",
             }}
             nowIndicator={true}
             dayMaxEvents={true}
-            // Custom styles
+            // Styles personnalisés
             eventDidMount={(info) => {
-              // Add custom class for cancelled appointments
+              // Ajouter une classe personnalisée pour les rendez-vous annulés
               if (
                 info.event.extendedProps.appointment?.status === "cancelled"
               ) {
                 info.el.classList.add("line-through", "opacity-60");
               }
             }}
+            locale="fr" // Définir la localisation en français
           />
         </CardContent>
       </Card>
 
-      {/* Appointment Details Dialog */}
+      {/* Boîte de dialogue des détails du rendez-vous */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Appointment Details</DialogTitle>
+            <DialogTitle>Détails du rendez-vous</DialogTitle>
           </DialogHeader>
 
           {selectedAppointment && (
@@ -222,7 +241,7 @@ export default function AppointmentPage() {
                         : "secondary"
                     }
                   >
-                    {selectedAppointment.status}
+                    {translateStatus(selectedAppointment.status)}
                   </Badge>
                 </div>
                 <div className="text-right">
@@ -240,7 +259,7 @@ export default function AppointmentPage() {
                         }}
                       >
                         <X className="mr-2 h-4 w-4" />
-                        Cancel
+                        Annuler
                       </Button>
                     )}
                 </div>
@@ -251,7 +270,7 @@ export default function AppointmentPage() {
                 <div>
                   <p className="font-medium">
                     {new Date(selectedAppointment.date).toLocaleDateString(
-                      undefined,
+                      "fr-FR",
                       {
                         weekday: "long",
                         year: "numeric",
@@ -265,21 +284,24 @@ export default function AppointmentPage() {
                 <Clock className="h-5 w-5 text-primary" />
                 <div>
                   <p className="font-medium">
-                    {new Date(selectedAppointment.date).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                    {" to "}
+                    {new Date(selectedAppointment.date).toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
+                    {" à "}
                     {new Date(
                       new Date(selectedAppointment.date).getTime() +
                         selectedAppointment.duration * 60000
-                    ).toLocaleTimeString([], {
+                    ).toLocaleTimeString("fr-FR", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Duration: {selectedAppointment.duration} minutes
+                    Durée : {selectedAppointment.duration} minutes
                   </p>
                 </div>
 
@@ -290,14 +312,16 @@ export default function AppointmentPage() {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {selectedAppointment.doctor.specialty ||
-                      "General Practitioner"}
+                      "Médecin généraliste"}
                   </p>
                 </div>
 
                 {selectedAppointment.reason && (
                   <>
                     <div className="col-span-2 mt-2">
-                      <h4 className="font-medium text-sm">Reason for Visit</h4>
+                      <h4 className="font-medium text-sm">
+                        Motif de la visite
+                      </h4>
                     </div>
                     <div className="col-span-2 bg-muted p-3 rounded text-sm">
                       {selectedAppointment.reason}
@@ -308,9 +332,7 @@ export default function AppointmentPage() {
                 {selectedAppointment.notes && (
                   <>
                     <div className="col-span-2 mt-2">
-                      <h4 className="font-medium text-sm">
-                        Doctor&apos;s Notes
-                      </h4>
+                      <h4 className="font-medium text-sm">Notes du médecin</h4>
                     </div>
                     <div className="col-span-2 bg-muted p-3 rounded text-sm">
                       {selectedAppointment.notes}
@@ -323,14 +345,14 @@ export default function AppointmentPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Cancel Appointment Dialog */}
+      {/* Boîte de dialogue d'annulation de rendez-vous */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Appointment</DialogTitle>
+            <DialogTitle>Annuler le rendez-vous</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel this appointment? This action
-              cannot be undone.
+              Êtes-vous sûr de vouloir annuler ce rendez-vous ? Cette action ne
+              peut pas être annulée.
             </DialogDescription>
           </DialogHeader>
 
@@ -340,16 +362,21 @@ export default function AppointmentPage() {
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-4 w-4" />
                   <span>
-                    {new Date(selectedAppointment.date).toLocaleDateString()}
+                    {new Date(selectedAppointment.date).toLocaleDateString(
+                      "fr-FR"
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
                   <span>
-                    {new Date(selectedAppointment.date).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {new Date(selectedAppointment.date).toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -365,14 +392,16 @@ export default function AppointmentPage() {
               variant="outline"
               onClick={() => setCancelDialogOpen(false)}
             >
-              Keep Appointment
+              Conserver le rendez-vous
             </Button>
             <Button
               variant="destructive"
               onClick={handleCancelAppointment}
               disabled={isCancelling}
             >
-              {isCancelling ? "Cancelling..." : "Cancel Appointment"}
+              {isCancelling
+                ? "Annulation en cours..."
+                : "Annuler le rendez-vous"}
             </Button>
           </DialogFooter>
         </DialogContent>

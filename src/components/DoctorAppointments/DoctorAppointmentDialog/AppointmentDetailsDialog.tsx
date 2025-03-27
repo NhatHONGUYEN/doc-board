@@ -44,6 +44,20 @@ export function AppointmentDetailsDialog() {
     }
   };
 
+  // Traduire le statut du rendez-vous
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmé";
+      case "cancelled":
+        return "Annulé";
+      case "completed":
+        return "Terminé";
+      default:
+        return "En attente";
+    }
+  };
+
   return (
     <Dialog open={detailsDialogOpen} onOpenChange={closeDetailsDialog}>
       <DialogContent className="max-w-lg">
@@ -52,7 +66,7 @@ export function AppointmentDetailsDialog() {
             <div className="w-7 h-7 bg-primary/90 rounded-md flex items-center justify-center">
               <Stethoscope className="h-4 w-4 text-white" />
             </div>
-            <span className="text-card-foreground">Appointment Details</span>
+            <span className="text-card-foreground">Détails du rendez-vous</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -66,7 +80,7 @@ export function AppointmentDetailsDialog() {
                   "capitalize text-xs px-3 py-1"
                 )}
               >
-                {selectedAppointment.status}
+                {translateStatus(selectedAppointment.status)}
               </Badge>
             </div>
             <div className="flex gap-2">
@@ -84,7 +98,7 @@ export function AppointmentDetailsDialog() {
                 className="border-border bg-card hover:bg-primary/10 hover:text-primary transition-all"
               >
                 <FileText className="mr-2 h-4 w-4" />
-                {selectedAppointment.notes ? "Edit" : "Add"} Notes
+                {selectedAppointment.notes ? "Modifier" : "Ajouter"} des notes
               </Button>
               {selectedAppointment.status !== "cancelled" &&
                 selectedAppointment.status !== "completed" && (
@@ -100,7 +114,7 @@ export function AppointmentDetailsDialog() {
                     }}
                     className="bg-primary hover:bg-primary/90 transition-all"
                   >
-                    Update Status
+                    Mettre à jour le statut
                   </Button>
                 )}
             </div>
@@ -114,7 +128,7 @@ export function AppointmentDetailsDialog() {
               <div>
                 <p className="text-xs text-muted-foreground">Patient</p>
                 <p className="text-sm font-medium text-card-foreground">
-                  {selectedAppointment.patient?.user?.name || "Unknown Patient"}
+                  {selectedAppointment.patient?.user?.name || "Patient inconnu"}
                 </p>
               </div>
             </div>
@@ -127,7 +141,7 @@ export function AppointmentDetailsDialog() {
                 <p className="text-xs text-muted-foreground">Date</p>
                 <p className="text-sm font-medium text-card-foreground">
                   {new Date(selectedAppointment.date).toLocaleDateString(
-                    undefined,
+                    "fr-FR",
                     {
                       weekday: "long",
                       year: "numeric",
@@ -144,23 +158,26 @@ export function AppointmentDetailsDialog() {
                 <Clock className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Time</p>
+                <p className="text-xs text-muted-foreground">Heure</p>
                 <p className="text-sm font-medium text-card-foreground">
-                  {new Date(selectedAppointment.date).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  {" to "}
+                  {new Date(selectedAppointment.date).toLocaleTimeString(
+                    "fr-FR",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }
+                  )}
+                  {" à "}
                   {new Date(
                     new Date(selectedAppointment.date).getTime() +
                       selectedAppointment.duration * 60000
-                  ).toLocaleTimeString([], {
+                  ).toLocaleTimeString("fr-FR", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Duration: {selectedAppointment.duration} minutes
+                  Durée : {selectedAppointment.duration} minutes
                 </p>
               </div>
             </div>
@@ -172,7 +189,7 @@ export function AppointmentDetailsDialog() {
                 <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                   <ClipboardList className="h-3 w-3 text-primary" />
                 </div>
-                <span className="text-card-foreground">Reason for Visit</span>
+                <span className="text-card-foreground">Motif de la visite</span>
               </h4>
               <div className="bg-card/50 border p-3 rounded-md text-sm text-card-foreground">
                 {selectedAppointment.reason}
@@ -186,7 +203,7 @@ export function AppointmentDetailsDialog() {
                 <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center mr-2">
                   <FileText className="h-3 w-3 text-primary" />
                 </div>
-                <span className="text-card-foreground">Clinical Notes</span>
+                <span className="text-card-foreground">Notes cliniques</span>
               </h4>
               <div
                 className="bg-card/50 border p-3 rounded-md text-sm text-card-foreground"
@@ -212,14 +229,14 @@ export function AppointmentDetailsDialog() {
             className="border-border bg-card hover:bg-primary/10 hover:text-primary transition-all"
           >
             <FileText className="mr-2 h-4 w-4" />
-            View Patient Record
+            Voir le dossier patient
           </Button>
           <Button
             variant="default"
             onClick={closeDetailsDialog}
             className="bg-primary hover:bg-primary/90 transition-all"
           >
-            Close
+            Fermer
           </Button>
         </DialogFooter>
       </DialogContent>

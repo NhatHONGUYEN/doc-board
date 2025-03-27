@@ -34,7 +34,7 @@ export default function PatientSelector({
           <FormLabel>Patient</FormLabel>
 
           {field.value && patients.find((p) => p.id === field.value) ? (
-            // Show selected patient with option to change
+            // Afficher le patient sélectionné avec option de changement
             <div className="flex items-center justify-between border rounded-md p-3 bg-card">
               <div className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary mr-3">
@@ -60,18 +60,18 @@ export default function PatientSelector({
                 onClick={() => field.onChange("")}
                 className="hover:bg-destructive/10 hover:text-destructive transition-all"
               >
-                Change
+                Changer
               </Button>
             </div>
           ) : (
-            // Show search with live results
+            // Afficher la recherche avec résultats en direct
             <div className="space-y-0 relative">
               <div className="relative">
                 <div className="absolute left-2.5 top-2.5 flex items-center justify-center">
                   <Search className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <Input
-                  placeholder="Search patients by name or email..."
+                  placeholder="Rechercher des patients par nom ou email..."
                   className="pl-9 border-border bg-card"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -79,14 +79,14 @@ export default function PatientSelector({
                 />
               </div>
 
-              {/* Show results immediately below the search box as you type */}
+              {/* Afficher les résultats immédiatement sous la barre de recherche pendant la saisie */}
               {searchTerm && !field.value && (
                 <div className="absolute z-10 w-full mt-1 border rounded-md bg-card shadow-md max-h-64 overflow-y-auto">
                   {isLoadingPatients ? (
                     <div className="p-4 text-center flex items-center justify-center">
                       <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                       <p className="text-sm text-muted-foreground">
-                        Loading patients...
+                        Chargement des patients...
                       </p>
                     </div>
                   ) : filteredPatients.length === 0 ? (
@@ -95,10 +95,10 @@ export default function PatientSelector({
                         <Search className="h-5 w-5 text-primary" />
                       </div>
                       <p className="text-sm font-medium text-card-foreground">
-                        No patients found
+                        Aucun patient trouvé
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Try searching with a different name or email
+                        Essayez de rechercher avec un nom ou email différent
                       </p>
                     </div>
                   ) : (
@@ -132,7 +132,7 @@ export default function PatientSelector({
           )}
 
           <FormDescription className="text-xs text-muted-foreground">
-            Search by name or email and select a patient.
+            Recherchez par nom ou email et sélectionnez un patient.
           </FormDescription>
           <FormMessage />
         </FormItem>

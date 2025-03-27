@@ -29,26 +29,28 @@ export default function AppointmentDetails({
       name="appointmentType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Appointment Type</FormLabel>
+          <FormLabel>Type de rendez-vous</FormLabel>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value || "regular"}
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select appointment type" />
+                <SelectValue placeholder="Sélectionner un type de rendez-vous" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="regular">Regular Checkup</SelectItem>
-              <SelectItem value="followup">Follow-up Visit</SelectItem>
-              <SelectItem value="urgent">Urgent Care</SelectItem>
-              <SelectItem value="procedure">Procedure</SelectItem>
-              <SelectItem value="consultation">Consultation</SelectItem>
+              <SelectItem value="regular">Consultation de routine</SelectItem>
+              <SelectItem value="followup">Visite de suivi</SelectItem>
+              <SelectItem value="urgent">Soins urgents</SelectItem>
+              <SelectItem value="procedure">Procédure médicale</SelectItem>
+              <SelectItem value="consultation">
+                Consultation spécialisée
+              </SelectItem>
             </SelectContent>
           </Select>
           <FormDescription>
-            The type of appointment helps with scheduling and preparation.
+            Le type de rendez-vous facilite la planification et la préparation.
           </FormDescription>
           <FormMessage />
         </FormItem>
