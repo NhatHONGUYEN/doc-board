@@ -10,6 +10,8 @@ import {
   User,
   X,
   PlusCircle,
+  FileText,
+  ClipboardList,
 } from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
 import { Appointment } from "@/lib/types/core-entities";
@@ -234,7 +236,7 @@ export default function AppointmentPage() {
           </DialogHeader>
 
           {selectedAppointment && (
-            <div className="py-4 space-y-6">
+            <div className="py-4 space-y-5">
               <div className="flex items-start justify-between">
                 <div>
                   <Badge
@@ -270,80 +272,119 @@ export default function AppointmentPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-[20px_1fr] gap-x-4 gap-y-3 items-start">
-                <CalendarIcon className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-medium">
-                    {new Date(selectedAppointment.date).toLocaleDateString(
-                      "fr-FR",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                  </p>
+              <div className="space-y-4">
+                {/* Date */}
+                <div className="flex items-start gap-4">
+                  <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                    <CalendarIcon className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Date</p>
+                    <p className="text-muted-foreground">
+                      {new Date(selectedAppointment.date).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
                 </div>
 
-                <Clock className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-medium">
-                    {new Date(selectedAppointment.date).toLocaleTimeString(
-                      "fr-FR",
-                      {
+                {/* Heure */}
+                <div className="flex items-start gap-4">
+                  <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                    <Clock className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Heure et durée</p>
+                    <p className="text-muted-foreground">
+                      {new Date(selectedAppointment.date).toLocaleTimeString(
+                        "fr-FR",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                      {" à "}
+                      {new Date(
+                        new Date(selectedAppointment.date).getTime() +
+                          selectedAppointment.duration * 60000
+                      ).toLocaleTimeString("fr-FR", {
                         hour: "2-digit",
                         minute: "2-digit",
-                      }
-                    )}
-                    {" à "}
-                    {new Date(
-                      new Date(selectedAppointment.date).getTime() +
-                        selectedAppointment.duration * 60000
-                    ).toLocaleTimeString("fr-FR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Durée : {selectedAppointment.duration} minutes
-                  </p>
+                      })}
+                      <span className="block text-xs">
+                        Durée : {selectedAppointment.duration} minutes
+                      </span>
+                    </p>
+                  </div>
                 </div>
 
-                <User className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-medium">
-                    Dr. {selectedAppointment.doctor.user.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedAppointment.doctor.specialty ||
-                      "Médecin généraliste"}
-                  </p>
+                {/* Médecin */}
+                <div className="flex items-start gap-4">
+                  <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Médecin</p>
+                    <p className="text-muted-foreground">
+                      Dr. {selectedAppointment.doctor.user.name}
+                      <span className="block text-xs">
+                        {selectedAppointment.doctor.specialty ||
+                          "Médecin généraliste"}
+                      </span>
+                    </p>
+                  </div>
                 </div>
 
+                {/* Motif de la visite */}
                 {selectedAppointment.reason && (
-                  <>
-                    <div className="col-span-2 mt-2">
-                      <h4 className="font-medium text-sm">
-                        Motif de la visite
-                      </h4>
+                  <div className="pt-3 border-t border-muted/20">
+                    <div className="flex items-start gap-4">
+                      <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                        <FileText className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">
+                          Motif de la visite
+                        </p>
+                        <p className="text-muted-foreground">
+                          {selectedAppointment.reason}
+                        </p>
+                      </div>
                     </div>
-                    <div className="col-span-2 bg-muted p-3 rounded text-sm">
-                      {selectedAppointment.reason}
-                    </div>
-                  </>
+                  </div>
                 )}
 
+                {/* Notes du médecin */}
                 {selectedAppointment.notes && (
-                  <>
-                    <div className="col-span-2 mt-2">
-                      <h4 className="font-medium text-sm">Notes du médecin</h4>
+                  <div className="pt-3 border-t border-muted/20">
+                    <div className="flex items-start gap-4">
+                      <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                        <ClipboardList className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">Notes du médecin</p>
+                        <p className="text-muted-foreground">
+                          {selectedAppointment.notes}
+                        </p>
+                      </div>
                     </div>
-                    <div className="col-span-2 bg-muted p-3 rounded text-sm">
-                      {selectedAppointment.notes}
-                    </div>
-                  </>
+                  </div>
                 )}
+              </div>
+
+              {/* Bouton vers page détaillée */}
+              <div className="border-t pt-4 mt-4">
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href={`/patient/appointment/${selectedAppointment.id}`}>
+                    Voir tous les détails
+                  </Link>
+                </Button>
               </div>
             </div>
           )}
@@ -362,51 +403,83 @@ export default function AppointmentPage() {
           </DialogHeader>
 
           {selectedAppointment && (
-            <div className="py-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  <span>
-                    {new Date(selectedAppointment.date).toLocaleDateString(
-                      "fr-FR"
-                    )}
-                  </span>
+            <div className="py-3 my-2 border border-destructive/10 bg-destructive/5 rounded-md">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 px-4">
+                  <div className="h-7 w-7 bg-destructive/10 rounded-lg flex items-center justify-center shrink-0">
+                    <CalendarIcon className="h-4 w-4 text-destructive" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Date</p>
+                    <p className="text-muted-foreground text-sm">
+                      {new Date(selectedAppointment.date).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    {new Date(selectedAppointment.date).toLocaleTimeString(
-                      "fr-FR",
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
-                  </span>
+
+                <div className="flex items-start gap-3 px-4">
+                  <div className="h-7 w-7 bg-destructive/10 rounded-lg flex items-center justify-center shrink-0">
+                    <Clock className="h-4 w-4 text-destructive" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Heure</p>
+                    <p className="text-muted-foreground text-sm">
+                      {new Date(selectedAppointment.date).toLocaleTimeString(
+                        "fr-FR",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>Dr. {selectedAppointment.doctor.user.name}</span>
+
+                <div className="flex items-start gap-3 px-4">
+                  <div className="h-7 w-7 bg-destructive/10 rounded-lg flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-destructive" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Médecin</p>
+                    <p className="text-muted-foreground text-sm">
+                      Dr. {selectedAppointment.doctor.user.name}
+                      {selectedAppointment.doctor.specialty && (
+                        <span className="block text-xs">
+                          {selectedAppointment.doctor.specialty}
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className="gap-2 mt-2">
             <Button
               variant="outline"
               onClick={() => setCancelDialogOpen(false)}
+              className="flex-1"
             >
-              Conserver le rendez-vous
+              Conserver
             </Button>
             <Button
               variant="destructive"
               onClick={handleCancelAppointment}
               disabled={isCancelling}
+              className="flex-1"
             >
               {isCancelling
                 ? "Annulation en cours..."
-                : "Annuler le rendez-vous"}
+                : "Confirmer l'annulation"}
             </Button>
           </DialogFooter>
         </DialogContent>
