@@ -1,6 +1,6 @@
 import { Logo } from "@/components/logo";
 import Link from "next/link";
-import { HeroBackground } from "./HeroBackground";
+import { HeroBackground } from "../HeroBackground";
 
 // Utiliser les mêmes liens que dans HeroHeader
 const links = [

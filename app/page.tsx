@@ -1,9 +1,10 @@
-import Faq from "@/components/Faq";
-import Features from "@/components/Features";
-import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
-import Pricing from "@/components/Pricing";
-import Testimonials from "@/components/Testimonials";
+import Faq from "@/components/HomePage/Faq";
+import Features from "@/components/HomePage/Features";
+import Footer from "@/components/HomePage/Footer";
+import Hero from "@/components/HomePage/Hero";
+
+import Pricing from "@/components/HomePage/Pricing";
+import Testimonials from "@/components/HomePage/Testimonials";
 
 export default function Home() {
   return (

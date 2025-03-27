@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { BarChart3, Calendar, Clock } from "lucide-react";
 import { ReactNode } from "react";
-
-import { Badge } from "./ui/badge";
-import { HeroBackground } from "./HeroBackground";
+import { HeroBackground } from "../HeroBackground";
+import { Badge } from "../ui/badge";
 
 export default function Features() {
   return (

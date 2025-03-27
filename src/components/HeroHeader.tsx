@@ -91,13 +91,10 @@ export default function HeroHeader() {
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 {/* Button order and styling that matches the Hero section */}
                 <div
-                  className={cn(
-                    "bg-foreground/10 rounded-full border p-0.5",
-                    isScrolled && "lg:hidden"
-                  )}
+                  className={cn("w-full sm:w-auto", isScrolled && "lg:hidden")}
                 >
-                  <Button asChild size="sm">
-                    <Link href="/sign-up">
+                  <Button asChild size="sm" className="w-full">
+                    <Link href="/sign-up" className="w-full">
                       <span>Créer un Compte</span>
                     </Link>
                   </Button>
@@ -106,18 +103,21 @@ export default function HeroHeader() {
                   asChild
                   variant="ghost"
                   size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
+                  className={cn("w-full sm:w-auto", isScrolled && "lg:hidden")}
                 >
-                  <Link href="/sign-in">
+                  <Link href="/sign-in" className="w-full">
                     <span>Se Connecter</span>
                   </Link>
                 </Button>
                 <Button
                   asChild
                   size="sm"
-                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
+                  className={cn(
+                    "w-full sm:w-auto",
+                    isScrolled ? "lg:inline-flex" : "hidden"
+                  )}
                 >
-                  <Link href="/sign-up">
+                  <Link href="/sign-up" className="w-full">
                     <span>Commencer</span>
                   </Link>
                 </Button>

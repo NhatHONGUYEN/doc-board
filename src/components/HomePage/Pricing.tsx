@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import Link from "next/link";
-
-import { Badge } from "./ui/badge";
-import { HeroBackground } from "./HeroBackground";
+import { HeroBackground } from "../HeroBackground";
+import { Badge } from "../ui/badge";
 
 export default function Pricing() {
   return (

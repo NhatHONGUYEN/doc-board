@@ -1,5 +1,5 @@
 import { HelpCircle, UserPlus, FileText, Stethoscope } from "lucide-react";
-import { HeroBackground } from "./HeroBackground";
+import { HeroBackground } from "../HeroBackground";
 
 export default function Faq() {
   return (
