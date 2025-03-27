@@ -110,7 +110,10 @@ export default function PatientDashboard() {
 
           {/* Carte du prochain rendez-vous (si existant) */}
           {nextAppointment && (
-            <NextAppointmentCard appointment={nextAppointment} />
+            <NextAppointmentCard
+              appointment={nextAppointment}
+              patient={patient}
+            />
           )}
 
           {/* Aperçu des statistiques */}

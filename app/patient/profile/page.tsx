@@ -27,7 +27,7 @@ type PersonalInfoCardProps = {
   patient?: Patient;
 };
 
-export function PersonalInfoCard({ patient }: PersonalInfoCardProps) {
+export default function PersonalInfoCard({ patient }: PersonalInfoCardProps) {
   return (
     <div className="space-y-3">
       <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">

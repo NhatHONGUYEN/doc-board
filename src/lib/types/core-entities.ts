@@ -88,6 +88,7 @@ export type Appointment = {
 
   doctorId: string;
   doctor: {
+    officeAddress: string | null; // ✅ matches your Prisma schema
     id: string;
     specialty: string | null;
     user: {

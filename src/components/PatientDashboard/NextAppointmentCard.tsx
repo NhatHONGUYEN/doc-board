@@ -11,12 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, CalendarClock, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { Appointment } from "@/lib/types/core-entities";
+import { Appointment, Patient } from "@/lib/types/core-entities";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 type NextAppointmentCardProps = {
   appointment: Appointment;
+  patient: Patient | undefined;
 };
 
 export function NextAppointmentCard({ appointment }: NextAppointmentCardProps) {
