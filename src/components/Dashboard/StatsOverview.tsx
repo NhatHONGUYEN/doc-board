@@ -89,15 +89,12 @@ export function StatsOverview({ stats }: { stats: Stats }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* Total Patients */}
         <StatCard
-          title="Toues les patients"
+          title="Tous les patients"
           value={stats.totalPatients}
           icon={<Users size={24} className="text-primary" />}
           bgClass="bg-primary/10"
           textClass="text-primary"
-          trend={{
-            value: 5,
-            isPositive: true,
-          }}
+          // Ne pas passer de trend pour l'instant
         />
 
         {/* All Appointments */}
@@ -107,10 +104,7 @@ export function StatsOverview({ stats }: { stats: Stats }) {
           icon={<Calendar size={24} className="text-primary" />}
           bgClass="bg-primary/15"
           textClass="text-primary"
-          trend={{
-            value: 12,
-            isPositive: true,
-          }}
+          // Ne pas passer de trend pour l'instant
         />
 
         {/* Completed Appointments */}
@@ -125,33 +119,26 @@ export function StatsOverview({ stats }: { stats: Stats }) {
           }
           bgClass="bg-emerald-100 dark:bg-emerald-900/30"
           textClass="text-emerald-600 dark:text-emerald-400"
-          trend={{
-            value: 8,
-            isPositive: true,
-          }}
+          // Ne pas passer de trend pour l'instant
         />
 
         {/* Cancelled Appointments */}
         <StatCard
-          title="Rencontres annulées"
+          title="Rendez-vous annulés"
           value={stats.cancelledAppointments}
           icon={<XCircle size={24} className="text-destructive" />}
           bgClass="bg-destructive/10"
           textClass="text-destructive"
-          trend={{
-            value: 3,
-            isPositive: false,
-          }}
+          // Ne pas passer de trend pour l'instant
         />
       </div>
 
-      {/* Using InfoNotice component instead of hardcoded notice */}
+      {/* Remplacer la notice pour indiquer que les tendances seront disponibles prochainement */}
       <InfoNotice
         icon={<Calendar size={14} />}
-        note="Remarque : Les pourcentages de tendance sont calculés sur les 30 derniers jours par rapport à la période précédente."
+        note="Les tendances statistiques comparatives seront disponibles prochainement."
       >
-        Ces statistiques représentent votre activité globale. Les indicateurs de
-        pourcentage montrent les variations d&apos;un mois à l&apos;autre.
+        Ces statistiques représentent votre activité globale actuelle.
       </InfoNotice>
     </div>
   );
