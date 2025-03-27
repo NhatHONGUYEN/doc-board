@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { useFetchDoctors } from "@/hooks/useFetchDoctors";
 
 // Composant principal de la page - n'utilise pas useSearchParams
 export default function NewAppointmentPage() {
@@ -33,7 +34,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -71,32 +71,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { cn } from "@/lib/utils";
-import { Doctor } from "@/lib/types/core-entities";
-
-// Schéma de validation du formulaire
-const appointmentFormSchema = z.object({
-  doctorId: z.string({
-    required_error: "Veuillez sélectionner un médecin",
-  }),
-  date: z.date({
-    required_error: "Veuillez sélectionner une date",
-  }),
-  time: z.string({
-    required_error: "Veuillez sélectionner une heure",
-  }),
-  duration: z.string({
-    required_error: "Veuillez sélectionner une durée de rendez-vous",
-  }),
-  reason: z.string().optional(),
-});
-
-type AppointmentFormValues = z.infer<typeof appointmentFormSchema>;
-
-type TimeSlot = {
-  value: string;
-  label: string;
-  available: boolean;
-};
+import { useAvailableTimeSlots } from "@/hooks/useAvailableTimeSlots";
+import {
+  appointmentFormSchema,
+  TimeSlot,
+  type AppointmentFormValues,
+} from "@/lib/schema/patientAppointment";
 
 // Composant de formulaire qui utilise useSearchParams
 function AppointmentFormContent({
@@ -108,15 +88,12 @@ function AppointmentFormContent({
   const selectedDateParam = searchParams.get("date");
   const { session, status } = useSessionStore();
 
+  // Utilisez votre hook personnalisé pour récupérer les médecins
+  const { data: doctors = [], isLoading: isDoctorsLoading } = useFetchDoctors();
+
   // État et logique de formulaire existants
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [, setSelectedDoctor] = useState<string | null>(null);
-  const [, setSelectedDate] = useState<Date | null>(
-    selectedDateParam ? new Date(selectedDateParam) : null
-  );
 
   // Initialisation du formulaire avec valeurs par défaut
   const form = useForm<AppointmentFormValues>({
@@ -130,97 +107,30 @@ function AppointmentFormContent({
     },
   });
 
-  // Récupérer la liste des médecins au chargement du composant
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const response = await fetch("/api/allDoctor");
-        if (!response.ok) throw new Error("Échec de récupération des médecins");
-        const data = await response.json();
-
-        // Déboguer ce qui vient de l'API
-        console.log("Données des médecins:", data);
-
-        if (data && Array.isArray(data)) {
-          setDoctors(data);
-          if (data.length === 0) {
-            toast.info(
-              "Aucun médecin disponible dans le système pour l'instant"
-            );
-          }
-        }
-      } catch (error) {
-        toast.error("Échec du chargement des médecins");
-        console.error(error);
-      }
-    };
-
-    fetchDoctors();
-  }, []);
-
   // Surveillance des changements de médecin et de date pour récupérer les créneaux disponibles
   const watchDoctorId = form.watch("doctorId");
   const watchDate = form.watch("date");
 
+  // Utiliser le hook pour récupérer les créneaux disponibles
+  const { data: availabilityData, isLoading: isCheckingAvailability } =
+    useAvailableTimeSlots(watchDoctorId, watchDate);
+
+  // Mettre à jour le formulaire quand les créneaux changent
   useEffect(() => {
-    const fetchAvailableTimeSlots = async () => {
-      if (!watchDoctorId || !watchDate) return;
+    if (availabilityData) {
+      // Mettre à jour l'état des créneaux
+      setTimeSlots(availabilityData.timeSlots);
 
-      setIsCheckingAvailability(true);
-      try {
-        const formattedDate = format(watchDate, "yyyy-MM-dd");
-        const response = await fetch(
-          `/api/doctor/availability?doctorId=${watchDoctorId}&date=${formattedDate}`
-        );
-
-        if (!response.ok)
-          throw new Error("Échec de vérification des disponibilités");
-
-        const data = await response.json();
-
-        // Créer uniquement des créneaux pour les heures disponibles renvoyées par l'API
-        const slots: TimeSlot[] = [];
-
-        if (data.availableSlots && data.availableSlots.length > 0) {
-          // Trier les créneaux horaires pour un affichage correct
-          const sortedSlots = [...data.availableSlots].sort();
-
-          // Créer des créneaux adaptés à l'interface uniquement pour les heures disponibles
-          sortedSlots.forEach((timeString) => {
-            const [hour, minute] = timeString.split(":").map(Number);
-
-            // Format d'affichage (format 24h pour la France)
-            const displayTime = `${hour}h${minute.toString().padStart(2, "0")}`;
-
-            slots.push({
-              value: timeString,
-              label: displayTime,
-              available: true, // Tous les créneaux affichés sont disponibles
-            });
-          });
-        }
-
-        setTimeSlots(slots);
-
-        // Effacer le créneau précédemment sélectionné s'il n'est plus disponible
-        const currentTime = form.getValues("time");
-        if (currentTime && !data.availableSlots.includes(currentTime)) {
-          form.setValue("time", "");
-        }
-      } catch (error) {
-        toast.error("Échec de vérification des disponibilités");
-        console.error(error);
-      } finally {
-        setIsCheckingAvailability(false);
+      // Effacer le créneau précédemment sélectionné s'il n'est plus disponible
+      const currentTime = form.getValues("time");
+      if (
+        currentTime &&
+        !availabilityData.availableSlots.includes(currentTime)
+      ) {
+        form.setValue("time", "");
       }
-    };
-
-    if (watchDoctorId && watchDate) {
-      setSelectedDoctor(watchDoctorId);
-      setSelectedDate(watchDate);
-      fetchAvailableTimeSlots();
     }
-  }, [watchDoctorId, watchDate, form]);
+  }, [availabilityData, form]);
 
   // Après l'initialisation du formulaire :
   useEffect(() => {
@@ -229,29 +139,9 @@ function AppointmentFormContent({
       form.setValue("date", new Date(selectedDateParam));
     }
 
-    // Si nous avons à la fois une date depuis l'URL et un médecin déjà sélectionné, vérifier la disponibilité
-    if (selectedDateParam && form.getValues("doctorId")) {
-      fetchAvailableTimeSlots(
-        form.getValues("doctorId"),
-        new Date(selectedDateParam)
-      );
-    }
+    // Nous n'avons plus besoin d'appeler fetchAvailableTimeSlots ici
+    // Le hook useAvailableTimeSlots se déclenchera automatiquement lorsque doctorId et date changeront
   }, [selectedDateParam, form]);
-
-  // Extraire fetchAvailableTimeSlots dans une fonction séparée pour la réutiliser
-  const fetchAvailableTimeSlots = async (doctorId: string, date: Date) => {
-    if (!doctorId || !date) return;
-
-    setIsCheckingAvailability(true);
-    try {
-      // Reste de votre code existant pour gérer la réponse
-      // ...
-    } catch {
-      // ...
-    } finally {
-      setIsCheckingAvailability(false);
-    }
-  };
 
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!session) {
@@ -343,14 +233,26 @@ function AppointmentFormContent({
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={isDoctorsLoading}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner un médecin" />
+                        <SelectValue
+                          placeholder={
+                            isDoctorsLoading
+                              ? "Chargement des médecins..."
+                              : "Sélectionner un médecin"
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {doctors.length > 0 ? (
+                      {isDoctorsLoading ? (
+                        <div className="flex items-center justify-center p-2">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Chargement...
+                        </div>
+                      ) : doctors.length > 0 ? (
                         doctors.map((doctor) => (
                           <SelectItem key={doctor.id} value={doctor.id}>
                             Dr. {doctor.user.name}
