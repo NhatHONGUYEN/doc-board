@@ -30,7 +30,7 @@ export default function NewAppointmentPage() {
 }
 
 // Composant séparé qui utilise useSearchParams
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -74,9 +74,11 @@ import { cn } from "@/lib/utils";
 import { useAvailableTimeSlots } from "@/hooks/useAvailableTimeSlots";
 import {
   appointmentFormSchema,
-  TimeSlot,
   type AppointmentFormValues,
 } from "@/lib/schema/patientAppointment";
+import { useCreateAppointment } from "@/hooks/useCreateAppointment";
+import { formatAppointmentData } from "@/lib/utils/date";
+import { usePatientAppointmentFormStore } from "@/lib/store/usePatientAppointmentFormStore";
 
 // Composant de formulaire qui utilise useSearchParams
 function AppointmentFormContent({
@@ -92,8 +94,17 @@ function AppointmentFormContent({
   const { data: doctors = [], isLoading: isDoctorsLoading } = useFetchDoctors();
 
   // État et logique de formulaire existants
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const timeSlots = usePatientAppointmentFormStore((state) => state.timeSlots);
+  const setTimeSlots = usePatientAppointmentFormStore(
+    (state) => state.setTimeSlots
+  );
+  const isSubmitting = usePatientAppointmentFormStore(
+    (state) => state.isSubmitting
+  );
+  const setSubmitting = usePatientAppointmentFormStore(
+    (state) => state.setSubmitting
+  );
+  const resetForm = usePatientAppointmentFormStore((state) => state.resetForm);
 
   // Initialisation du formulaire avec valeurs par défaut
   const form = useForm<AppointmentFormValues>({
@@ -118,7 +129,6 @@ function AppointmentFormContent({
   // Mettre à jour le formulaire quand les créneaux changent
   useEffect(() => {
     if (availabilityData) {
-      // Mettre à jour l'état des créneaux
       setTimeSlots(availabilityData.timeSlots);
 
       // Effacer le créneau précédemment sélectionné s'il n'est plus disponible
@@ -130,7 +140,7 @@ function AppointmentFormContent({
         form.setValue("time", "");
       }
     }
-  }, [availabilityData, form]);
+  }, [availabilityData, form, setTimeSlots]);
 
   // Après l'initialisation du formulaire :
   useEffect(() => {
@@ -143,53 +153,40 @@ function AppointmentFormContent({
     // Le hook useAvailableTimeSlots se déclenchera automatiquement lorsque doctorId et date changeront
   }, [selectedDateParam, form]);
 
+  // Utilisez le hook de mutation
+  const createAppointmentMutation = useCreateAppointment();
+
+  // Nettoyage lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      resetForm();
+    };
+  }, [resetForm]);
+
   const onSubmit = async (data: AppointmentFormValues) => {
+    if (isSubmitting) return;
+
+    setSubmitting(true);
     if (!session) {
       toast.error("Vous devez être connecté pour prendre un rendez-vous");
+      setSubmitting(false);
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      // Convertir la date et l'heure en chaîne ISO
-      const [hours, minutes] = data.time.split(":");
-      const appointmentDate = new Date(data.date);
-      appointmentDate.setHours(parseInt(hours, 10));
-      appointmentDate.setMinutes(parseInt(minutes, 10));
+      // Utiliser la fonction utilitaire au lieu du code en ligne
+      const appointmentData = formatAppointmentData(data);
 
-      const appointmentData = {
-        doctorId: data.doctorId,
-        date: appointmentDate.toISOString(),
-        duration: parseInt(data.duration),
-        reason: data.reason || undefined,
-      };
+      // Utiliser la mutation au lieu du fetch manuel
+      await createAppointmentMutation.mutateAsync(appointmentData);
 
-      const response = await fetch("/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(appointmentData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || "Échec de réservation du rendez-vous"
-        );
-      }
-
-      toast.success("Rendez-vous pris avec succès");
+      // Rediriger seulement en cas de succès
       router.push("/patient/appointment");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Échec de réservation du rendez-vous");
-      }
+      // La gestion des erreurs est déjà faite dans le hook useCreateAppointment
       console.error(error);
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
@@ -438,11 +435,14 @@ function AppointmentFormContent({
                 >
                   Annuler
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && (
+                <Button
+                  type="submit"
+                  disabled={createAppointmentMutation.isPending}
+                >
+                  {createAppointmentMutation.isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isSubmitting
+                  {createAppointmentMutation.isPending
                     ? "Réservation en cours..."
                     : "Prendre rendez-vous"}
                 </Button>
