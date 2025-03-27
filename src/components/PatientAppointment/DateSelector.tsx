@@ -20,6 +20,8 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Control } from "react-hook-form";
 import { AppointmentFormValues } from "@/lib/schema/patientAppointment";
+import { isToday } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 
 type DateSelectorProps = {
   control: Control<AppointmentFormValues>;
@@ -32,7 +34,17 @@ export function DateSelector({ control }: DateSelectorProps) {
       name="date"
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Date</FormLabel>
+          <div className="flex justify-between items-center mb-1.5">
+            <FormLabel className="text-base">Date du rendez-vous</FormLabel>
+            {field.value && isToday(field.value) && (
+              <Badge
+                variant="outline"
+                className="bg-primary/5 text-primary border-primary/20"
+              >
+                Aujourd&apos;hui
+              </Badge>
+            )}
+          </div>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>

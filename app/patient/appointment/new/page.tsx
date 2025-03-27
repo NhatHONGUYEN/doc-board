@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, CalendarPlus, Loader2 } from "lucide-react";
 import { useFetchDoctors } from "@/hooks/useFetchDoctors";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { usePatientAppointmentFormStore } from "@/lib/store/usePatientAppointmentFormStore";
@@ -172,11 +172,18 @@ function AppointmentFormContent({
 
   return (
     <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Sélectionner un médecin et un horaire</CardTitle>
-        <CardDescription>
-          Choisissez votre médecin et l&apos;horaire de rendez-vous préférés
-        </CardDescription>
+      <CardHeader className="border-b pb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <CalendarPlus className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <CardTitle>Réservation de rendez-vous</CardTitle>
+            <CardDescription className="mt-1">
+              Choisissez votre médecin et l&apos;horaire qui vous convient
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent>
