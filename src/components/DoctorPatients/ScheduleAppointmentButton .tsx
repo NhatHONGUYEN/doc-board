@@ -10,7 +10,7 @@ type ScheduleAppointmentButtonProps = {
 export function ScheduleAppointmentButton({
   patientId,
   onSchedule,
-  label = "Schedule Appointment",
+  label = "Planifier un rendez-vous",
   ...buttonProps
 }: ScheduleAppointmentButtonProps) {
   return (

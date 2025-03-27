@@ -26,7 +26,7 @@ export function StatsOverview({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Upcoming Appointments
+                  Rendez-vous à venir
                 </p>
                 <div className="flex items-center gap-1">
                   <p className="text-2xl font-bold text-card-foreground">
@@ -51,10 +51,12 @@ export function StatsOverview({
                 <Shield className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Medical History</p>
+                <p className="text-sm text-muted-foreground">
+                  Historique médical
+                </p>
                 <div className="flex items-center gap-1">
                   <p className="text-2xl font-bold text-card-foreground">
-                    {hasMedicalHistory ? "Complete" : "Incomplete"}
+                    {hasMedicalHistory ? "Complet" : "Incomplet"}
                   </p>
                   <Link
                     href="/patient/medical-history"
@@ -75,10 +77,12 @@ export function StatsOverview({
                 <User className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Profile Status</p>
+                <p className="text-sm text-muted-foreground">
+                  Statut du profil
+                </p>
                 <div className="flex items-center gap-1">
                   <p className="text-2xl font-bold text-card-foreground">
-                    {isProfileComplete ? "Complete" : "Incomplete"}
+                    {isProfileComplete ? "Complet" : "Incomplet"}
                   </p>
                   <Link
                     href="/patient/profile"
@@ -93,13 +97,14 @@ export function StatsOverview({
         </Card>
       </div>
 
-      {/* InfoNotice added below the stats cards */}
+      {/* InfoNotice ajouté en dessous des cartes de statistiques */}
       <InfoNotice
         icon={<Info size={14} />}
-        note="Complete your profile and medical history to help doctors provide better care."
+        note="Complétez votre profil et votre historique médical pour aider les médecins à fournir de meilleurs soins."
       >
-        These statistics provide a quick overview of your account status. Click
-        on any card to manage the corresponding information.
+        Ces statistiques fournissent un aperçu rapide de l&apos;état de votre
+        compte. Cliquez sur n&apos;importe quelle carte pour gérer les
+        informations correspondantes.
       </InfoNotice>
     </div>
   );

@@ -1,142 +1,122 @@
-// src/components/PatientDashboard/PersonalInfoCard.tsx
+// src/components/PatientDashboard/NextAppointmentCard.tsx
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  User,
-  Mail,
-  Phone,
-  Calendar as CalendarIcon,
-  FileText,
-  LockKeyhole,
-} from "lucide-react";
+import { Calendar, Clock, CalendarClock, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { Patient } from "@/lib/types/core-entities";
-import { InfoNotice } from "@/components/InfoNotice";
+import { Appointment } from "@/lib/types/core-entities";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
-type PersonalInfoCardProps = {
-  patient?: Patient;
+type NextAppointmentCardProps = {
+  appointment: Appointment;
 };
 
-export function PersonalInfoCard({ patient }: PersonalInfoCardProps) {
+export function NextAppointmentCard({ appointment }: NextAppointmentCardProps) {
+  // Traduire le statut du rendez-vous
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmé";
+      case "cancelled":
+        return "Annulé";
+      case "completed":
+        return "Terminé";
+      default:
+        return "En attente";
+    }
+  };
+
   return (
-    <div className="space-y-3">
-      <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
-        <CardHeader className="bg-card border-b border-border">
-          <div className="flex justify-between items-center pb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
-                <User className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-card-foreground">
-                  Personal Information
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Your profile details
-                </CardDescription>
-              </div>
-            </div>
+    <Card className="mb-8 overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+      <CardHeader className="bg-card border-b border-border pb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
+            <CalendarClock className="h-4 w-4 text-white" />
           </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <div className="flex justify-center mb-6">
-            <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
-              <AvatarImage src={patient?.user?.image || ""} alt="Patient" />
-              <AvatarFallback className="bg-primary/5 text-primary text-xl font-semibold">
-                {patient?.user?.name
+          <div>
+            <CardTitle className="text-card-foreground">
+              Prochain rendez-vous
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Votre consultation médicale à venir
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex gap-4">
+            <Avatar className="h-16 w-16 border-2 border-background shadow-md">
+              <AvatarImage src="" alt="Médecin" />
+              <AvatarFallback className="bg-primary/5 text-primary font-semibold">
+                {appointment.doctor?.user?.name
                   ?.split(" ")
                   .map((n) => n[0])
                   .join("")
-                  .toUpperCase() || "P"}
+                  .toUpperCase() || "D"}
               </AvatarFallback>
             </Avatar>
-          </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <User className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Full Name</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.user?.name}
-                </p>
+            <div>
+              <div className="flex items-center gap-1 mb-1">
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">
+                  {translateStatus(appointment.status)}
+                </Badge>
+                <span className="text-muted-foreground text-sm">•</span>
+                <span className="text-primary text-sm font-medium">
+                  {appointment.duration} minutes
+                </span>
               </div>
-            </div>
 
-            <div className="flex items-center">
-              <Mail className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.user?.email}
-                </p>
-              </div>
-            </div>
+              <h3 className="text-lg font-semibold text-card-foreground">
+                Dr. {appointment.doctor?.user?.name}
+              </h3>
 
-            <div className="flex items-center">
-              <Phone className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.phone || (
-                    <span className="text-muted-foreground italic text-sm">
-                      Not provided
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
+              <p className="text-sm text-muted-foreground">
+                {appointment.doctor?.specialty || "Médecin généraliste"}
+              </p>
 
-            <div className="flex items-center">
-              <CalendarIcon className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Date of Birth</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.birthDate ? (
-                    new Date(patient.birthDate).toLocaleDateString()
-                  ) : (
-                    <span className="text-muted-foreground italic text-sm">
-                      Not provided
-                    </span>
-                  )}
-                </p>
+              <div className="flex items-center gap-1 mt-2 text-sm">
+                <Calendar className="h-4 w-4 text-primary/70" />
+                <span>
+                  {format(new Date(appointment.date), "EEEE d MMMM yyyy", {
+                    locale: fr,
+                  })}
+                </span>
+                <span className="text-muted-foreground mx-1">à</span>
+                <Clock className="h-4 w-4 text-primary/70" />
+                <span>
+                  {format(new Date(appointment.date), "HH'h'mm", {
+                    locale: fr,
+                  })}
+                </span>
               </div>
             </div>
           </div>
-        </CardContent>
-        <CardFooter className="bg-card border-t border-border py-4 px-5">
+
           <Button
             asChild
             variant="outline"
-            className="w-full h-10 bg-card hover:bg-primary/10 hover:text-primary transition-all"
+            className="h-10 bg-card border-border hover:bg-primary/10 hover:text-primary transition-all"
           >
             <Link
-              href="/patient/profile"
-              className="flex items-center justify-center"
+              href={`/patient/appointment/${appointment.id}`}
+              className="flex items-center"
             >
-              <FileText className="h-4 w-4 mr-2" />
-              Edit Profile
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Voir les détails
             </Link>
           </Button>
-        </CardFooter>
-      </Card>
-
-      {/* InfoNotice outside and below the card */}
-      <InfoNotice
-        icon={<LockKeyhole size={14} />}
-        note="Your information is only shared with your healthcare providers."
-      >
-        Keeping your profile up-to-date ensures that your doctors have accurate
-        information for diagnosis and treatment.
-      </InfoNotice>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

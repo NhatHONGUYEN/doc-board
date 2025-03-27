@@ -9,10 +9,10 @@ type DashboardHeaderProps = {
 };
 
 export function DashboardHeader({ patientName }: DashboardHeaderProps) {
-  // Safely extract first name, handling null and undefined
+  // Extraire en toute sécurité le prénom, en gérant null et undefined
   const firstName = patientName?.split(" ")[0] || "Patient";
 
-  // Define the action button for PageHeader
+  // Définir le bouton d'action pour PageHeader
   const actionButton = (
     <Button
       asChild
@@ -20,18 +20,18 @@ export function DashboardHeader({ patientName }: DashboardHeaderProps) {
     >
       <Link href="/patient/appointment/new" className="flex items-center">
         <CalendarPlus className="mr-2 h-4 w-4" />
-        Book New Appointment
+        Prendre un rendez-vous
       </Link>
     </Button>
   );
 
   return (
     <PageHeader
-      title="Patient Dashboard"
+      title="Tableau de bord Patient"
       icon={<UserCircle className="h-5 w-5 text-primary" />}
       actions={actionButton}
       highlightedText={{
-        prefix: "Welcome back,",
+        prefix: "Bienvenue,",
         text: firstName,
       }}
     />

@@ -20,6 +20,8 @@ import {
 import Link from "next/link";
 import { Appointment } from "@/lib/types/core-entities";
 import { InfoNotice } from "@/components/InfoNotice";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 type UpcomingAppointmentsProps = {
   appointments: Appointment[];
@@ -28,6 +30,20 @@ type UpcomingAppointmentsProps = {
 export function UpcomingAppointments({
   appointments,
 }: UpcomingAppointmentsProps) {
+  // Traduire le statut du rendez-vous
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "Confirmé";
+      case "cancelled":
+        return "Annulé";
+      case "completed":
+        return "Terminé";
+      default:
+        return "En attente";
+    }
+  };
+
   return (
     <div className="space-y-3">
       <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
@@ -39,10 +55,10 @@ export function UpcomingAppointments({
               </div>
               <div>
                 <CardTitle className="text-card-foreground">
-                  Upcoming Appointments
+                  Prochains rendez-vous
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Your scheduled medical consultations
+                  Vos consultations médicales programmées
                 </CardDescription>
               </div>
             </div>
@@ -54,7 +70,7 @@ export function UpcomingAppointments({
             >
               <Link href="/patient/appointment" className="flex items-center">
                 <ArrowRight className="h-4 w-4 mr-1" />
-                View All
+                Voir tout
               </Link>
             </Button>
           </div>
@@ -74,7 +90,7 @@ export function UpcomingAppointments({
                     <div className="flex justify-between">
                       <div className="flex gap-3">
                         <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
-                          <AvatarImage src="" alt="Doctor" />
+                          <AvatarImage src="" alt="Médecin" />
                           <AvatarFallback className="bg-primary/5 text-primary font-semibold">
                             {apt.doctor?.user?.name
                               ?.split(" ")
@@ -88,25 +104,20 @@ export function UpcomingAppointments({
                             Dr. {apt.doctor?.user?.name}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {apt.doctor?.specialty || "General Practitioner"}
+                            {apt.doctor?.specialty || "Médecin généraliste"}
                           </p>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                             <Calendar className="h-3.5 w-3.5 text-primary/70" />
                             <span>
-                              {new Date(apt.date).toLocaleDateString(
-                                undefined,
-                                {
-                                  month: "short",
-                                  day: "numeric",
-                                }
-                              )}
+                              {format(new Date(apt.date), "d MMM", {
+                                locale: fr,
+                              })}
                             </span>
                             <span className="text-border">•</span>
                             <Clock className="h-3.5 w-3.5 text-primary/70" />
                             <span>
-                              {new Date(apt.date).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
+                              {format(new Date(apt.date), "HH'h'mm", {
+                                locale: fr,
                               })}
                             </span>
                           </div>
@@ -116,7 +127,7 @@ export function UpcomingAppointments({
                         variant="outline"
                         className="bg-primary/10 text-primary border-primary/20 self-start font-normal"
                       >
-                        {apt.status}
+                        {translateStatus(apt.status)}
                       </Badge>
                     </div>
                   </Link>
@@ -129,10 +140,10 @@ export function UpcomingAppointments({
                 <CalendarIcon size={24} className="text-primary" />
               </div>
               <p className="text-card-foreground font-medium mb-1">
-                No upcoming appointments
+                Aucun rendez-vous à venir
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                You don&apos;t have any scheduled appointments
+                Vous n&apos;avez aucun rendez-vous programmé
               </p>
               <Button
                 className="h-10 bg-primary hover:bg-primary/90 transition-all"
@@ -143,7 +154,7 @@ export function UpcomingAppointments({
                   className="flex items-center"
                 >
                   <CalendarPlus className="mr-2 h-4 w-4" />
-                  Book an Appointment
+                  Prendre un rendez-vous
                 </Link>
               </Button>
             </div>
@@ -151,14 +162,15 @@ export function UpcomingAppointments({
         </CardContent>
       </Card>
 
-      {/* InfoNotice outside the card */}
+      {/* InfoNotice en dehors de la carte */}
       <InfoNotice
         icon={<AlertCircle size={14} />}
-        note="Please arrive 15 minutes before your scheduled appointment time."
+        note="Veuillez arriver 15 minutes avant l'heure prévue de votre rendez-vous."
       >
-        Click on any appointment for detailed information. You can view your
-        medical records, update information, or cancel if needed at least 24
-        hours in advance.
+        Cliquez sur n&apos;importe quel rendez-vous pour obtenir des
+        informations détaillées. Vous pouvez consulter vos dossiers médicaux,
+        mettre à jour vos informations, ou annuler si nécessaire au moins 24
+        heures à l&apos;avance.
       </InfoNotice>
     </div>
   );
