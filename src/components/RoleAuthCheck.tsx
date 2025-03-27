@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useSessionStore from "@/lib/store/useSessionStore";
+import { Loading } from "./Loading";
 
 type Role = "DOCTOR" | "PATIENT" | "ADMIN" | string;
 
@@ -29,13 +29,7 @@ export function RoleAuthCheck({
 
   // Check if loading
   if (status === "loading") {
-    return loadingComponent ? (
-      <>{loadingComponent}</>
-    ) : (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    return loadingComponent ? <>{loadingComponent}</> : <Loading />;
   }
 
   // Check if authenticated

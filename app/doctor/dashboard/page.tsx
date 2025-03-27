@@ -11,6 +11,7 @@ import { WeeklyActivity } from "@/components/Dashboard/WeeklyActivity";
 import { Clock, LayoutDashboard } from "lucide-react";
 import { DashboardColumns } from "@/components/Dashboard/DashboardColumns/DashboardColumns";
 import { PageHeader } from "@/components/PageHeader";
+import { Loading } from "@/components/Loading";
 
 export default function DoctorDashboard() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -42,7 +43,7 @@ export default function DoctorDashboard() {
 
   // Handle loading state - from TanStack Query
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Chargement de votre tableau de bord...</div>;
+    return <Loading />;
   }
 
   // Handle error state - from TanStack Query

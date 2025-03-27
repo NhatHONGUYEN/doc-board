@@ -2,7 +2,6 @@
 import { format } from "date-fns";
 import {
   CalendarIcon,
-  Loader2,
   Plus,
   Trash2,
   X,
@@ -46,6 +45,7 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
 import { InfoNotice } from "@/components/InfoNotice";
+import { Loading } from "../Loading";
 
 export default function SpecialDatesCard({ isLoading = false }) {
   const {
@@ -260,9 +260,7 @@ export default function SpecialDatesCard({ isLoading = false }) {
 
         <CardContent className="space-y-4 p-5 pt-4">
           {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
+            <Loading />
           ) : specialDates.length === 0 ? (
             <div className="text-center py-8 flex flex-col items-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">

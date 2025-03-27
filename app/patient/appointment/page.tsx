@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { EventClickArg } from "@fullcalendar/core";
 import { DateClickArg } from "@fullcalendar/interaction";
 import { PageHeader } from "@/components/PageHeader";
+import { Loading } from "@/components/Loading";
 
 export default function AppointmentPage() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -54,7 +55,7 @@ export default function AppointmentPage() {
   const router = useRouter();
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Chargement de vos rendez-vous...</div>;
+    return <Loading />;
   }
 
   if (isError) {

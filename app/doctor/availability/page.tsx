@@ -14,6 +14,7 @@ import { useAvailabilityStore } from "@/lib/store/useAvailabilityStore";
 import WeeklyScheduleCard from "@/components/DoctorAvailability/WeeklyScheduleCard";
 import SpecialDatesCard from "@/components/DoctorAvailability/SpecialDatesCard";
 import { PageHeader } from "@/components/PageHeader";
+import { Loading } from "@/components/Loading";
 
 export default function DoctorAvailabilityPage() {
   const router = useRouter();
@@ -53,11 +54,7 @@ export default function DoctorAvailabilityPage() {
     status === "loading" || isLoadingDoctor || isLoadingAvailability;
 
   // Composant de chargement personnalisé
-  const loadingComponent = (
-    <div className="flex justify-center items-center h-64">
-      <Loader2 className="h-8 w-8 animate-spin" />
-    </div>
-  );
+  const loadingComponent = <Loading />;
 
   // Composant de vérification du profil du médecin
   const doctorProfileCheck = (
@@ -110,11 +107,14 @@ export default function DoctorAvailabilityPage() {
             }
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Les composants existants restent inchangés */}
-            <WeeklyScheduleCard isLoading={isLoading} />
-            <SpecialDatesCard isLoading={isLoading} />
-          </div>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <WeeklyScheduleCard isLoading={isLoading} />
+              <SpecialDatesCard isLoading={isLoading} />
+            </div>
+          )}
         </div>
       )}
     </RoleAuthCheck>

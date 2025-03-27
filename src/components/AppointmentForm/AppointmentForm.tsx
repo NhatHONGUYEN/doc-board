@@ -22,6 +22,7 @@ import PatientSelector from "./PatientSelector";
 import AppointmentDetails from "./AppointmentDetails";
 import AppointmentTiming from "./AppointmentTiming";
 import AppointmentNotes from "./AppointmentNotes";
+import { Loading } from "../Loading";
 
 export default function AppointmentForm({
   router,
@@ -116,7 +117,7 @@ export default function AppointmentForm({
   };
 
   if (status === "loading" || isLoadingDoctor) {
-    return <div className="p-8">Chargement...</div>;
+    return <Loading />;
   }
 
   if (!doctor) {

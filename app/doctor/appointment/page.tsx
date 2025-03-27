@@ -14,6 +14,7 @@ import { TodaysAppointments } from "@/components/DoctorAppointments/TodaysAppoin
 import { AppointmentDetailsDialog } from "@/components/DoctorAppointments/DoctorAppointmentDialog/AppointmentDetailsDialog";
 import { UpdateStatusDialog } from "@/components/DoctorAppointments/DoctorAppointmentDialog/UpdateStatusDialog";
 import { AddNotesDialog } from "@/components/DoctorAppointments/DoctorAppointmentDialog/AddNotesDialog";
+import { Loading } from "@/components/Loading";
 
 export default function DoctorAppointmentPage() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -29,7 +30,7 @@ export default function DoctorAppointmentPage() {
   const [activeTab, setActiveTab] = useState("calendar");
 
   if (sessionStatus === "loading" || isLoading) {
-    return <div className="p-8">Chargement des rendez-vous...</div>;
+    return <Loading />;
   }
 
   if (isError) {

@@ -2,11 +2,12 @@
 
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, CalendarPlus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CalendarPlus } from "lucide-react";
+
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
 import AppointmentForm from "@/components/AppointmentForm/AppointmentForm";
 import { PageHeader } from "@/components/PageHeader";
+import { Loading } from "@/components/Loading";
 
 export default function NewDoctorAppointmentPage() {
   const router = useRouter();
@@ -20,15 +21,7 @@ export default function NewDoctorAppointmentPage() {
           description="Créez un nouveau rendez-vous pour un patient. Sélectionnez le patient, la date, l'heure et ajoutez des notes pertinentes."
         />
 
-        <Suspense
-          fallback={
-            <Card className="max-w-2xl mx-auto">
-              <CardContent className="p-8 flex justify-center items-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              </CardContent>
-            </Card>
-          }
-        >
+        <Suspense fallback={<Loading />}>
           <AppointmentForm router={router} />
         </Suspense>
       </div>

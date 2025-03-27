@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Loader2, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { useMedicalRecordsListStore } from "@/hooks/useMedicalRecordsListStore";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/PageHeader";
 // Import our components
 import MedicalRecordsCard from "@/components/MedicalRecords/MedicalRecordsCard";
 import RecordDetailDialog from "@/components/MedicalRecords/RecordDetailDialog";
+import { Loading } from "@/components/Loading";
 
 export default function MedicalRecordsPage() {
   const { session, status } = useSessionStore();
@@ -49,13 +50,7 @@ export default function MedicalRecordsPage() {
   }, [session?.user?.id, fetchPatients, resetStore]);
 
   // Composant de chargement personnalisé
-  const loadingComponent = (
-    <div className="container py-10">
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    </div>
-  );
+  const loadingComponent = <Loading />;
 
   // Afficher l'état de chargement uniquement si :
   // 1. Nous n'avons pas encore tenté de charger les données, OU

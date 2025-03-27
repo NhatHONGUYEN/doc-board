@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { User, Loader2, AlertTriangle } from "lucide-react";
+import { User, AlertTriangle } from "lucide-react";
 import { usePatientData } from "@/hooks/usePatientData";
 import useSessionStore from "@/lib/store/useSessionStore";
 import { RoleAuthCheck } from "@/components/RoleAuthCheck";
@@ -11,6 +11,7 @@ import { NextAppointmentCard } from "@/components/PatientDashboard/NextAppointme
 import { StatsOverview } from "@/components/PatientDashboard/StatsOverview";
 import { UpcomingAppointments } from "@/components/PatientDashboard/UpcomingAppointments";
 import { PersonalInfoCard } from "@/components/PatientDashboard/PersonalInfoCard";
+import { Loading } from "@/components/Loading";
 
 export default function PatientDashboard() {
   const { session } = useSessionStore();
@@ -35,17 +36,7 @@ export default function PatientDashboard() {
       : null;
 
   // Composant de chargement à utiliser avec RoleAuthCheck
-  const loadingComponent = (
-    <div className="flex justify-center py-12">
-      <div className="flex flex-col items-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground text-sm">
-          Chargement de votre tableau de bord...
-        </p>
-      </div>
-    </div>
-  );
-
+  const loadingComponent = <Loading />;
   // Composant de gestion d'erreur
   const ErrorDisplay = () => {
     if (!isError) return null;

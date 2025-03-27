@@ -33,6 +33,7 @@ import { ReasonField } from "@/components/PatientAppointment/ReasonField";
 import { FormActions } from "@/components/PatientAppointment/FormActions";
 import { Form } from "@/components/ui/form";
 import { PageHeader } from "@/components/PageHeader";
+import { Loading } from "@/components/Loading";
 
 // app/patient/appointment/new/page.tsx
 export default function NewAppointmentPage() {
@@ -157,7 +158,7 @@ function AppointmentFormContent({
   };
 
   // Gestion des états
-  if (status === "loading") return <div className="p-8">Chargement...</div>;
+  if (status === "loading") return <Loading />;
   if (!session) {
     return (
       <div className="p-8">
