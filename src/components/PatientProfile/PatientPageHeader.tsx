@@ -5,9 +5,9 @@ import { User } from "lucide-react";
 export function PatientPageHeader() {
   return (
     <PageHeader
-      title="My Profile"
+      title="Mon Profil"
       icon={<User className="h-5 w-5 text-primary" />}
-      description="View and manage your personal information"
+      description="Consultez et gérez vos informations personnelles"
     />
   );
 }

@@ -38,16 +38,16 @@ export function SettingsMedicalInformation({
             </div>
             <div>
               <CardTitle className="text-card-foreground">
-                Medical Information
+                Informations médicales
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Update your health information and medical details
+                Mettez à jour vos informations de santé et détails médicaux
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
-          {/* Social Security Number */}
+          {/* Numéro de sécurité sociale */}
           <FormField
             control={form.control}
             name="socialSecurityNumber"
@@ -55,25 +55,25 @@ export function SettingsMedicalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <Shield className="h-3.5 w-3.5 text-primary/70" />
-                  Social Security Number
+                  Numéro de sécurité sociale
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="XXX-XX-XXXX"
+                    placeholder="X XX XX XX XXX XXX"
                     {...field}
                     className="border-border"
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  Your SSN is securely stored and only used for insurance
-                  purposes
+                  Votre numéro de sécurité sociale est stocké de manière
+                  sécurisée et utilisé uniquement à des fins d&apos;assurance
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Medical History */}
+          {/* Historique médical */}
           <FormField
             control={form.control}
             name="medicalHistory"
@@ -81,18 +81,18 @@ export function SettingsMedicalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <ClipboardList className="h-3.5 w-3.5 text-primary/70" />
-                  Medical History
+                  Historique médical
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Enter any relevant medical history, allergies, or conditions"
+                    placeholder="Saisissez tout antécédent médical, allergie ou pathologie pertinente"
                     className="min-h-32 border-border"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  Please include any chronic conditions, allergies, or past
-                  surgeries
+                  Veuillez inclure toute pathologie chronique, allergie ou
+                  intervention chirurgicale antérieure
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -101,14 +101,15 @@ export function SettingsMedicalInformation({
         </CardContent>
       </Card>
 
-      {/* InfoNotice component outside the card */}
+      {/* Composant InfoNotice en dehors de la carte */}
       <InfoNotice
         icon={<AlertCircle size={14} />}
-        note="Your medical information is protected by HIPAA regulations."
+        note="Vos informations médicales sont protégées par la réglementation sur la confidentialité des données de santé."
       >
-        Providing accurate medical history helps your healthcare providers offer
-        better and safer care. This information will only be accessible to your
-        authorized healthcare team and is protected by strict privacy laws.
+        Fournir un historique médical précis aide vos professionnels de santé à
+        offrir des soins meilleurs et plus sûrs. Ces informations ne seront
+        accessibles qu&apos;à votre équipe médicale autorisée et sont protégées
+        par des lois strictes sur la confidentialité.
       </InfoNotice>
     </div>
   );

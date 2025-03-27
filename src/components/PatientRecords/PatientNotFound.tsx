@@ -10,16 +10,16 @@ export function PatientNotFound() {
     <div className="container py-10">
       <Card>
         <CardContent className="p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Patient Not Found</h1>
+          <h1 className="text-2xl font-bold mb-4">Patient non trouvé</h1>
           <p>
-            The requested patient record doesn&apos;t exist or you don&apos;t
-            have permission to view it.
+            Le dossier patient demandé n&apos;existe pas ou vous n&apos;avez pas
+            l&apos;autorisation de le consulter.
           </p>
           <Button
             className="mt-4"
             onClick={() => router.push("/doctor/dashboard")}
           >
-            Back to Dashboard
+            Retour au tableau de bord
           </Button>
         </CardContent>
       </Card>

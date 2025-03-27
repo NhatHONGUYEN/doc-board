@@ -52,9 +52,9 @@ export function MedicalHistoryCard({
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle>Medical History</CardTitle>
+                <CardTitle>Historique médical</CardTitle>
                 <CardDescription>
-                  Patient&apos;s medical background and conditions
+                  Antécédents médicaux et pathologies du patient
                 </CardDescription>
               </div>
             </div>
@@ -67,7 +67,7 @@ export function MedicalHistoryCard({
                 onClick={onEdit}
               >
                 <Edit className="h-4 w-4 mr-2" />
-                Edit Record
+                Modifier
               </Button>
             ) : (
               <div className="flex space-x-2">
@@ -78,7 +78,7 @@ export function MedicalHistoryCard({
                   onClick={onCancel}
                 >
                   <X className="h-4 w-4 mr-2" />
-                  Cancel
+                  Annuler
                 </Button>
                 <Button
                   size="sm"
@@ -91,7 +91,7 @@ export function MedicalHistoryCard({
                   ) : (
                     <Save className="h-4 w-4 mr-2" />
                   )}
-                  Save Changes
+                  Enregistrer
                 </Button>
               </div>
             )}
@@ -104,26 +104,26 @@ export function MedicalHistoryCard({
               value={editableNotes}
               onChange={(e) => onNotesChange(e.target.value)}
               className="min-h-40 font-mono"
-              placeholder="ALLERGIES:
-• Medication, food, or environmental allergies
+              placeholder="ALLERGIES :
+• Allergies aux médicaments, aliments ou environnementales
 
-MEDICATIONS:
-• Current medications and dosages
+MÉDICAMENTS :
+• Médicaments actuels et posologies
 
-MEDICAL HISTORY:
-• Chronic conditions
-• Previous surgeries
+ANTÉCÉDENTS MÉDICAUX :
+• Maladies chroniques
+• Interventions chirurgicales antérieures
 
-FAMILY HISTORY:
-• Relevant hereditary conditions
+ANTÉCÉDENTS FAMILIAUX :
+• Pathologies héréditaires significatives
 
-NOTES:
-• Additional observations"
+NOTES :
+• Observations supplémentaires"
             />
           ) : (
             <ScrollArea className="h-40 rounded-md border p-4">
               {patient.medicalHistory ? (
-                <div className="whitespace-pre-wrap  ">
+                <div className="whitespace-pre-wrap">
                   {patient.medicalHistory}
                 </div>
               ) : (
@@ -132,15 +132,15 @@ NOTES:
                     <PlusSquare className="h-8 w-8 text-primary" />
                   </div>
                   <p className="text-muted-foreground mb-2">
-                    No medical history recorded
+                    Aucun historique médical enregistré
                   </p>
                   <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
-                    Add medical history information to help track this
-                    patient&apos;s conditions and treatments.
+                    Ajoutez des informations d&apos;historique médical pour
+                    aider à suivre les pathologies et traitements de ce patient.
                   </p>
                   <Button onClick={onEdit}>
                     <PlusSquare className="h-4 w-4 mr-2" />
-                    Add Medical Record
+                    Ajouter un dossier médical
                   </Button>
                 </div>
               )}
@@ -149,11 +149,11 @@ NOTES:
         </CardContent>
       </Card>
 
-      {/* InfoNotice moved outside the Card */}
+      {/* InfoNotice placée en dehors de la Card */}
       <InfoNotice icon={<AlertTriangle size={14} />}>
-        Medical history information is critical for proper diagnosis and
-        treatment. Keep this section updated with all relevant patient
-        conditions and allergies.
+        Les informations d&apos;historique médical sont essentielles pour un
+        diagnostic et un traitement appropriés. Maintenez cette section à jour
+        avec toutes les pathologies et allergies pertinentes du patient.
       </InfoNotice>
     </div>
   );

@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { InfoNotice } from "@/components/InfoNotice";
 import { Patient } from "@/lib/types/core-entities";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 type PatientPersonalInformationProps = {
   patient?: Patient;
@@ -40,10 +42,10 @@ export function PatientPersonalInformation({
             </div>
             <div>
               <CardTitle className="text-card-foreground">
-                Personal Information
+                Informations personnelles
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Your personal and contact details
+                Vos coordonnées et informations personnelles
               </CardDescription>
             </div>
           </div>
@@ -52,12 +54,12 @@ export function PatientPersonalInformation({
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Full Name</p>
+              <p className="text-sm text-muted-foreground">Nom complet</p>
               <p className="font-medium text-card-foreground flex items-center gap-2">
                 <User className="h-4 w-4 text-primary/70" />
                 {patient?.user?.name || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -72,38 +74,42 @@ export function PatientPersonalInformation({
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Date of Birth</p>
+              <p className="text-sm text-muted-foreground">Date de naissance</p>
               <p className="font-medium text-card-foreground flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary/70" />
                 {patient?.birthDate ? (
-                  new Date(patient.birthDate).toLocaleDateString()
+                  format(new Date(patient.birthDate), "d MMMM yyyy", {
+                    locale: fr,
+                  })
                 ) : (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseignée
                   </span>
                 )}
               </p>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Phone Number</p>
+              <p className="text-sm text-muted-foreground">
+                Numéro de téléphone
+              </p>
               <p className="font-medium text-card-foreground flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary/70" />
                 {patient?.phone || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
             </div>
 
             <div className="md:col-span-2 space-y-1">
-              <p className="text-sm text-muted-foreground">Address</p>
+              <p className="text-sm text-muted-foreground">Adresse</p>
               <p className="font-medium text-card-foreground flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary/70" />
                 {patient?.address || (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseignée
                   </span>
                 )}
               </p>
@@ -111,7 +117,7 @@ export function PatientPersonalInformation({
 
             <div className="md:col-span-2 space-y-1">
               <p className="text-sm text-muted-foreground">
-                Social Security Number
+                Numéro de sécurité sociale
               </p>
               <p className="font-medium text-card-foreground flex items-center gap-2">
                 <Shield className="h-4 w-4 text-primary/70" />
@@ -119,7 +125,7 @@ export function PatientPersonalInformation({
                   <span>••••••{patient.socialSecurityNumber.slice(-4)}</span>
                 ) : (
                   <span className="text-muted-foreground italic text-sm">
-                    Not provided
+                    Non renseigné
                   </span>
                 )}
               </p>
@@ -128,37 +134,40 @@ export function PatientPersonalInformation({
         </CardContent>
 
         <CardFooter className=" border-t border-border py-4 px-6 flex justify-between">
-          {/* Left side - Last updated info */}
+          {/* Côté gauche - Informations de dernière mise à jour */}
           <div className="flex items-center text-sm text-primary/70">
             <Clock className="mr-2 h-4 w-4" />
-            <span className="font-medium mr-1">Last updated:</span>
+            <span className="font-medium mr-1">Dernière mise à jour :</span>
             <span>
               {patient?.updatedAt
-                ? new Date(patient.updatedAt).toLocaleDateString()
-                : "Never updated"}
+                ? format(new Date(patient.updatedAt), "d MMMM yyyy", {
+                    locale: fr,
+                  })
+                : "Jamais mis à jour"}
             </span>
           </div>
 
-          {/* Right side - Edit button */}
+          {/* Côté droit - Bouton modifier */}
           <Button
             asChild
             className="h-10 bg-primary hover:bg-primary/90 transition-all"
           >
             <Link href="/patient/settings" className="flex items-center">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Profile
+              Modifier le profil
             </Link>
           </Button>
         </CardFooter>
       </Card>
 
-      {/* Info notice about data privacy */}
+      {/* Note d'information sur la confidentialité des données */}
       <InfoNotice
         icon={<Shield size={14} />}
-        note="Your personal information is encrypted and protected."
+        note="Vos informations personnelles sont chiffrées et protégées."
       >
-        Complete your profile to help us provide better care. Your information
-        will only be shared with your healthcare providers.
+        Complétez votre profil pour nous aider à vous fournir de meilleurs
+        soins. Vos informations ne seront partagées qu&apos;avec vos
+        professionnels de santé.
       </InfoNotice>
     </div>
   );

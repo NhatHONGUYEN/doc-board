@@ -37,16 +37,16 @@ export function SettingsPersonalInformation({
             </div>
             <div>
               <CardTitle className="text-card-foreground">
-                Personal Information
+                Informations personnelles
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Update your personal and contact details
+                Mettez à jour vos coordonnées et informations personnelles
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
-          {/* Name */}
+          {/* Nom */}
           <FormField
             control={form.control}
             name="name"
@@ -54,11 +54,11 @@ export function SettingsPersonalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <User className="h-3.5 w-3.5 text-primary/70" />
-                  Full Name
+                  Nom complet
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="John Doe"
+                    placeholder="Jean Dupont"
                     {...field}
                     className="border-border"
                   />
@@ -81,7 +81,7 @@ export function SettingsPersonalInformation({
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="your@email.com"
+                    placeholder="votre@email.com"
                     {...field}
                     className="border-border"
                   />
@@ -91,7 +91,7 @@ export function SettingsPersonalInformation({
             )}
           />
 
-          {/* Date of Birth */}
+          {/* Date de naissance */}
           <FormField
             control={form.control}
             name="birthDate"
@@ -99,20 +99,21 @@ export function SettingsPersonalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5 text-primary/70" />
-                  Date of Birth
+                  Date de naissance
                 </FormLabel>
                 <FormControl>
                   <Input type="date" {...field} className="border-border" />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  Your date of birth helps doctors provide appropriate care
+                  Votre date de naissance aide les médecins à vous prodiguer des
+                  soins adaptés
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Phone */}
+          {/* Téléphone */}
           <FormField
             control={form.control}
             name="phone"
@@ -120,11 +121,11 @@ export function SettingsPersonalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <Phone className="h-3.5 w-3.5 text-primary/70" />
-                  Phone Number
+                  Numéro de téléphone
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="06 12 34 56 78"
                     {...field}
                     className="border-border"
                   />
@@ -134,7 +135,7 @@ export function SettingsPersonalInformation({
             )}
           />
 
-          {/* Address */}
+          {/* Adresse */}
           <FormField
             control={form.control}
             name="address"
@@ -142,11 +143,11 @@ export function SettingsPersonalInformation({
               <FormItem>
                 <FormLabel className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-primary/70" />
-                  Home Address
+                  Adresse domicile
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="123 Main St, City, State, ZIP"
+                    placeholder="123 rue Principale, Ville, Code postal"
                     {...field}
                     className="border-border"
                   />
@@ -158,14 +159,15 @@ export function SettingsPersonalInformation({
         </CardContent>
       </Card>
 
-      {/* InfoNotice component outside the card */}
+      {/* Composant InfoNotice en dehors de la carte */}
       <InfoNotice
         icon={<Info size={14} />}
-        note="Your personal information is used for identification and communication purposes only."
+        note="Vos informations personnelles sont utilisées uniquement à des fins d'identification et de communication."
       >
-        Keep your contact information up to date to receive important
-        notifications about appointments and test results. Your address is
-        required for billing and insurance purposes.
+        Maintenez vos coordonnées à jour pour recevoir des notifications
+        importantes concernant vos rendez-vous et résultats d&apos;examens.
+        Votre adresse est nécessaire pour la facturation et les besoins
+        d&apos;assurance.
       </InfoNotice>
     </div>
   );

@@ -5,7 +5,7 @@ import { ArrowLeft, Settings } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 
 export function SettingsPageHeader() {
-  // Define the action button for PageHeader
+  // Définir le bouton d'action pour PageHeader
   const actionButton = (
     <Button
       variant="outline"
@@ -14,16 +14,16 @@ export function SettingsPageHeader() {
     >
       <Link href="/patient/profile" className="flex items-center">
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Profile
+        Retour au Profil
       </Link>
     </Button>
   );
 
   return (
     <PageHeader
-      title="Profile Settings"
+      title="Paramètres du Profil"
       icon={<Settings className="h-5 w-5 text-primary" />}
-      description="Update your personal and medical information"
+      description="Mettez à jour vos informations personnelles et médicales"
       actions={actionButton}
     />
   );

@@ -35,10 +35,10 @@ export function ProfileOverview({
             </div>
             <div>
               <CardTitle className="text-card-foreground">
-                Profile Overview
+                Aperçu du profil
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Your account information and status
+                Informations et statut de votre compte
               </CardDescription>
             </div>
           </div>
@@ -50,7 +50,7 @@ export function ProfileOverview({
               <Avatar className="h-28 w-28 border-4 border-background shadow-xl mb-2">
                 <AvatarImage
                   src={session?.user?.image || ""}
-                  alt="Profile picture"
+                  alt="Photo de profil"
                 />
                 <AvatarFallback className="bg-primary/5 text-primary text-4xl font-semibold">
                   {patient?.user?.name
@@ -68,7 +68,7 @@ export function ProfileOverview({
                     : "bg-primary/10 text-primary border-primary/20"
                 )}
               >
-                {completionPercentage === 100 ? "Complete" : "Incomplete"}
+                {completionPercentage === 100 ? "Complet" : "Incomplet"}
               </Badge>
             </div>
 
@@ -104,23 +104,23 @@ export function ProfileOverview({
                 ></div>
               </div>
               <p className="text-xs text-muted-foreground mb-4">
-                Profile Completeness: {completionPercentage}%
+                Niveau de complétion du profil : {completionPercentage}%
               </p>
             </div>
           </div>
         </CardContent>
 
-        {/* Removed the CardFooter with Edit button */}
+        {/* Le CardFooter avec bouton Modifier a été supprimé */}
       </Card>
 
-      {/* Info notice about profile completion */}
+      {/* Note d'information sur la complétion du profil */}
       <InfoNotice
         icon={<Info size={14} />}
-        note="Complete your profile to help doctors provide better care."
+        note="Complétez votre profil pour aider les médecins à fournir de meilleurs soins."
       >
-        A complete profile helps ensure accurate diagnosis and treatment.
-        Missing information may affect your healthcare experience and limit
-        available features.
+        Un profil complet permet d&apos;assurer un diagnostic et un traitement
+        précis. Des informations manquantes peuvent affecter votre expérience de
+        soins et limiter les fonctionnalités disponibles.
       </InfoNotice>
     </div>
   );

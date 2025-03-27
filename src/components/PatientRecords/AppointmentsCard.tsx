@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 import { Badge } from "@/components/ui/badge";
 import { PatientRecord } from "@/lib/types/medical-records";
@@ -23,12 +24,12 @@ type AppointmentsCardProps = {
 export function AppointmentsCard({ patient }: AppointmentsCardProps) {
   const router = useRouter();
 
-  // Function to schedule a new appointment
+  // Fonction pour planifier un nouveau rendez-vous
   const scheduleAppointment = () => {
     router.push(`/doctor/appointment/new?patientId=${patient.id}`);
   };
 
-  // Get only pending appointments (scheduled status)
+  // Obtenir uniquement les rendez-vous en attente (statut programmé)
   const appointments = patient.appointments || [];
   const pendingAppointments = appointments
     .filter(
@@ -49,16 +50,16 @@ export function AppointmentsCard({ patient }: AppointmentsCardProps) {
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle>Pending Appointments</CardTitle>
+                <CardTitle>Rendez-vous en attente</CardTitle>
                 <CardDescription>
-                  Upcoming scheduled visits for this patient
+                  Prochaines visites programmées pour ce patient
                 </CardDescription>
               </div>
             </div>
 
             <Button onClick={scheduleAppointment} className="h-9" size="sm">
               <CalendarPlus className="h-4 w-4 mr-2" />
-              Schedule
+              Planifier
             </Button>
           </div>
         </CardHeader>
@@ -77,16 +78,20 @@ export function AppointmentsCard({ patient }: AppointmentsCardProps) {
                   <div className="flex-1 space-y-1">
                     <div className="flex justify-between">
                       <p className="font-medium">
-                        {format(new Date(appointment.date), "MMMM d, yyyy")}
+                        {format(new Date(appointment.date), "d MMMM yyyy", {
+                          locale: fr,
+                        })}
                       </p>
-                      <Badge variant="outline">Scheduled</Badge>
+                      <Badge variant="outline">Programmé</Badge>
                     </div>
                     <p className="text-muted-foreground">
-                      {format(new Date(appointment.date), "h:mm a")}
+                      {format(new Date(appointment.date), "HH'h'mm", {
+                        locale: fr,
+                      })}
                     </p>
                     {appointment.reason && (
                       <p className="text-sm text-muted-foreground">
-                        Reason: {appointment.reason}
+                        Motif : {appointment.reason}
                       </p>
                     )}
                   </div>
@@ -100,7 +105,7 @@ export function AppointmentsCard({ patient }: AppointmentsCardProps) {
                   router.push(`/doctor/appointment?patientId=${patient.id}`)
                 }
               >
-                <span>View all appointments</span>
+                <span>Voir tous les rendez-vous</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -110,15 +115,14 @@ export function AppointmentsCard({ patient }: AppointmentsCardProps) {
                 <CalendarPlus className="h-8 w-8 text-primary" />
               </div>
               <p className="text-muted-foreground mb-2">
-                No pending appointments
+                Aucun rendez-vous en attente
               </p>
               <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-                This patient doesn&apos;t have any scheduled appointments with
-                you.
+                Ce patient n&apos;a aucun rendez-vous programmé avec vous.
               </p>
               <Button onClick={scheduleAppointment}>
                 <CalendarPlus className="h-4 w-4 mr-2" />
-                Schedule Appointment
+                Planifier un rendez-vous
               </Button>
             </div>
           )}
@@ -126,9 +130,9 @@ export function AppointmentsCard({ patient }: AppointmentsCardProps) {
       </Card>
 
       <InfoNotice icon={<Calendar size={14} />}>
-        You can quickly schedule a new appointment for this patient using the
-        Schedule button. Only upcoming appointments with &quot;Scheduled&quot;
-        status are shown here.
+        Vous pouvez rapidement planifier un nouveau rendez-vous pour ce patient
+        en utilisant le bouton Planifier. Seuls les rendez-vous à venir avec le
+        statut « Programmé » sont affichés ici.
       </InfoNotice>
     </div>
   );

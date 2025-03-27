@@ -1,5 +1,6 @@
 // src/components/PatientRecords/PatientInfoCard.tsx
 import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import {
   Calendar,
   Phone,
@@ -33,8 +34,10 @@ export function PatientInfoCard({ patient }: PatientInfoCardProps) {
               <UserRound className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle>Patient Information</CardTitle>
-              <CardDescription>Personal and contact details</CardDescription>
+              <CardTitle>Informations patient</CardTitle>
+              <CardDescription>
+                Coordonnées et informations personnelles
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -64,36 +67,38 @@ export function PatientInfoCard({ patient }: PatientInfoCardProps) {
           <div className="space-y-4">
             <InfoItem
               icon={<Calendar className="h-5 w-5 text-primary" />}
-              label="Date of Birth"
+              label="Date de naissance"
               value={
                 patient.birthDate
-                  ? format(new Date(patient.birthDate), "MMMM d, yyyy")
-                  : "Not provided"
+                  ? format(new Date(patient.birthDate), "d MMMM yyyy", {
+                      locale: fr,
+                    })
+                  : "Non renseignée"
               }
               isMissing={!patient.birthDate}
             />
 
             <InfoItem
               icon={<Phone className="h-5 w-5 text-primary" />}
-              label="Phone"
-              value={patient.phone || "Not provided"}
+              label="Téléphone"
+              value={patient.phone || "Non renseigné"}
               isMissing={!patient.phone}
             />
 
             <InfoItem
               icon={<MapPin className="h-5 w-5 text-primary" />}
-              label="Address"
-              value={patient.address || "Not provided"}
+              label="Adresse"
+              value={patient.address || "Non renseignée"}
               isMissing={!patient.address}
             />
 
             <InfoItem
               icon={<ClipboardList className="h-5 w-5 text-primary" />}
-              label="SSN"
+              label="N° Sécurité sociale"
               value={
                 patient.socialSecurityNumber
                   ? `•••••${patient.socialSecurityNumber.slice(-4)}`
-                  : "Not recorded"
+                  : "Non enregistré"
               }
               isMissing={!patient.socialSecurityNumber}
             />
@@ -101,11 +106,12 @@ export function PatientInfoCard({ patient }: PatientInfoCardProps) {
         </CardContent>
       </Card>
 
-      {/* InfoNotice moved outside the Card */}
+      {/* InfoNotice en dehors de la Card */}
       <InfoNotice icon={<Calendar size={14} />}>
-        Patient information is displayed as recorded in their profile. Missing
-        information is marked as &quot;Not provided&quot;. Please verify and
-        update during appointments.
+        Les informations du patient sont affichées telles qu&apos;enregistrées
+        dans son profil. Les informations manquantes sont indiquées comme
+        &quot;Non renseignées&quot;. Veuillez vérifier et mettre à jour lors des
+        consultations.
       </InfoNotice>
     </div>
   );

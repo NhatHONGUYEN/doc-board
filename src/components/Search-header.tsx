@@ -18,8 +18,8 @@ type SearchHeaderProps = {
 export function SearchHeader({
   searchTerm,
   onSearchChange,
-  label = "Search",
-  placeholder = "Search...",
+  label = "Rechercher",
+  placeholder = "Rechercher...",
   id = "search-input",
   className,
   showClearButton = true,
