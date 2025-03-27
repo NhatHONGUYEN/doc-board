@@ -31,6 +31,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { Badge } from "@/components/ui/badge";
 import { EventClickArg } from "@fullcalendar/core";
 import { DateClickArg } from "@fullcalendar/interaction";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function AppointmentPage() {
   const { session, status: sessionStatus } = useSessionStore();
@@ -168,15 +169,19 @@ export default function AppointmentPage() {
 
   return (
     <div className="container py-10">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Mes Rendez-vous</h1>
-        <Button asChild>
-          <Link href="/patient/appointment/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Prendre un nouveau rendez-vous
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Mes Rendez-vous"
+        icon={<CalendarIcon className="h-5 w-5 text-primary" />}
+        description="Consultez et gérez vos rendez-vous médicaux"
+        actions={
+          <Button asChild>
+            <Link href="/patient/appointment/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Prendre un nouveau rendez-vous
+            </Link>
+          </Button>
+        }
+      />
 
       <Card>
         <CardContent className="p-4 md:p-6 h-[70vh]">

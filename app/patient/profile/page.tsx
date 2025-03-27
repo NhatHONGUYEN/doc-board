@@ -1,148 +1,119 @@
-// src/components/PatientDashboard/PersonalInfoCard.tsx
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+"use client";
+
+import { Loader2, AlertTriangle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  User,
-  Mail,
-  Phone,
-  Calendar as CalendarIcon,
-  FileText,
-  LockKeyhole,
-} from "lucide-react";
 import Link from "next/link";
-import { Patient } from "@/lib/types/core-entities";
-import { InfoNotice } from "@/components/InfoNotice";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { usePatientData } from "@/hooks/usePatientData";
+import useSessionStore from "@/lib/store/useSessionStore";
+import { RoleAuthCheck } from "@/components/RoleAuthCheck";
+import { PatientPageHeader } from "@/components/PatientProfile/PatientPageHeader";
+import { ProfileOverview } from "@/components/PatientProfile/ProfileOverview";
+import { PatientPersonalInformation } from "@/components/PatientProfile/PatientPersonalInformation";
 
-type PersonalInfoCardProps = {
-  patient?: Patient;
-};
+export default function PatientProfilePage() {
+  const { session } = useSessionStore();
+  const {
+    data: patient,
+    isLoading,
+    isError,
+    error,
+  } = usePatientData(session?.user?.id);
 
-export default function PersonalInfoCard({ patient }: PersonalInfoCardProps) {
-  return (
-    <div className="space-y-3">
-      <Card className="overflow-hidden border-border hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full">
-        <CardHeader className="bg-card border-b border-border">
-          <div className="flex justify-between items-center pb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/90 rounded-md flex items-center justify-center">
-                <User className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-card-foreground">
-                  Informations personnelles
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Détails de votre profil
-                </CardDescription>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <div className="flex justify-center mb-6">
-            <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
-              <AvatarImage src={patient?.user?.image || ""} alt="Patient" />
-              <AvatarFallback className="bg-primary/5 text-primary text-xl font-semibold">
-                {patient?.user?.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase() || "P"}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <User className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Nom complet</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.user?.name}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <Mail className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.user?.email}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <Phone className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">Téléphone</p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.phone || (
-                    <span className="text-muted-foreground italic text-sm">
-                      Non renseigné
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <CalendarIcon className="h-4 w-4 text-primary/70 mr-2" />
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Date de naissance
-                </p>
-                <p className="font-medium text-card-foreground">
-                  {patient?.birthDate ? (
-                    format(new Date(patient.birthDate), "d MMMM yyyy", {
-                      locale: fr,
-                    })
-                  ) : (
-                    <span className="text-muted-foreground italic text-sm">
-                      Non renseignée
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="bg-card border-t border-border py-4 px-5">
-          <Button
-            asChild
-            variant="outline"
-            className="w-full h-10 bg-card hover:bg-primary/10 hover:text-primary transition-all"
-          >
-            <Link
-              href="/patient/profile"
-              className="flex items-center justify-center"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Modifier le profil
-            </Link>
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* Note d'information sous la carte */}
-      <InfoNotice
-        icon={<LockKeyhole size={14} />}
-        note="Vos informations sont uniquement partagées avec vos professionnels de santé."
-      >
-        Maintenir votre profil à jour permet à vos médecins de disposer
-        d&apos;informations précises pour le diagnostic et le traitement.
-      </InfoNotice>
+  // Composant de chargement à utiliser avec RoleAuthCheck
+  const loadingComponent = (
+    <div className="flex justify-center py-12">
+      <div className="flex flex-col items-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground text-sm">
+          Chargement de votre profil...
+        </p>
+      </div>
     </div>
+  );
+
+  // Composant de gestion d'erreur
+  const ErrorDisplay = () => {
+    if (!isError) return null;
+
+    return (
+      <div className="flex justify-center py-12">
+        <div className="text-center max-w-md">
+          <div className="bg-destructive/10 rounded-full p-3 mx-auto mb-4 w-fit">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium text-card-foreground mb-1">
+            Erreur de chargement du profil
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4">
+            {error.message ||
+              "Un problème est survenu lors du chargement de votre profil. Veuillez réessayer."}
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-primary hover:bg-primary/90"
+          >
+            Réessayer
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  // Composant pour utilisateur non authentifié
+  const unauthenticatedComponent = (
+    <div className="flex justify-center py-12">
+      <div className="text-center max-w-md">
+        <div className="bg-primary/10 rounded-full p-3 mx-auto mb-4 w-fit">
+          <User className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-lg font-medium text-card-foreground mb-1">
+          Authentification requise
+        </h3>
+        <p className="text-muted-foreground text-sm mb-4">
+          Veuillez vous connecter pour consulter votre profil.
+        </p>
+        <Button asChild className="bg-primary hover:bg-primary/90">
+          <Link href="/api/auth/signin">Se connecter</Link>
+        </Button>
+      </div>
+    </div>
+  );
+
+  // Calcul du taux de complétude du profil
+  const requiredFields = [
+    "phone",
+    "address",
+    "birthDate",
+    "socialSecurityNumber",
+  ];
+  const completedFields = requiredFields.filter(
+    (field) => !!patient?.[field as keyof typeof patient]
+  ).length;
+  const completionPercentage = Math.round(
+    (completedFields / requiredFields.length) * 100
+  );
+
+  return (
+    <RoleAuthCheck
+      allowedRoles="PATIENT"
+      loadingComponent={isLoading ? loadingComponent : undefined}
+      unauthenticatedComponent={unauthenticatedComponent}
+    >
+      {isError ? (
+        <ErrorDisplay />
+      ) : (
+        <div className="container max-w-3xl py-10">
+          <PatientPageHeader />
+
+          <ProfileOverview
+            patient={patient}
+            session={session}
+            completionPercentage={completionPercentage}
+          />
+
+          <PatientPersonalInformation patient={patient} />
+        </div>
+      )}
+    </RoleAuthCheck>
   );
 }
